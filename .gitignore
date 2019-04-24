@@ -1,0 +1,9 @@
+# This project
+.gradle
+.idea
+build
+gradle
+gradlew
+gradlew.bat
+*.iml
+/gradle.properties
