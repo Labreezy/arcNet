@@ -6,7 +6,7 @@ import org.jire.kotmem.win32.Kernel32.ReadProcessMemory
 class MemHandler : XrdApi {
     var GG_PROC: Win32Process? = null;
 
-    override fun isXrdConnected(): Boolean {
+    override fun isConnected(): Boolean {
         if (GG_PROC != null) return true
         try {
             GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
@@ -38,7 +38,7 @@ class MemHandler : XrdApi {
     }
 
     override fun getXrdData() : List<PlayerData> {
-        if(!isXrdConnected()){
+        if(!isConnected()){
             return ArrayList<PlayerData>()
         }
         var offs = longArrayOf(0x1C25AB4L, 0x44CL)
@@ -68,7 +68,7 @@ class MemHandler : XrdApi {
             } else {
                 println("NO PLAYER")
             }*/
-            var pd = PlayerData(dispname, steamid, charid, cabid, playerside, totalmatch, wins, loadpercent)
+            var pd = PlayerData(steamid, dispname, charid, cabid, playerside, totalmatch, wins, loadpercent)
             pDatas.add(pd)
             offs[1] += 0x48L
         }

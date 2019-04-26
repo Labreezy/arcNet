@@ -39,7 +39,7 @@ private class Start_lwjgl {
 
     fun mainLoop(stack: MemoryStack) {
         lwjglGlfw.newFrame()
-        ImGui.run { newFrame(); runApplication() }
+        ImGui.run { newFrame(); runApplicationLoop() }
         ImGui.render()
         glViewport(window.framebufferSize)
         glClearColor(WINDOW_TINT)

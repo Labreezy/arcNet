@@ -12,7 +12,15 @@ val WINDOW_HORZ = 640
 val WINDOW_VERT = 480
 var yup = true
 
-fun runApplication() {
+private val xrdApi: XrdApi = MemHandler()
+private val players: List<Player> = ArrayList()
+
+fun runApplicationLoop() {
+
+    if (xrdApi.isConnected()) {
+
+    }
+
     ImGui.run {
         setNextWindowPos(Vec2(0, 0), Cond.Always)
         setNextWindowSize(Vec2(WINDOW_HORZ, WINDOW_VERT), Cond.Always)
