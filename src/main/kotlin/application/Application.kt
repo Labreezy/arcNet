@@ -1,9 +1,14 @@
+package application
+
+import bounties.Player
 import glm_.vec2.Vec2
 import glm_.vec4.Vec4
 import imgui.Cond
 import imgui.ImGui
 import imgui.imgui.demo.showExampleApp.PlayerOverlay
 import imgui.or
+import memscan.MemHandler
+import memscan.XrdApi
 import imgui.WindowFlag as Wf
 
 val WINDOW_NAME = "arcNet  -  DISCONNECTED \uD83D\uDCE1 ..."

@@ -1,5 +1,7 @@
+package database
+
 /**
- * SqlApi
+ * database.SqlApi
  * provides [LegacyData]
  */
 interface SqlApi {

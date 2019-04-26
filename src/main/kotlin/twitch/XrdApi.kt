@@ -1,21 +1,22 @@
+package twitch
+
 /**
- * XrdApi
- * provides [PlayerData]
- * provides [MatchData]
+ * twitch.BotApi
  */
-interface XrdApi {
+interface BotApi {
 
     /**
      * @return Is Xrd running and ready to serve data
      */
-    fun isConnected(): Boolean
+    fun sendMessage(message:String)
 
     /**
      * @return a List of the Xrd lobby's active players and their data
      */
-    fun getXrdData(): List<PlayerData>
+    fun getMessages(): List<PlayerData>
 
 }
+
 
 class PlayerData(
     val steamUserId: Long,
@@ -26,6 +27,7 @@ class PlayerData(
     val matchesWon: Int,
     val matchesSum: Int,
     val loadingPct: Int)
+
 
 class MatchData(
     val players: Pair<PlayerData, PlayerData>,

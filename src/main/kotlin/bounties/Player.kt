@@ -1,5 +1,8 @@
+package bounties
+
 import classes.Character.getCharacterName
 import classes.addCommas
+import memscan.PlayerData
 import kotlin.math.abs
 
 class Player(playerData: PlayerData) {
