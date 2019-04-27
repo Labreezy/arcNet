@@ -3,81 +3,98 @@ package application
 import bounties.Player
 import glm_.vec2.Vec2
 import glm_.vec4.Vec4
-import imgui.Cond
-import imgui.ImGui
-import imgui.functionalProgramming
-import imgui.or
+import imgui.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import memscan.MemHandler
+import memscan.PlayerData
 import memscan.XrdApi
 import window
+import imgui.ImGui as Ui
 import imgui.WindowFlag as Wf
 
-val WINDOW_NAME = "gearNet  -  DISCONNECTED ❌ ..."
-val WINDOW_TINT = Vec4(0.16f, 0.16f, 0.16f, 1.0f)
-val WINDOW_HORZ = 640
-val WINDOW_VERT = 480
-val yup = true
-
 private val xrdApi: XrdApi = MemHandler()
-private val players: List<Player> = ArrayList()
+private val players: MutableMap<Long, Player> = HashMap()
+var gameLoop = 0
 
 fun runApplicationLoop() {
-    ImGui.setNextWindowPos(Vec2(0, 0), Cond.Always)
-    ImGui.setNextWindowSize(Vec2(WINDOW_HORZ, WINDOW_VERT), Cond.Always)
-    ImGui.begin("", null, 0 or Wf.NoTitleBar or Wf.NoResize or Wf.NoCollapse or Wf.NoBackground)
-    ImGui.end()
+    var i = 0
+    if (gameLoop == 0) {
+        players.put(0L, Player(PlayerData(0L,"ggplayer0",0x0,0x0,0x0,0,0,0)))
+        players.put(1L, Player(PlayerData(1L,"ggplayer1",0x0,0x0,0x0,0,0,0)))
+        players.put(2L, Player(PlayerData(2L,"ggplayer2",0x0,0x0,0x0,0,0,0)))
+        players.put(3L, Player(PlayerData(3L,"ggplayer3",0x0,0x0,0x0,0,0,0)))
 
-    if (xrdApi.isConnected()) { window.title = "gearNet  -  CONNECTED \uD83D\uDCE1 ..."
-        val xrdData = xrdApi.getPlayerData()
-        for (i in 0..xrdData.size-1) {
-            if (xrdData.get(i).steamUserId != 0L) generatePlayerView(Player(xrdData.get(i)), i.toFloat())
-        }
-    } else window.title = WINDOW_NAME
+        runGameLoop()
+    }
+    if (xrdApi.isConnected()) { window.title = "gearNet  -  CONNECTED \uD83D\uDCE1 ${getDots()}"
+    } else window.title = "gearNet  -  DISCONNECTED ❌ ${getDots()}"
+    generateMonitorViews()
+    players.values.forEach { generatePlayerView(it, i++.toFloat()) }
+}
 
+private fun generateMonitorViews() {
+//    Ui.button("test", Vec2(5))
 
+    val windowPos = Vec2(0f)
+    val windowPosPivot = Vec2(0f)
+    Ui.setNextWindowPos(windowPos, Cond.Always, windowPosPivot)
+    Ui.setNextWindowContentSize(Vec2(200, 24))
+    Ui.setNextWindowBgAlpha(0.8f)
+    Ui.pushStyleVar(StyleVar.WindowRounding, 4f)
+
+    functionalProgramming.withWindow("Debug", null, Wf.NoTitleBar or Wf.NoResize or Wf.NoSavedSettings or Wf.NoFocusOnAppearing or Wf.NoNav) {
+        Ui.textColored(Vec4(0, 1, 1, 1), "Player Count")
+        Ui.sameLine(160)
+        Ui.text("${players.size}")
+    }
+}
+
+private fun getDots():String {
+    when (gameLoop) {
+        1 -> return "."
+        2 -> return ".."
+        3 -> return "..."
+        4 -> return ""
+        else -> gameLoop = 1
+    }
+    return ""
+}
+
+private fun runGameLoop() {
+    gameLoop++
+    GlobalScope.launch {
+        delay(256)
+        if (xrdApi.isConnected()) { players.values.forEach { player -> xrdApi.getPlayerData().forEach { data -> if (data.steamUserId == player.getSteamId()) player.updatePlayerData(data) } } }
+        runGameLoop()
+    }
 }
 
 fun generatePlayerView(player: Player, height: Float) {
-    val windowPos = Vec2(ImGui.io.displaySize[0].toFloat() - 440f, (96f * height) + 10f)
+    val windowPos = Vec2(Ui.io.displaySize[0].toFloat() - 444f, (94f * height) + 16f)
     val windowPosPivot = Vec2(0f)
-    ImGui.setNextWindowPos(windowPos, Cond.Always, windowPosPivot)
-    ImGui.setNextWindowContentSize(Vec2(420f, 88f))
-    ImGui.setNextWindowBgAlpha(0.8f)
+    Ui.setNextWindowPos(windowPos, Cond.Always, windowPosPivot)
+    Ui.setNextWindowContentSize(Vec2(420f, 88f))
+    Ui.setNextWindowBgAlpha(0.8f)
+    Ui.pushStyleVar(StyleVar.WindowRounding, 0f)
 
     functionalProgramming.withWindow("title${height}", null, Wf.NoTitleBar or Wf.NoResize or Wf.NoSavedSettings or Wf.NoFocusOnAppearing or Wf.NoNav) {
-        ImGui.text(player.getNameString())
-        ImGui.separator()
-        ImGui.pushItemWidth(ImGui.fontSize * -12)
+        Ui.textColored(Vec4(1,0,0,1), player.getNameString())
+        Ui.separator()
 
-        ImGui.textColored(Vec4(1.0f, 0.0f, 0.0f, 1.0f), player.getCharacter(false))
-        ImGui.sameLine(200)
-        ImGui.progressBar(player.getLoadPercent() * 0.01f)
+        Ui.textColored(Vec4(1,1,0,1), player.getCharacter(false))
+        Ui.pushItemWidth(Ui.calcItemWidth()/3)
+        Ui.sameLine(200)
+        Ui.pushItemWidth(Ui.calcItemWidth()/3)
+        Ui.progressBar(player.getLoadPercent() * 0.01f)
 
-        ImGui.text(player.getRecordString())
-        ImGui.sameLine(200)
-        ImGui.text(player.getBountyString())
+        Ui.text(player.getRecordString())
+        Ui.sameLine(200)
+        Ui.text(player.getBountyString())
 
-        ImGui.text(player.getCabinetString())
-        ImGui.sameLine(200)
-        ImGui.text(player.getPlaySideString())
+        Ui.text(player.getCabinetString())
+        Ui.sameLine(200)
+        Ui.text(player.getPlaySideString())
     }
-//    ImGui.begin("", null, flags)
-//
-//    ImGui.text(player.getNameString())
-//    ImGui.separator()
-//    ImGui.pushItemWidth(ImGui.fontSize * -12)
-//
-//    ImGui.text(player.getCharacter(false))
-//    ImGui.sameLine(200)
-//    ImGui.progressBar(player.getLoadPercent() * 0.01f)
-//
-//    ImGui.text(player.getRecordString())
-//    ImGui.sameLine(200)
-//    ImGui.text(player.getBountyString())
-//
-//    ImGui.text(player.getCabinetString())
-//    ImGui.sameLine(200)
-//    ImGui.text(player.getPlaySideString())
-//
-//    ImGui.end()
 }
