@@ -1,4 +1,4 @@
-package bounties
+package session
 
 import classes.Character.getCharacterName
 import classes.addCommas
@@ -32,7 +32,7 @@ class Player(playerData: PlayerData) {
 
     fun getBountyFormatted() = "${addCommas(getBounty().toString())} W$"
 
-    fun getBountyString() = if (getBounty() > 0) "Bounty: ${getBountyFormatted()} (${change})" else "Free"
+    fun getBountyString() = if (getBounty() > 0) "Bounty: ${getBountyFormatted()} (${change})" else "Bounty: None"
 
     fun getChain() = chain
 
@@ -60,21 +60,20 @@ class Player(playerData: PlayerData) {
 
     fun getCabinetString(): String {
         when(getCabinet().toInt()) {
-            0 -> return "Cabinet A"
-            1 -> return "Cabinet B"
-            2 -> return "Cabinet C"
-            3 -> return "Cabinet D"
+            0 -> return "Cabinet A - ${getPlaySideString()}"
+            1 -> return "Cabinet B - ${getPlaySideString()}"
+            2 -> return "Cabinet C - ${getPlaySideString()}"
+            3 -> return "Cabinet D - ${getPlaySideString()}"
             else -> return "Roaming..."
         }
     }
 
-    fun getPlaySide() = getData().playerSide
-
-    fun getPlaySideString(): String {
+    private fun getPlaySideString(): String {
         if (getCabinet().toInt() <= 3 && getCabinet().toInt() >= 0) {
-            when(getPlaySide().toInt()) {
+            when(getData().playerSide.toInt()) {
                 0 -> return "Player One"
                 1 -> return "Player Two"
+                else -> return "[${getData().playerSide.toInt()}]"
             }
         }
         return "-"
