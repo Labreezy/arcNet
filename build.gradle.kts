@@ -23,10 +23,11 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("com.github.kotlin-graphics:imgui:v1.68.01-00")
     implementation("org.jire.kotmem:Kotmem:0.86")
-    implementation("org.jdbi:jdbi3-core:3.3.0")
-    implementation("org.jdbi:jdbi3-bom:3.3.0") // http://jdbi.org/#_introduction_to_jdbi
-    implementation("mysql:mysql-connector-java:8.0.12") // http://zetcode.com/db/jdbi/
-
+    implementation("org.jdbi:jdbi3-sqlobject:3.8.0") // http://jdbi.org/#_introduction_to_jdbi
+    implementation("org.jdbi:jdbi3-postgres:3.8.0")
+    implementation("org.jdbi:jdbi3-kotlin-sqlobject:3.8.0")
+    implementation("org.postgresql:postgresql:42.2.5")
+    implementation("org.jdbi:jdbi3-core:3.8.0")
     implementation("org.lwjgl", "lwjgl", lwjglVersion)
     implementation("org.lwjgl", "lwjgl-assimp", lwjglVersion)
     implementation("org.lwjgl", "lwjgl-bgfx", lwjglVersion)
