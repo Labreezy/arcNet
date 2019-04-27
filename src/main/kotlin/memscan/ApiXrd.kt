@@ -15,7 +15,12 @@ interface XrdApi {
     /**
      * @return a List of the Xrd lobby's active players and their data
      */
-    fun getXrdData(): List<PlayerData>
+    fun getPlayerData(): List<PlayerData>
+
+    /**
+     * @return data from current match
+     */
+    fun getMatchData(): MatchData
 
 }
 
@@ -33,7 +38,7 @@ class PlayerData(
 
 class MatchData(
     val players: Pair<PlayerData, PlayerData>,
-    val tension: Pair<Int, Int>,
+    val tension: Pair<Float, Float>,
     val health: Pair<Int, Int>,
     val burst: Pair<Int, Int>,
     val timer: Int

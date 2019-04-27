@@ -6,6 +6,7 @@ import java.nio.ByteBuffer
 import com.sun.jna.Pointer
 import org.jire.kotmem.win32.Kernel32.ReadProcessMemory
 class MemHandler : XrdApi {
+
     var GG_PROC: Win32Process? = null;
 
     override fun isConnected(): Boolean {
@@ -39,7 +40,7 @@ class MemHandler : XrdApi {
         return bufferMem.getByteBuffer(0L, numBytes.toLong())
     }
 
-    override fun getXrdData() : List<PlayerData> {
+    override fun getPlayerData() : List<PlayerData> {
         if(!isConnected()){
             return ArrayList<PlayerData>()
         }
@@ -58,22 +59,15 @@ class MemHandler : XrdApi {
             bb.position(0xC)
             bb.get(dispbytes, 0, 0x24)
             var dispname = String(dispbytes).trim('\u0000')
-            /* if (steamid != 0L) {
-                println("Steam ID: " + steamid.toString())
-                println("Total Matches: " + totalmatch.toString())
-                println("Number of wins: " + wins.toString())
-                println("Display Name: " + dispname)
-                println("Cab Id: " + cabid.toString())
-                println("P1/P2 Id: " + playerside.toString())
-                println("Character ID: 0x" + charid.toString(16))
-                println("Loading percent: " + loadpercent.toString() + "%")
-            } else {
-                println("NO PLAYER")
-            }*/
-            var pd = PlayerData(steamid, dispname, charid, cabid, playerside, totalmatch, wins, loadpercent)
+            var pd = PlayerData(steamid, dispname, charid, cabid, playerside, wins, totalmatch , loadpercent)
             pDatas.add(pd)
             offs[1] += 0x48L
         }
         return pDatas
     }
+
+    override fun getMatchData(): MatchData {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
 }

@@ -54,11 +54,33 @@ class Player(playerData: PlayerData) {
 
     fun getMatchesPlayed() = getData().matchesSum
 
-    fun getRecordString() = "Chain: ${getChain()}  [ W:${getMatchesWon()} / M:${getMatchesPlayed()} ]"
+    fun getRecordString() = "Wins:${getMatchesWon()} / Matches:${getMatchesPlayed()}"
+
+    fun getCabinet() = getData().cabinetLoc
+
+    fun getCabinetString(): String {
+        when(getCabinet().toInt()) {
+            0 -> return "Cabinet A"
+            1 -> return "Cabinet B"
+            2 -> return "Cabinet C"
+            3 -> return "Cabinet D"
+            else -> return "Roaming..."
+        }
+    }
+
+    fun getPlaySide() = getData().playerSide
+
+    fun getPlaySideString(): String {
+        if (getCabinet().toInt() <= 3 && getCabinet().toInt() >= 0) {
+            when(getPlaySide().toInt()) {
+                0 -> return "Player One"
+                1 -> return "Player Two"
+            }
+        }
+        return "-"
+    }
 
     fun getLoadPercent() = getData().loadingPct
-
-    fun getStatusString() = if (idle == 0) "Idle: ${idle}   [${getLoadPercent()}%]" else "Standby: ${idle}  [${getLoadPercent()}%]"
 
     fun justPlayed() = getData().matchesSum > oldData().matchesSum
 
@@ -66,13 +88,13 @@ class Player(playerData: PlayerData) {
 
     fun justWon() = getData().matchesWon > oldData().matchesWon && justPlayed()
 
+    fun getRating() = (getMatchesWon() + getChain()).toFloat() / (getMatchesPlayed() - getChain()).toFloat()
+
     fun changeBounty(amount:Int) {
         change = amount
         bounty += amount
         if (bounty < 0) bounty = 0
     }
-
-    fun getRating() = (getMatchesWon() + getChain()).toFloat() / (getMatchesPlayed() - getChain()).toFloat()
 
     fun getRatingLetter(): String {
         var grade = "-"

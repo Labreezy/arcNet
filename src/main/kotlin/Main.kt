@@ -16,9 +16,10 @@ import uno.glfw.glfw
 
 fun main(args: Array<String>) { Start_lwjgl() }
 
+lateinit var window: GlfwWindow
+
 private class Start_lwjgl {
 
-    val window: GlfwWindow
     val context: Context
     val lwjglGlfw: LwjglGlfw
 

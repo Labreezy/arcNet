@@ -28,8 +28,6 @@ object PlayerOverlay {
 
     var corner = 0
 
-    /** Demonstrate creating a simple static window with no decoration + a context-menu to choose which corner
-     *  of the screen to use */
     operator fun invoke(open: KMutableProperty0<Boolean>) {
 
         val DISTANCE = 32f
