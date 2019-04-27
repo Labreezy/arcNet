@@ -23,7 +23,7 @@ interface SqlApi {
 }
 
 data class LegacyData(
-    val steamId: Long,
+    val steamUserId: Long,
     val displayName: String = "",
     val matchesWon: Int = -1,
     val matchesSum: Int = -1,

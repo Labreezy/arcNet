@@ -8,3 +8,5 @@ gradlew.bat
 *.iml
 /gradle.properties
 /out/
+/keys/
+/imgui.ini
