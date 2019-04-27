@@ -22,12 +22,11 @@ interface SqlApi {
     fun putData(legacy: LegacyData)
 }
 
-
-class LegacyData(
-    val steamUserId: Long,
-    val displayName: String,
-    val matchesWon: Int,
-    val matchesSum: Int,
-    val bountyWon: Int,
-    val bountySum: Int
+data class LegacyData(
+    val steamId: Long,
+    val displayName: String = "",
+    val matchesWon: Int = -1,
+    val matchesSum: Int = -1,
+    val bountyWon: Int = -1,
+    val bountySum: Int = -1
 )

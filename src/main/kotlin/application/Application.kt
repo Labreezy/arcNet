@@ -1,83 +1,98 @@
 package application
 
-import bounties.Player
+import WINDOW_HORZ
+import WINDOW_VERT
 import glm_.vec2.Vec2
 import glm_.vec4.Vec4
-import imgui.Cond
-import imgui.ImGui
-import imgui.functionalProgramming
-import imgui.or
-import memscan.MemHandler
-import memscan.XrdApi
+import imgui.*
+import session.Player
+import session.Session
 import window
+import imgui.ImGui as Ui
 import imgui.WindowFlag as Wf
 
-val WINDOW_NAME = "gearNet  -  DISCONNECTED ❌ ..."
-val WINDOW_TINT = Vec4(0.16f, 0.16f, 0.16f, 1.0f)
-val WINDOW_HORZ = 640
-val WINDOW_VERT = 480
-val yup = true
+private val SECTION_FLAGS = Wf.NoTitleBar or Wf.NoCollapse or Wf.NoScrollbar or Wf.NoResize or Wf.NoSavedSettings or Wf.NoFocusOnAppearing or Wf.NoBringToFrontOnFocus
+private val CELL_FLAGS = Wf.NoTitleBar or Wf.NoCollapse or Wf.NoScrollbar or Wf.NoResize or Wf.NoSavedSettings
 
-private val xrdApi: XrdApi = MemHandler()
-private val players: List<Player> = ArrayList()
+val session: Session = Session()
 
 fun runApplicationLoop() {
-    ImGui.setNextWindowPos(Vec2(0, 0), Cond.Always)
-    ImGui.setNextWindowSize(Vec2(WINDOW_HORZ, WINDOW_VERT), Cond.Always)
-    ImGui.begin("", null, 0 or Wf.NoTitleBar or Wf.NoResize or Wf.NoCollapse or Wf.NoBackground)
-    ImGui.end()
+    var i = 0
+    if (session.gameLoop == 0) session.runGameLoop()
+    if (session.xrdApi.isConnected()) { window.title = "gearNet  -  CONNECTED \uD83D\uDCE1 ${getDots()}"
+    } else window.title = "gearNet  -  DISCONNECTED ❌ ${getDots()}"
 
-    if (xrdApi.isConnected()) { window.title = "gearNet  -  CONNECTED \uD83D\uDCE1 ..."
-        val xrdData = xrdApi.getPlayerData()
-        for (i in 0..xrdData.size-1) {
-            if (xrdData.get(i).steamUserId != 0L) generatePlayerView(Player(xrdData.get(i)), i.toFloat())
-        }
-    } else window.title = WINDOW_NAME
+    Ui.setNextWindowPos(Vec2(0f,0f), Cond.Always, Vec2(0f))
+    Ui.setNextWindowBgAlpha(1.0f)
+    Ui.setNextWindowSize(Vec2(WINDOW_HORZ, 40), Cond.Always)
+    functionalProgramming.withWindow("Status", null, SECTION_FLAGS) {
+        Ui.button("Func 1", Vec2(120, 24))
+        Ui.sameLine(132)
+        Ui.button("Func 2", Vec2(120, 24))
+        Ui.sameLine(256)
+        Ui.button("Func 3", Vec2(120, 24))
+        Ui.sameLine(380)
+        Ui.button("Func 4", Vec2(120, 24))
+    }
+
+    Ui.setNextWindowPos(Vec2(0f,40f), Cond.Always, Vec2(0F))
+    Ui.setNextWindowSize(Vec2(250, WINDOW_VERT), Cond.Always)
+    Ui.setNextWindowBgAlpha(0.8f)
+    functionalProgramming.withWindow("Debug", null, SECTION_FLAGS) {
+        generateMonitorViews()
+    }
+
+    Ui.setNextWindowPos(Vec2(Ui.io.displaySize[0].toFloat() - 470f, 40), Cond.Always, Vec2(0F))
+    Ui.setNextWindowSize(Vec2(470, WINDOW_VERT), Cond.Always)
+    Ui.setNextWindowBgAlpha(0.8f)
+    functionalProgramming.withWindow("Lobby", null, SECTION_FLAGS) {
+        session.players.values.forEach { generatePlayerView(it, i++.toFloat()) }
+    }
+}
 
 
+private fun generateMonitorViews() {
+    Ui.button("Overlay: AUTO", Vec2(234, 32))
+    Ui.separator()
+    Ui.progressBar(0.0f, Vec2(234, 16), "Player 1 HP: n/a")
+    Ui.progressBar(0.0f, Vec2(234, 16), "Player 2 HP: n/a")
+    Ui.separator()
+    Ui.textColored(Vec4(0, 1, 1, 1), "Player Count")
+    Ui.sameLine(160)
+    Ui.text("${session.players.size}")
 }
 
 fun generatePlayerView(player: Player, height: Float) {
-    val windowPos = Vec2(ImGui.io.displaySize[0].toFloat() - 440f, (96f * height) + 10f)
-    val windowPosPivot = Vec2(0f)
-    ImGui.setNextWindowPos(windowPos, Cond.Always, windowPosPivot)
-    ImGui.setNextWindowContentSize(Vec2(420f, 88f))
-    ImGui.setNextWindowBgAlpha(0.8f)
+    Ui.setNextWindowPos(Vec2(Ui.io.displaySize[0].toFloat() - 470f, (70f * height) + 40f), Cond.Always, Vec2(0f))
+    Ui.setNextWindowSize(Vec2(470f, 70f))
+    Ui.setNextWindowBgAlpha(0.8f)
+    Ui.pushStyleVar(StyleVar.WindowRounding, 0f)
+    functionalProgramming.withWindow("title${height}", null, CELL_FLAGS) {
+        Ui.textColored(Vec4(1,0,0,1), player.getNameString())
+        Ui.sameLine(295)
+        Ui.pushItemWidth(Ui.calcItemWidth()/3)
+        Ui.progressBar(player.getLoadPercent() * 0.01f,  Vec2(164, 16), "Standby")
 
-    functionalProgramming.withWindow("title${height}", null, Wf.NoTitleBar or Wf.NoResize or Wf.NoSavedSettings or Wf.NoFocusOnAppearing or Wf.NoNav) {
-        ImGui.text(player.getNameString())
-        ImGui.separator()
-        ImGui.pushItemWidth(ImGui.fontSize * -12)
+        Ui.text(player.getCharacter(false))
+        Ui.sameLine(300)
+        Ui.textColored(Vec4(0.64,0.64,0.64,1), player.getCabinetString())
 
-        ImGui.textColored(Vec4(1.0f, 0.0f, 0.0f, 1.0f), player.getCharacter(false))
-        ImGui.sameLine(200)
-        ImGui.progressBar(player.getLoadPercent() * 0.01f)
 
-        ImGui.text(player.getRecordString())
-        ImGui.sameLine(200)
-        ImGui.text(player.getBountyString())
-
-        ImGui.text(player.getCabinetString())
-        ImGui.sameLine(200)
-        ImGui.text(player.getPlaySideString())
+        Ui.textColored(Vec4(1,1,0,1), player.getBountyString())
+        Ui.sameLine(200)
+        Ui.textColored(Vec4(0,1,1,1), "Chain: ${player.getChain()}")
+        Ui.sameLine(300)
+        Ui.textColored(Vec4(0.64,0.64,0.64,1), player.getRecordString())
     }
-//    ImGui.begin("", null, flags)
-//
-//    ImGui.text(player.getNameString())
-//    ImGui.separator()
-//    ImGui.pushItemWidth(ImGui.fontSize * -12)
-//
-//    ImGui.text(player.getCharacter(false))
-//    ImGui.sameLine(200)
-//    ImGui.progressBar(player.getLoadPercent() * 0.01f)
-//
-//    ImGui.text(player.getRecordString())
-//    ImGui.sameLine(200)
-//    ImGui.text(player.getBountyString())
-//
-//    ImGui.text(player.getCabinetString())
-//    ImGui.sameLine(200)
-//    ImGui.text(player.getPlaySideString())
-//
-//    ImGui.end()
+}
+
+private fun getDots():String {
+    when (session.gameLoop) {
+        1 -> return "."
+        2 -> return ".."
+        3 -> return "..."
+        4 -> return ""
+        else -> session.gameLoop = 1
+    }
+    return ""
 }
