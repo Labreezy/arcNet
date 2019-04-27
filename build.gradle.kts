@@ -21,6 +21,7 @@ val lwjglNatives = "natives-windows"
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
     implementation("com.github.kotlin-graphics:imgui:v1.68.01-00")
     implementation("org.jire.kotmem:Kotmem:0.86")
     implementation("org.jdbi:jdbi3-sqlobject:3.8.0") // http://jdbi.org/#_introduction_to_jdbi
@@ -28,6 +29,7 @@ dependencies {
     implementation("org.jdbi:jdbi3-kotlin-sqlobject:3.8.0")
     implementation("org.postgresql:postgresql:42.2.5")
     implementation("org.jdbi:jdbi3-core:3.8.0")
+  
     implementation("org.lwjgl", "lwjgl", lwjglVersion)
     implementation("org.lwjgl", "lwjgl-assimp", lwjglVersion)
     implementation("org.lwjgl", "lwjgl-bgfx", lwjglVersion)
@@ -96,22 +98,5 @@ dependencies {
     runtimeOnly("org.lwjgl", "lwjgl-xxhash", lwjglVersion, classifier = lwjglNatives)
     runtimeOnly("org.lwjgl", "lwjgl-yoga", lwjglVersion, classifier = lwjglNatives)
     runtimeOnly("org.lwjgl", "lwjgl-zstd", lwjglVersion, classifier = lwjglNatives)
-
-//    val lwjglNatives = when (OperatingSystem.current()) {
-//        OperatingSystem.WINDOWS -> "natives-windows"
-//        OperatingSystem.LINUX   -> "natives-linux"
-//        OperatingSystem.MAC_OS  -> "natives-macos"
-//        else                    -> ""
-//    }
-//
-//    // Look up which modules and versions of LWJGL are required and add setup the approriate natives.
-//    configurations["compile"].resolvedConfiguration.resolvedArtifacts.forEach {
-//        if (it.moduleVersion.id.group == "org.lwjgl") {
-//            "runtime"("org.lwjgl:${it.moduleVersion.id.name}:${it.moduleVersion.id.version}:$lwjglNatives")
-//        }
-//    }
 }
 
-//tasks.withType<KotlinCompile> {
-//    kotlinOptions.jvmTarget = "1.8"
-//}
