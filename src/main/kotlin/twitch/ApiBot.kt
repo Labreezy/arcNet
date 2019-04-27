@@ -6,16 +6,19 @@ package twitch
 interface BotApi {
 
     /**
-     * @return Is Xrd running and ready to serve data
+     * Send a bot message to Twitch chat
      */
     fun sendMessage(message:String)
 
     /**
-     * @return a List of the Xrd lobby's active players and their data
+     * @return a List of all Messages
      */
     fun getMessages(): List<Message>
 
 }
 
 
-class Message(val comingSoon: Long)
+class Message(
+    val twitchUserId: Long,
+    val messageText: String
+)

@@ -1,5 +1,6 @@
 package session
 
+import database.LegacyData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -9,6 +10,7 @@ import memscan.XrdApi
 class Session {
     val xrdApi: XrdApi = MemHandler()
     val players: MutableMap<Long, Player> = HashMap()
+    val legacies: MutableMap<Long, LegacyData> = HashMap()
     var gameLoop = 0
 
     fun runGameLoop() {

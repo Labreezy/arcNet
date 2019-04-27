@@ -25,7 +25,7 @@ interface XrdApi {
 }
 
 
-class PlayerData(
+data class PlayerData(
     val steamUserId: Long,
     val displayName: String,
     val characterId: Byte,
@@ -36,7 +36,7 @@ class PlayerData(
     val loadingPct: Int)
 
 
-class MatchData(
+data class MatchData(
     val players: Pair<PlayerData, PlayerData>,
     val tension: Pair<Float, Float>,
     val health: Pair<Int, Int>,
