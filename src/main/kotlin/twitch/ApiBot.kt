@@ -6,6 +6,11 @@ package twitch
 interface BotApi {
 
     /**
+     * @return if bot is running and responsive
+     */
+    fun isConnected(): Boolean
+
+    /**
      * Send a bot message to Twitch chat
      */
     fun sendMessage(message:String)
