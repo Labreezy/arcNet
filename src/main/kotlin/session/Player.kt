@@ -22,7 +22,7 @@ class Player(playerData: PlayerData) {
 
     fun getDisplayName() = getData().displayName
 
-    fun getNameString() = "${getDisplayName()}  [${getSteamId()}]"
+    fun getNameString() = "${getDisplayName()}"
 
     fun getSteamId() = getData().steamUserId
 
