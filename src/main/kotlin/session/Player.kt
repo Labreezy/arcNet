@@ -7,18 +7,18 @@ import kotlin.math.abs
 
 class Player(playerData: PlayerData) {
 
+    private val MAX_IDLE = 8
+    var present = true
     private var bounty = 0
     private var change = 0
     private var chain = 0
-    private var idle = 0
+    private var idle = MAX_IDLE
     private var data = Pair(playerData, playerData)
 
     private fun oldData() = data.first
     fun getData() = data.second
 
-    fun updatePlayerData(updatedData: PlayerData) { data = Pair(getData(), updatedData) }
-
-    fun shouldRedrawView() = !oldData().equals(getData())
+    fun updatePlayerData(updatedData: PlayerData) { data = Pair(getData(), updatedData); present = true }
 
     fun getDisplayName() = getData().displayName
 
@@ -28,6 +28,8 @@ class Player(playerData: PlayerData) {
 
     fun getCharacter(shortened: Boolean) = getCharacterName(getData().characterId, shortened)
 
+    fun isScoreboardWorthy() = getBounty() > 0 && idle > 0 && getMatchesWon() > 0
+
     fun getBounty() = bounty
 
     fun getBountyFormatted() = "${addCommas(getBounty().toString())} W$"
@@ -36,7 +38,8 @@ class Player(playerData: PlayerData) {
 
     fun getChain() = chain
 
-    val MAX_IDLE = 8
+    fun getChainString():String = if (idle > 0) "Chain: ${getChain()} (${idle})" else "Chain: ${getChain()}"
+
     fun changeChain(amount:Int) {
         idle = MAX_IDLE
         chain += amount
@@ -73,6 +76,12 @@ class Player(playerData: PlayerData) {
             when(getData().playerSide.toInt()) {
                 0 -> return "Player One"
                 1 -> return "Player Two"
+                2 -> return "Second"
+                3 -> return "Third"
+                4 -> return "Fourth"
+                5 -> return "Fifth"
+                6 -> return "Sixth"
+                7 -> return "Spectating"
                 else -> return "[${getData().playerSide.toInt()}]"
             }
         }

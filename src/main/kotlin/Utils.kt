@@ -1,6 +1,10 @@
 package classes
 
 
+fun writeToFile(fileName: String, text: String) {
+    // TODO: soon
+}
+
 fun truncate(name: String, length: Int): String {
     if (name.length > length) return name.substring(0, length)
     else return name
