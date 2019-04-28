@@ -14,12 +14,22 @@ interface SqlApi {
     /**
      * @return player Legacy data from the SQL Database
      */
-    fun getData(steamId: Long): LegacyData
+    fun getLegacyData(steamId: Long): LegacyData
 
     /**
      * Update player Legacy data on the SQL Database
      */
-    fun putData(legacy: LegacyData)
+    fun putLegacyData(legacy: LegacyData)
+
+    /**
+     * @return all Fight archives stores in the SQL Database
+     */
+    fun getFightData(): List<FightData>
+
+    /**
+     * Add a new Fight to the SQL Database
+     */
+    fun putFightData(fight: FightData)
 }
 
 data class LegacyData(
@@ -29,4 +39,11 @@ data class LegacyData(
     val matchesSum: Int = -1,
     val bountyWon: Int = -1,
     val bountySum: Int = -1
+)
+
+data class FightData(
+    val winnerId: Long,
+    val fallenId: Long,
+    val winnerChar: Int,
+    val fallenChar: Int
 )

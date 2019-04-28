@@ -70,38 +70,53 @@ private fun generateMonitorViews() {
 }
 
 
-
 fun generatePlayerView(player: Player, height: Float) {
-    Ui.setNextWindowPos(Vec2(Ui.io.displaySize[0].toFloat() - 500f, (70f * height) + 40f), Cond.Always, Vec2(0f))
-    Ui.setNextWindowSize(Vec2(500f, 70f))
+    Ui.setNextWindowPos(Vec2(Ui.io.displaySize[0].toFloat() - 550f, (70f * height) + 40f), Cond.Always, Vec2(0f))
+    Ui.setNextWindowSize(Vec2(550f, 70f))
     Ui.setNextWindowBgAlpha(0.8f)
     Ui.pushStyleVar(StyleVar.WindowRounding, 0f)
     functionalProgramming.withWindow("title${height}", null, CELL_FLAGS) {
+        Ui.image(2, Vec2(40,52))
+        Ui.sameLine(60)
+        Ui.beginGroup()
         // Name, & Status
-        if (player.present) Ui.textColored(Vec4(1,0.2,0,1), player.getNameString())
-        else Ui.textColored(Vec4(0.4,0.4,0.4,1), player.getNameString())
+        Ui.textColored(statColor(player, player.getIdle(), Vec4(0.2,1,0.2,1)), player.getNameString())
         Ui.sameLine(230)
-        Ui.textColored(Vec4(0.2,1,0.8,1), "Rating: ${player.getRatingLetter()}")
+        Ui.textColored(statColor(player, (player.getRating()*10).toInt(), Vec4(0.8,0.8,0.8,1)), "Rating:")
+        Ui.sameLine(285)
+        Ui.textColored(player.getRatingColor(), player.getRatingLetter())
         Ui.sameLine(325)
         Ui.pushItemWidth(Ui.calcItemWidth()/3)
-        if (player.present) Ui.progressBar(getLoadBarValue(player),  Vec2(164, 16), getLoadStatusString(player))
-        else Ui.progressBar(0f, Vec2(164, 16), "Idle")
+        if (player.present) Ui.progressBar(getLoadBarValue(player),  Vec2(160, 16), getLoadStatusString(player))
+        else Ui.progressBar(0f, Vec2(160, 16), "Idle")
 
         // Character, & Cabinet
-        if (player.present) Ui.text(player.getCharacter(false))
-        else Ui.textColored(Vec4(0.4,0.4,0.4,1), player.getCharacter(false))
+        Ui.textColored(statColor(player, player.getIdle(), Vec4(1,1,1,1)), player.getCharacter(false))
         Ui.sameLine(330)
-        Ui.textColored(Vec4(0.64,0.64,0.64,1), player.getCabinetString())
+        if (player.getCabinet().toInt() < 4) {
+            when (player.getData().playerSide.toInt()) {
+                0 -> Ui.textColored(Vec4(0.8, 0.1, 0.1, 1), player.getCabinetString())
+                1 -> Ui.textColored(Vec4(0.1, 0.5, 0.9, 1), player.getCabinetString())
+                else -> Ui.textColored(Vec4(0.8, 0.8, 0.8, 1), player.getCabinetString())
+            }
+        } else Ui.textColored(Vec4(0.8,0.8,0.8,0.8), player.getCabinetString())
 
         // Bounty, Chain, & Record
-        if (player.present) Ui.textColored(Vec4(1,0.8,0.2,1), player.getBountyString())
-        else Ui.textColored(Vec4(0.4,0.4,0.4,1), player.getBountyString())
+        Ui.textColored(statColor(player, player.getBounty(), Vec4(1,0.8,0.2,1)), player.getBountyString())
         Ui.sameLine(230)
-        if (player.present) Ui.textColored(Vec4(0.2,1,0.8,1), player.getChainString())
-        else Ui.textColored(Vec4(0.4,0.4,0.4,1), player.getChainString())
+        Ui.textColored(statColor(player, player.getChain(), Vec4(0.8,0.8,0.8,1)), "Chains:")
+        Ui.sameLine(285)
+        Ui.textColored(statColor(player, player.getChain(), Vec4(0.2, 1, 0.8, 1)), player.getChainString())
         Ui.sameLine(330)
         Ui.textColored(Vec4(0.64,0.64,0.64,1), player.getRecordString())
+        Ui.endGroup()
     }
+}
+
+private fun statColor(player:Player, value:Int, vec4:Vec4):Vec4 {
+    if (!player.present) return Vec4(0.8,0.8,0.8,0.8)
+    if (value <= 0) return Vec4(0.8,0.8,0.8,0.8)
+    return vec4
 }
 
 private fun getLoadBarValue(player: Player):Float {

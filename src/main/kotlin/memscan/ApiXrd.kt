@@ -33,7 +33,8 @@ data class PlayerData(
     val playerSide: Byte,
     val matchesWon: Int,
     val matchesSum: Int,
-    val loadingPct: Int)
+    val loadingPct: Int
+)
 
 
 data class MatchData(
