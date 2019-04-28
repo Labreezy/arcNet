@@ -14,7 +14,9 @@ import imgui.WindowFlag as Wf
 
 private val SECTION_FLAGS = Wf.NoTitleBar or Wf.NoCollapse or Wf.NoScrollbar or Wf.NoResize or Wf.NoSavedSettings or Wf.NoFocusOnAppearing or Wf.NoBringToFrontOnFocus
 private val CELL_FLAGS = Wf.NoTitleBar or Wf.NoCollapse or Wf.NoScrollbar or Wf.NoResize or Wf.NoSavedSettings
-val session: Session = Session()
+private val session: Session = Session()
+
+fun getSession() = session
 
 fun runApplicationLoop(stack: MemoryStack) {
     // Initialize Application
@@ -35,8 +37,8 @@ fun runApplicationLoop(stack: MemoryStack) {
     functionalProgramming.withWindow("Debug", null, SECTION_FLAGS) { generateMonitorViews() }
 
     // Right side Lobby Players
-    Ui.setNextWindowPos(Vec2(Ui.io.displaySize[0].toFloat() - 470f, 40), Cond.Always, Vec2(0F))
-    Ui.setNextWindowSize(Vec2(470, WINDOW_VERT), Cond.Always)
+    Ui.setNextWindowPos(Vec2(Ui.io.displaySize[0].toFloat() - 550f, 40), Cond.Always, Vec2(0F))
+    Ui.setNextWindowSize(Vec2(550, WINDOW_VERT), Cond.Always)
     Ui.setNextWindowBgAlpha(0.8f); var i = 0
     functionalProgramming.withWindow("Lobby", null, SECTION_FLAGS) {
         session.getAll().forEach { generatePlayerView(it, i++.toFloat()) }
@@ -59,6 +61,9 @@ private fun generateMonitorViews() {
     Ui.progressBar(0.0f, Vec2(234, 16), "Player 1 HP: n/a")
     Ui.progressBar(0.0f, Vec2(234, 16), "Player 2 HP: n/a")
     Ui.separator()
+    Ui.textColored(Vec4(0, 1, 1, 1), "Games Count")
+    Ui.sameLine(160)
+    Ui.text("${session.gamesCount}")
     Ui.textColored(Vec4(0, 1, 1, 1), "Player Count")
     Ui.sameLine(160)
     Ui.text("${session.players.size}")
@@ -67,34 +72,34 @@ private fun generateMonitorViews() {
 
 
 fun generatePlayerView(player: Player, height: Float) {
-    Ui.setNextWindowPos(Vec2(Ui.io.displaySize[0].toFloat() - 470f, (70f * height) + 40f), Cond.Always, Vec2(0f))
-    Ui.setNextWindowSize(Vec2(470f, 70f))
+    Ui.setNextWindowPos(Vec2(Ui.io.displaySize[0].toFloat() - 500f, (70f * height) + 40f), Cond.Always, Vec2(0f))
+    Ui.setNextWindowSize(Vec2(500f, 70f))
     Ui.setNextWindowBgAlpha(0.8f)
     Ui.pushStyleVar(StyleVar.WindowRounding, 0f)
     functionalProgramming.withWindow("title${height}", null, CELL_FLAGS) {
         // Name, & Status
         if (player.present) Ui.textColored(Vec4(1,0.2,0,1), player.getNameString())
         else Ui.textColored(Vec4(0.4,0.4,0.4,1), player.getNameString())
-        Ui.sameLine(200)
+        Ui.sameLine(230)
         Ui.textColored(Vec4(0.2,1,0.8,1), "Rating: ${player.getRatingLetter()}")
-        Ui.sameLine(295)
+        Ui.sameLine(325)
         Ui.pushItemWidth(Ui.calcItemWidth()/3)
         if (player.present) Ui.progressBar(getLoadBarValue(player),  Vec2(164, 16), getLoadStatusString(player))
-        else Ui.progressBar(0f, Vec2(164, 16), "Offline")
+        else Ui.progressBar(0f, Vec2(164, 16), "Idle")
 
         // Character, & Cabinet
         if (player.present) Ui.text(player.getCharacter(false))
         else Ui.textColored(Vec4(0.4,0.4,0.4,1), player.getCharacter(false))
-        Ui.sameLine(300)
+        Ui.sameLine(330)
         Ui.textColored(Vec4(0.64,0.64,0.64,1), player.getCabinetString())
 
         // Bounty, Chain, & Record
         if (player.present) Ui.textColored(Vec4(1,0.8,0.2,1), player.getBountyString())
         else Ui.textColored(Vec4(0.4,0.4,0.4,1), player.getBountyString())
-        Ui.sameLine(200)
+        Ui.sameLine(230)
         if (player.present) Ui.textColored(Vec4(0.2,1,0.8,1), player.getChainString())
         else Ui.textColored(Vec4(0.4,0.4,0.4,1), player.getChainString())
-        Ui.sameLine(300)
+        Ui.sameLine(330)
         Ui.textColored(Vec4(0.64,0.64,0.64,1), player.getRecordString())
     }
 }
@@ -109,9 +114,9 @@ private fun getLoadBarValue(player: Player):Float {
 
 private fun getLoadStatusString(player: Player):String {
     when(player.getLoadPercent()) {
-        0 -> return "Standby"
-        100 -> return "Standby"
-        else -> return "${player.getLoadPercent()}% Loaded"
+        0 -> return "Standby [${player.getIdle()}]"
+        100 -> return "Standby [${player.getIdle()}]"
+        else -> return "Loading ${player.getLoadPercent()}%"
     }
 }
 

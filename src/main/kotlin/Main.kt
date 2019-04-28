@@ -25,7 +25,7 @@ fun main(args: Array<String>) {
 
 lateinit var window: GlfwWindow
 val WINDOW_TINT = Vec4(0.26f, 0.06f, 0.16f, 1.0f)
-val WINDOW_HORZ = 720
+val WINDOW_HORZ = 800
 val WINDOW_VERT = 600
 
 private class Start_lwjgl {

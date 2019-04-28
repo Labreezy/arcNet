@@ -30,21 +30,32 @@ class Player(playerData: PlayerData) {
 
     fun isScoreboardWorthy() = getBounty() > 0 && idle > 0 && getMatchesWon() > 0
 
+    fun getIdle() = idle
+
+    fun incrementIdle() {
+        changeBounty(0)
+        if (--idle <= 0) {
+            idle = 0
+            if (changeChain(-1) <= 0) present = false
+            else idle = MAX_IDLE
+        }
+    }
+
     fun getBounty() = bounty
 
     fun getBountyFormatted() = "${addCommas(getBounty().toString())} W$"
 
-    fun getBountyString() = if (getBounty() > 0) "Bounty: ${getBountyFormatted()} (${change})" else "Bounty: None"
+    fun getBountyString() = if (getBounty() > 0) "Bounty: ${getBountyFormatted()}  ${if (change>0) "(+${change})" else if (change<0) "(${change})" else ""}" else "Civilian"
 
     fun getChain() = chain
 
-    fun getChainString():String = if (idle > 0) "Chain: ${getChain()} (${idle})" else "Chain: ${getChain()}"
+    fun getChainString():String = "Chains: ${if (getChain()>0) getChain() else "-"}"
 
-    fun changeChain(amount:Int) {
-        idle = MAX_IDLE
+    fun changeChain(amount:Int): Int {
         chain += amount
         if (chain < 0) chain = 0
         if (chain > 8) chain = 8
+        return chain
     }
 
     fun getChangeString(): String {
@@ -57,16 +68,16 @@ class Player(playerData: PlayerData) {
 
     fun getMatchesPlayed() = getData().matchesSum
 
-    fun getRecordString() = "Wins:${getMatchesWon()} / Matches:${getMatchesPlayed()}"
+    fun getRecordString() = "Wins: ${getMatchesWon()} / Games: ${getMatchesPlayed()}"
 
     fun getCabinet() = getData().cabinetLoc
 
     fun getCabinetString(): String {
         when(getCabinet().toInt()) {
-            0 -> return "Cabinet A - ${getPlaySideString()}"
-            1 -> return "Cabinet B - ${getPlaySideString()}"
-            2 -> return "Cabinet C - ${getPlaySideString()}"
-            3 -> return "Cabinet D - ${getPlaySideString()}"
+            0 -> return "Cab A - ${getPlaySideString()}"
+            1 -> return "Cab B - ${getPlaySideString()}"
+            2 -> return "Cab C - ${getPlaySideString()}"
+            3 -> return "Cab D - ${getPlaySideString()}"
             else -> return "Roaming..."
         }
     }
