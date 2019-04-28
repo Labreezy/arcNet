@@ -6,6 +6,12 @@ import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
 
 class TwitchBot(accessToken: String) : BotApi {
+
+    override fun isConnected(): Boolean {
+        // TODO: Make this return the proper Boolean
+        return false
+    }
+
     private val messageCache: MutableList<Message> = mutableListOf()
     private val twitchClient: TwitchClient
 

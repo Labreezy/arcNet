@@ -1,13 +1,17 @@
 package session
 
+import database.DatabaseHandler
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import memscan.MemHandler
 import memscan.XrdApi
+import twitch.TwitchBot
 
 class Session {
     val xrdApi: XrdApi = MemHandler()
+    val dataApi: DatabaseHandler = DatabaseHandler("", "")
+    val botApi: TwitchBot = TwitchBot("")
     var players: MutableMap<Long, Player> = HashMap()
     var gamesCount: Int = 0
     var gameLoop = 0
