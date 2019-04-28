@@ -2,23 +2,24 @@ package session
 
 import classes.Character.getCharacterName
 import classes.addCommas
+import glm_.vec4.Vec4
 import memscan.PlayerData
 import kotlin.math.abs
 
 class Player(playerData: PlayerData) {
 
+    private val MAX_IDLE = 8
+    var present = true
     private var bounty = 0
     private var change = 0
     private var chain = 0
-    private var idle = 0
+    private var idle = 8
     private var data = Pair(playerData, playerData)
 
     private fun oldData() = data.first
     fun getData() = data.second
 
-    fun updatePlayerData(updatedData: PlayerData) { data = Pair(getData(), updatedData) }
-
-    fun shouldRedrawView() = !oldData().equals(getData())
+    fun updatePlayerData(updatedData: PlayerData) { data = Pair(getData(), updatedData); present = true }
 
     fun getDisplayName() = getData().displayName
 
@@ -28,20 +29,35 @@ class Player(playerData: PlayerData) {
 
     fun getCharacter(shortened: Boolean) = getCharacterName(getData().characterId, shortened)
 
+    fun isScoreboardWorthy() = getBounty() > 0 && idle > 0 && getMatchesWon() > 0
+
+    fun getIdle() = idle
+
+    fun incrementIdle() {
+        changeBounty(0)
+        if (--idle <= 0) {
+            idle = 0
+            if (changeChain(-1) <= 0) present = false
+            else idle = MAX_IDLE
+        }
+    }
+
     fun getBounty() = bounty
 
     fun getBountyFormatted() = "${addCommas(getBounty().toString())} W$"
 
-    fun getBountyString() = if (getBounty() > 0) "Bounty: ${getBountyFormatted()} (${change})" else "Bounty: None"
+    fun getBountyString() = if (getBounty() > 0) "Bounty: ${getBountyFormatted()}  ${if (change>0) "(+${change})" else if (change<0) "(${change})" else ""}" else "Civilian"
 
     fun getChain() = chain
 
-    val MAX_IDLE = 8
-    fun changeChain(amount:Int) {
+    fun getChainString():String = "${if (getChain()>0) getChain() else "-"}"
+
+    fun changeChain(amount:Int): Int {
         idle = MAX_IDLE
         chain += amount
         if (chain < 0) chain = 0
         if (chain > 8) chain = 8
+        return chain
     }
 
     fun getChangeString(): String {
@@ -54,17 +70,17 @@ class Player(playerData: PlayerData) {
 
     fun getMatchesPlayed() = getData().matchesSum
 
-    fun getRecordString() = "Wins:${getMatchesWon()} / Matches:${getMatchesPlayed()}"
+    fun getRecordString() = "Wins: ${getMatchesWon()} / Games: ${getMatchesPlayed()}"
 
     fun getCabinet() = getData().cabinetLoc
 
     fun getCabinetString(): String {
         when(getCabinet().toInt()) {
-            0 -> return "Cabinet A - ${getPlaySideString()}"
-            1 -> return "Cabinet B - ${getPlaySideString()}"
-            2 -> return "Cabinet C - ${getPlaySideString()}"
-            3 -> return "Cabinet D - ${getPlaySideString()}"
-            else -> return "Roaming..."
+            0 -> return "${getPlaySideString()} on A"
+            1 -> return "${getPlaySideString()} on B"
+            2 -> return "${getPlaySideString()} on C"
+            3 -> return "${getPlaySideString()} on D"
+            else -> return "-"
         }
     }
 
@@ -73,6 +89,12 @@ class Player(playerData: PlayerData) {
             when(getData().playerSide.toInt()) {
                 0 -> return "Player One"
                 1 -> return "Player Two"
+                2 -> return "Next"
+                3 -> return "Spot 3"
+                4 -> return "Spot 4"
+                5 -> return "Spot 5"
+                6 -> return "Spot 6"
+                7 -> return "Spectating"
                 else -> return "[${getData().playerSide.toInt()}]"
             }
         }
@@ -87,7 +109,10 @@ class Player(playerData: PlayerData) {
 
     fun justWon() = getData().matchesWon > oldData().matchesWon && justPlayed()
 
-    fun getRating() = (getMatchesWon() + getChain()).toFloat() / (getMatchesPlayed() - getChain()).toFloat()
+    fun getRating():Float {
+        if (getMatchesPlayed() > 0) return ((((getMatchesWon().toFloat() * 0.1) * getChain()) + getMatchesWon()) / (getMatchesPlayed().toFloat())).toFloat()
+        else return 0F
+    }
 
     fun changeBounty(amount:Int) {
         change = amount
@@ -97,20 +122,33 @@ class Player(playerData: PlayerData) {
 
     fun getRatingLetter(): String {
         var grade = "-"
-        if (getMatchesWon() > 0) {
-            grade = "D"
-            val gradeConversion = getRating()
-            if (gradeConversion >= 0.1f) grade = "D+"
-            if (gradeConversion >= 0.2f) grade = "C"
-            if (gradeConversion >= 0.3f) grade = "C+"
-            if (gradeConversion >= 0.4f) grade = "B"
-            if (getMatchesWon() >= 4 && gradeConversion >= 0.6f) grade = "B+"
-            if (getMatchesWon() >= 8 && gradeConversion >= 1.0f) grade = "A"
-            if (getMatchesWon() >= 16 && gradeConversion >= 1.5f) grade = "A+"
-            if (getMatchesWon() >= 32 && gradeConversion >= 2.0f) grade = "S"
-            if (getMatchesWon() >= 64 && gradeConversion >= 3.0f) grade = "S+"
-        }
-        return grade
+        if (getMatchesWon() > 0 && getRating() > 0.0f) grade  = "D"
+        if (getMatchesWon() > 0 && getRating() >= 0.1f) grade  = "D+"
+        if (getMatchesWon() >= 1 && getRating() >= 0.2f) grade  = "C"
+        if (getMatchesWon() >= 1 && getRating() >= 0.3f) grade  = "C+"
+        if (getMatchesWon() >= 2 && getRating() >= 0.4f) grade  = "B"
+        if (getMatchesWon() >= 4 && getRating() >= 0.6f) grade  = "B+"
+        if (getMatchesWon() >= 8 && getRating() >= 1.0f) grade  = "A"
+        if (getMatchesWon() >= 16 && getRating() >= 1.5f) grade = "A+"
+        if (getMatchesWon() >= 32 && getRating() >= 2.0f) grade = "S"
+        if (getMatchesWon() >= 64 && getRating() >= 3.0f) grade = "S+"
+
+        return grade // "${grade} ${(getRating()*10).toInt()}"
+    }
+
+    fun getRatingColor(): Vec4 {
+        var color = Vec4(0.8,0.8,0.8,0.8)
+        if (getMatchesWon() > 0 && getRating() > 0.0f) color  = Vec4(0.0, 0.6, 0.8, 1) // D
+        if (getMatchesWon() > 0 && getRating() >= 0.1f) color  = Vec4(0.1, 0.7, 0.6, 1) // D+
+        if (getMatchesWon() >= 1 && getRating() >= 0.2f) color  = Vec4(0.2, 0.8, 0.4, 1) // C
+        if (getMatchesWon() >= 1 && getRating() >= 0.3f) color  = Vec4(0.3, 0.9, 0.2, 1) // C+
+        if (getMatchesWon() >= 2 && getRating() >= 0.4f) color  = Vec4(0.4, 1.0, 0.1, 1) // B
+        if (getMatchesWon() >= 4 && getRating() >= 0.6f) color  = Vec4(0.5, 0.8, 0.1, 1) // B+
+        if (getMatchesWon() >= 8 && getRating() >= 1.0f) color  = Vec4(0.6, 0.6, 0.2, 1) // A
+        if (getMatchesWon() >= 16 && getRating() >= 1.5f) color = Vec4(0.7, 0.4, 0.4, 1) // A+
+        if (getMatchesWon() >= 32 && getRating() >= 2.0f) color = Vec4(0.8, 0.2, 0.7, 1) // S
+        if (getMatchesWon() >= 64 && getRating() >= 3.0f) color = Vec4(0.9, 0.0, 0.8, 1) // S+
+        return color
     }
 
 }

@@ -14,8 +14,9 @@ import imgui.WindowFlag as Wf
 
 private val SECTION_FLAGS = Wf.NoTitleBar or Wf.NoCollapse or Wf.NoScrollbar or Wf.NoResize or Wf.NoSavedSettings or Wf.NoFocusOnAppearing or Wf.NoBringToFrontOnFocus
 private val CELL_FLAGS = Wf.NoTitleBar or Wf.NoCollapse or Wf.NoScrollbar or Wf.NoResize or Wf.NoSavedSettings
+private val session: Session = Session()
 
-val session: Session = Session()
+fun getSession() = session
 
 fun runApplicationLoop(stack: MemoryStack) {
     // Initialize Application
@@ -36,11 +37,11 @@ fun runApplicationLoop(stack: MemoryStack) {
     functionalProgramming.withWindow("Debug", null, SECTION_FLAGS) { generateMonitorViews() }
 
     // Right side Lobby Players
-    Ui.setNextWindowPos(Vec2(Ui.io.displaySize[0].toFloat() - 470f, 40), Cond.Always, Vec2(0F))
-    Ui.setNextWindowSize(Vec2(470, WINDOW_VERT), Cond.Always)
+    Ui.setNextWindowPos(Vec2(Ui.io.displaySize[0].toFloat() - 550f, 40), Cond.Always, Vec2(0F))
+    Ui.setNextWindowSize(Vec2(550, WINDOW_VERT), Cond.Always)
     Ui.setNextWindowBgAlpha(0.8f); var i = 0
     functionalProgramming.withWindow("Lobby", null, SECTION_FLAGS) {
-        session.players.values.forEach { generatePlayerView(it, i++.toFloat()) }
+        session.getAll().forEach { generatePlayerView(it, i++.toFloat()) }
     }
 }
 
@@ -56,39 +57,81 @@ private fun generateFunctionButtons() {
 
 
 private fun generateMonitorViews() {
-    Ui.button("Overlay: AUTO", Vec2(234, 32))
     Ui.separator()
     Ui.progressBar(0.0f, Vec2(234, 16), "Player 1 HP: n/a")
     Ui.progressBar(0.0f, Vec2(234, 16), "Player 2 HP: n/a")
     Ui.separator()
+    Ui.textColored(Vec4(0, 1, 1, 1), "Games Count")
+    Ui.sameLine(160)
+    Ui.text("${session.gamesCount}")
     Ui.textColored(Vec4(0, 1, 1, 1), "Player Count")
     Ui.sameLine(160)
     Ui.text("${session.players.size}")
 }
 
+
 fun generatePlayerView(player: Player, height: Float) {
-    Ui.setNextWindowPos(Vec2(Ui.io.displaySize[0].toFloat() - 470f, (70f * height) + 40f), Cond.Always, Vec2(0f))
-    Ui.setNextWindowSize(Vec2(470f, 70f))
+    Ui.setNextWindowPos(Vec2(Ui.io.displaySize[0].toFloat() - 550f, (70f * height) + 40f), Cond.Always, Vec2(0f))
+    Ui.setNextWindowSize(Vec2(550f, 70f))
     Ui.setNextWindowBgAlpha(0.8f)
     Ui.pushStyleVar(StyleVar.WindowRounding, 0f)
     functionalProgramming.withWindow("title${height}", null, CELL_FLAGS) {
+        Ui.image(2, Vec2(40,52))
+        Ui.sameLine(60)
+        Ui.beginGroup()
         // Name, & Status
-        Ui.textColored(Vec4(1,0,0,1), player.getNameString())
-        Ui.sameLine(295)
+        Ui.textColored(statColor(player, player.getIdle(), Vec4(0.2,1,0.2,1)), player.getNameString())
+        Ui.sameLine(230)
+        Ui.textColored(statColor(player, (player.getRating()*10).toInt(), Vec4(0.8,0.8,0.8,1)), "Rating:")
+        Ui.sameLine(285)
+        Ui.textColored(player.getRatingColor(), player.getRatingLetter())
+        Ui.sameLine(325)
         Ui.pushItemWidth(Ui.calcItemWidth()/3)
-        Ui.progressBar(player.getLoadPercent() * 0.01f,  Vec2(164, 16), "Standby")
+        if (player.present) Ui.progressBar(getLoadBarValue(player),  Vec2(160, 16), getLoadStatusString(player))
+        else Ui.progressBar(0f, Vec2(160, 16), "Idle")
 
         // Character, & Cabinet
-        Ui.text(player.getCharacter(false))
-        Ui.sameLine(300)
-        Ui.textColored(Vec4(0.64,0.64,0.64,1), player.getCabinetString())
+        Ui.textColored(statColor(player, player.getIdle(), Vec4(1,1,1,1)), player.getCharacter(false))
+        Ui.sameLine(330)
+        if (player.getCabinet().toInt() < 4) {
+            when (player.getData().playerSide.toInt()) {
+                0 -> Ui.textColored(Vec4(0.8, 0.1, 0.1, 1), player.getCabinetString())
+                1 -> Ui.textColored(Vec4(0.1, 0.5, 0.9, 1), player.getCabinetString())
+                else -> Ui.textColored(Vec4(0.8, 0.8, 0.8, 1), player.getCabinetString())
+            }
+        } else Ui.textColored(Vec4(0.8,0.8,0.8,0.8), player.getCabinetString())
 
         // Bounty, Chain, & Record
-        Ui.textColored(Vec4(1,1,0,1), player.getBountyString())
-        Ui.sameLine(200)
-        Ui.textColored(Vec4(0,1,1,1), "Chain: ${player.getChain()}")
-        Ui.sameLine(300)
+        Ui.textColored(statColor(player, player.getBounty(), Vec4(1,0.8,0.2,1)), player.getBountyString())
+        Ui.sameLine(230)
+        Ui.textColored(statColor(player, player.getChain(), Vec4(0.8,0.8,0.8,1)), "Chains:")
+        Ui.sameLine(285)
+        Ui.textColored(statColor(player, player.getChain(), Vec4(0.2, 1, 0.8, 1)), player.getChainString())
+        Ui.sameLine(330)
         Ui.textColored(Vec4(0.64,0.64,0.64,1), player.getRecordString())
+        Ui.endGroup()
+    }
+}
+
+private fun statColor(player:Player, value:Int, vec4:Vec4):Vec4 {
+    if (!player.present) return Vec4(0.8,0.8,0.8,0.8)
+    if (value <= 0) return Vec4(0.8,0.8,0.8,0.8)
+    return vec4
+}
+
+private fun getLoadBarValue(player: Player):Float {
+    when (player.getLoadPercent()) {
+        0 -> return 0f
+        100 -> return 0f
+        else -> return player.getLoadPercent() * 0.01f
+    }
+}
+
+private fun getLoadStatusString(player: Player):String {
+    when(player.getLoadPercent()) {
+        0 -> return "Standby [${player.getIdle()}]"
+        100 -> return "Standby [${player.getIdle()}]"
+        else -> return "Loading ${player.getLoadPercent()}%"
     }
 }
 

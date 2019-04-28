@@ -6,6 +6,15 @@ import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import java.util.*
 
 class DatabaseHandler(host: String, password: String, port: Int = 5432) : SqlApi {
+
+    override fun getFightData(): List<FightData> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun putFightData(fight: FightData) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     private val connector: Jdbi
     private val daoClass = SqlApiDao::class.java
 
@@ -19,9 +28,9 @@ class DatabaseHandler(host: String, password: String, port: Int = 5432) : SqlApi
 
     override fun isConnected(): Boolean = connector.open().use { it.connection.isValid(5) }
 
-    override fun getData(steamId: Long): LegacyData = useDao { it.getData(steamId) }
+    override fun getLegacyData(steamId: Long): LegacyData = useDao { it.getData(steamId) }
 
-    override fun putData(legacy: LegacyData) = useDao { it.putData(legacy) }
+    override fun putLegacyData(legacy: LegacyData) = useDao { it.putData(legacy) }
 
     private fun <T> useDao(callback: (dao: SqlApiDao) -> T): T =
             connector.open().use { callback.invoke(it.attach(daoClass)) }
