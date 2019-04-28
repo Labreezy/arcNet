@@ -1,23 +1,18 @@
-import application.*
+import application.runApplicationLoop
 import glm_.vec4.Vec4
 import gln.checkError
 import gln.glClearColor
 import gln.glViewport
 import imgui.Context
 import imgui.DEBUG
-import imgui.ImGui as Ui
 import imgui.impl.LwjglGlfw
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT
 import org.lwjgl.opengl.GL11.glClear
 import org.lwjgl.system.MemoryStack
-import org.lwjgl.system.Platform
 import uno.glfw.GlfwWindow
 import uno.glfw.VSync
 import uno.glfw.glfw
+import imgui.ImGui as Ui
 
 fun main(args: Array<String>) {
     Start_lwjgl()
@@ -36,7 +31,7 @@ private class Start_lwjgl {
     init {
         glfw.init("3.0")
         DEBUG = false
-        window = GlfwWindow(WINDOW_HORZ, WINDOW_VERT, "").apply { init() }
+        window = GlfwWindow(WINDOW_HORZ, WINDOW_VERT, "arcNet \uD83D\uDCE1").apply { init() }
         window.resizable = false
         window.decorated = true
         glfw.swapInterval = VSync.ON

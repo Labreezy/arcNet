@@ -8,7 +8,6 @@ import imgui.*
 import org.lwjgl.system.MemoryStack
 import session.Player
 import session.Session
-import window
 import imgui.ImGui as Ui
 import imgui.WindowFlag as Wf
 
@@ -21,8 +20,8 @@ fun getSession() = session
 fun runApplicationLoop(stack: MemoryStack) {
     // Initialize Application
     if (session.gameLoop == 0) { session.runGameLoop(); print("[${stack.address}]") }
-    if (session.xrdApi.isConnected()) { window.title = "gearNet  -  CONNECTED \uD83D\uDCE1 ${getDots()}"
-    } else window.title = "gearNet  -  DISCONNECTED ❌ ${getDots()}"
+//    if (session.xrdApi.isConnected()) { window.title = "gearNet  -  CONNECTED \uD83D\uDCE1 ${getDots()}"
+//    } else window.title = "gearNet  -  DISCONNECTED ❌ ${getDots()}"
 
     // Top row Function Buttons
     Ui.setNextWindowPos(Vec2(0f,0f), Cond.Always, Vec2(0f))
@@ -46,13 +45,16 @@ fun runApplicationLoop(stack: MemoryStack) {
 }
 
 private fun generateFunctionButtons() {
-    Ui.button("Func 1", Vec2(120, 24))
+    if (session.xrdApi.isConnected()) Ui.textColored(Vec4(0, 1, 0, 0.8), "Xrd ONLINE ${getDots()}")
+    else Ui.textColored(Vec4(1, 0, 0, 0.4), "Xrd OFFLINE")
     Ui.sameLine(132)
-    Ui.button("Func 2", Vec2(120, 24))
+    if (session.botApi.isConnected()) Ui.textColored(Vec4(0, 1, 0, 0.8), "Bot ONLINE ${getDots()}")
+    else Ui.textColored(Vec4(1, 0, 0, 0.4), "Bot OFFLINE")
     Ui.sameLine(256)
-    Ui.button("Func 3", Vec2(120, 24))
-    Ui.sameLine(380)
-    Ui.button("Func 4", Vec2(120, 24))
+    if (session.dataApi.isConnected()) Ui.textColored(Vec4(0, 1, 0, 0.8), "DB ONLINE ${getDots()}")
+    else Ui.textColored(Vec4(1, 0, 0, 0.4), "DB OFFLINE")
+//    Ui.sameLine(380)
+//    Ui.button("Func 4", Vec2(120, 24))
 }
 
 

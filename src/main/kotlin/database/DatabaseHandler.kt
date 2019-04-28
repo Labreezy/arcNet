@@ -26,7 +26,8 @@ class DatabaseHandler(host: String, password: String, port: Int = 5432) : SqlApi
         connector.installPlugins()
     }
 
-    override fun isConnected(): Boolean = connector.open().use { it.connection.isValid(5) }
+    // TODO: This crashes the app when dummy data is used as credentials
+    override fun isConnected() = false //: Boolean = connector.open().use { it.connection.isValid(5) }
 
     override fun getLegacyData(steamId: Long): LegacyData = useDao { it.getData(steamId) }
 
