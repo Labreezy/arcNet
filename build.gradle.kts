@@ -11,6 +11,8 @@ version = "1.0"
 
 repositories {
     mavenCentral()
+    jcenter()
+    maven("https://oss.jfrog.org/artifactory/libs-release")
     maven("https://dl.bintray.com/kotlin/kotlin-dev")
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
     maven("https://jitpack.io")
@@ -30,6 +32,8 @@ dependencies {
     implementation("org.postgresql:postgresql:42.2.5")
     implementation("org.jdbi:jdbi3-core:3.8.0")
   
+    implementation("com.github.twitch4j:twitch4j:1.0.0-alpha.13")
+    
     implementation("org.lwjgl", "lwjgl", lwjglVersion)
     implementation("org.lwjgl", "lwjgl-assimp", lwjglVersion)
     implementation("org.lwjgl", "lwjgl-bgfx", lwjglVersion)
