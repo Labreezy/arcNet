@@ -3,10 +3,13 @@ package memscan
 import application.getSession
 import classes.truncate
 import com.sun.jna.Memory
-import org.jire.kotmem.win32.*
-import java.nio.ByteBuffer
 import com.sun.jna.Pointer
 import org.jire.kotmem.win32.Kernel32.ReadProcessMemory
+import org.jire.kotmem.win32.Win32Process
+import org.jire.kotmem.win32.openProcess
+import org.jire.kotmem.win32.processIDByName
+import java.nio.ByteBuffer
+
 class MemHandler : XrdApi {
 
     var GG_PROC: Win32Process? = null;
@@ -25,9 +28,8 @@ class MemHandler : XrdApi {
         val procBaseAddr: Pointer = GG_PROC!!.modules["GuiltyGearXrd.exe"]!!.pointer
         var bufferMem = Memory(4L)
         var lastPointer: Pointer = procBaseAddr
-        var newPointer = Pointer.NULL
         for (i in 0..offsets.size - 2) {
-            newPointer = Pointer(Pointer.nativeValue(lastPointer) + offsets[i])
+            val newPointer = Pointer(Pointer.nativeValue(lastPointer) + offsets[i])
             if (ReadProcessMemory(GG_PROC!!.handle.pointer, newPointer, bufferMem, 4, 0) == 0L) {
                 throw IllegalAccessError("ReadProcMemory returned 0!")
             }
@@ -59,9 +61,7 @@ class MemHandler : XrdApi {
             var loadpercent = bb.get(0x44).toInt()
             bb.position(0xC)
             bb.get(dispbytes, 0, 0x24)
-
-            val re = Regex("[^A-Za-z0-9 ]")
-            var dispname  = truncate(re.replace(String(dispbytes).trim('\u0000'), "X"), 24)
+            var dispname  = truncate(String(dispbytes).trim('\u0000'), 24)
             var pd = PlayerData(steamid, dispname, charid, cabid, playerside, wins, totalmatch , loadpercent)
 
             offs[1] += 0x48L

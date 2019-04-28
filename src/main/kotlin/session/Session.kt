@@ -24,11 +24,10 @@ class Session {
     fun getAll() = players.values.toList()
         .sortedByDescending { item -> item.getRating() }
         .sortedByDescending { item -> item.getBounty() }
-        .sortedByDescending { item -> item.present }
+        .sortedByDescending { item -> item.getIdle() > 0 }
 
     fun updatePlayerData() {
         var loserChange = 0
-        // reset all data to be updated
         val playerData = xrdApi.getPlayerData()
         playerData.forEach { data ->
             // Add new player if they didn't previously exist
@@ -45,7 +44,6 @@ class Session {
                         s.changeChain(-1)
                         if (s.getBounty() > 0) loserChange = ((s.getChain() * s.getChain() * 10) + s.getBounty()).div(2)
                         s.changeBounty(-loserChange)
-                        println("justLost: ${-loserChange} W$")
                     }
                 }
             }
@@ -58,7 +56,6 @@ class Session {
                         gamesCount++
                         s.changeChain(1)
                         s.changeBounty(loserChange + (s.getChain() * s.getChain() * 100))
-                        println("justWon: ${loserChange} W$")
                     }
                 }
             }
