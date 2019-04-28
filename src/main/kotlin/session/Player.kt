@@ -7,18 +7,18 @@ import kotlin.math.abs
 
 class Player(playerData: PlayerData) {
 
+    private val MAX_IDLE = 8
+    var present = true
     private var bounty = 0
     private var change = 0
     private var chain = 0
-    private var idle = 0
+    private var idle = MAX_IDLE
     private var data = Pair(playerData, playerData)
 
     private fun oldData() = data.first
     fun getData() = data.second
 
-    fun updatePlayerData(updatedData: PlayerData) { data = Pair(getData(), updatedData) }
-
-    fun shouldRedrawView() = !oldData().equals(getData())
+    fun updatePlayerData(updatedData: PlayerData) { data = Pair(getData(), updatedData); present = true }
 
     fun getDisplayName() = getData().displayName
 
@@ -28,20 +28,34 @@ class Player(playerData: PlayerData) {
 
     fun getCharacter(shortened: Boolean) = getCharacterName(getData().characterId, shortened)
 
+    fun isScoreboardWorthy() = getBounty() > 0 && idle > 0 && getMatchesWon() > 0
+
+    fun getIdle() = idle
+
+    fun incrementIdle() {
+        changeBounty(0)
+        if (--idle <= 0) {
+            idle = 0
+            if (changeChain(-1) <= 0) present = false
+            else idle = MAX_IDLE
+        }
+    }
+
     fun getBounty() = bounty
 
     fun getBountyFormatted() = "${addCommas(getBounty().toString())} W$"
 
-    fun getBountyString() = if (getBounty() > 0) "Bounty: ${getBountyFormatted()} (${change})" else "Bounty: None"
+    fun getBountyString() = if (getBounty() > 0) "Bounty: ${getBountyFormatted()}  ${if (change>0) "(+${change})" else if (change<0) "(${change})" else ""}" else "Civilian"
 
     fun getChain() = chain
 
-    val MAX_IDLE = 8
-    fun changeChain(amount:Int) {
-        idle = MAX_IDLE
+    fun getChainString():String = "Chains: ${if (getChain()>0) getChain() else "-"}"
+
+    fun changeChain(amount:Int): Int {
         chain += amount
         if (chain < 0) chain = 0
         if (chain > 8) chain = 8
+        return chain
     }
 
     fun getChangeString(): String {
@@ -54,16 +68,16 @@ class Player(playerData: PlayerData) {
 
     fun getMatchesPlayed() = getData().matchesSum
 
-    fun getRecordString() = "Wins:${getMatchesWon()} / Matches:${getMatchesPlayed()}"
+    fun getRecordString() = "Wins: ${getMatchesWon()} / Games: ${getMatchesPlayed()}"
 
     fun getCabinet() = getData().cabinetLoc
 
     fun getCabinetString(): String {
         when(getCabinet().toInt()) {
-            0 -> return "Cabinet A - ${getPlaySideString()}"
-            1 -> return "Cabinet B - ${getPlaySideString()}"
-            2 -> return "Cabinet C - ${getPlaySideString()}"
-            3 -> return "Cabinet D - ${getPlaySideString()}"
+            0 -> return "Cab A - ${getPlaySideString()}"
+            1 -> return "Cab B - ${getPlaySideString()}"
+            2 -> return "Cab C - ${getPlaySideString()}"
+            3 -> return "Cab D - ${getPlaySideString()}"
             else -> return "Roaming..."
         }
     }
@@ -73,6 +87,12 @@ class Player(playerData: PlayerData) {
             when(getData().playerSide.toInt()) {
                 0 -> return "Player One"
                 1 -> return "Player Two"
+                2 -> return "Second"
+                3 -> return "Third"
+                4 -> return "Fourth"
+                5 -> return "Fifth"
+                6 -> return "Sixth"
+                7 -> return "Spectating"
                 else -> return "[${getData().playerSide.toInt()}]"
             }
         }

@@ -1,5 +1,7 @@
 package memscan
 
+import application.getSession
+import classes.truncate
 import com.sun.jna.Memory
 import org.jire.kotmem.win32.*
 import java.nio.ByteBuffer
@@ -41,9 +43,8 @@ class MemHandler : XrdApi {
     }
 
     override fun getPlayerData() : List<PlayerData> {
-        if(!isConnected()){
-            return ArrayList<PlayerData>()
-        }
+        if(!isConnected()) return ArrayList()
+
         var offs = longArrayOf(0x1C25AB4L, 0x44CL)
         var pDatas = ArrayList<PlayerData>()
         for (i in 0..7) {
@@ -58,12 +59,26 @@ class MemHandler : XrdApi {
             var loadpercent = bb.get(0x44).toInt()
             bb.position(0xC)
             bb.get(dispbytes, 0, 0x24)
-            var dispname = String(dispbytes).trim('\u0000')
+
+            val re = Regex("[^A-Za-z0-9 ]")
+            var dispname  = truncate(re.replace(String(dispbytes).trim('\u0000'), "X"), 24)
             var pd = PlayerData(steamid, dispname, charid, cabid, playerside, wins, totalmatch , loadpercent)
-            pDatas.add(pd)
+
             offs[1] += 0x48L
+            if (excludeZeroId(pd)) continue
+            else pDatas.add(pd)
         }
         return pDatas
+    }
+
+    private fun excludeZeroId(pd: PlayerData): Boolean {
+        getSession().getAll().forEach { player ->
+            if (pd.steamUserId == 0L) {
+                if (player.getDisplayName().equals(pd.displayName)) player.present = false
+                return true
+            }
+        }
+        return false
     }
 
     override fun getMatchData(): MatchData {
