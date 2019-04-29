@@ -24,7 +24,7 @@ val lwjglNatives = "natives-windows"
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
-    implementation("com.github.kotlin-graphics:imgui:v1.68.01-00")
+    implementation("com.github.kotlin-graphics:imgui:v1.68.01-00") //https://github.com/kotlin-graphics/imgui
     implementation("org.jire.kotmem:Kotmem:0.86")
     implementation("org.jdbi:jdbi3-sqlobject:3.8.0") // http://jdbi.org/#_introduction_to_jdbi
     implementation("org.jdbi:jdbi3-postgres:3.8.0")
