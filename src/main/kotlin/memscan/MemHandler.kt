@@ -1,6 +1,5 @@
 package memscan
 
-import application.getSession
 import classes.truncate
 import com.sun.jna.Memory
 import com.sun.jna.Pointer
@@ -65,21 +64,11 @@ class MemHandler : XrdApi {
             var pd = PlayerData(steamid, dispname, charid, cabid, playerside, wins, totalmatch , loadpercent)
 
             offs[1] += 0x48L
-            if (excludeZeroId(pd)) continue
-            else pDatas.add(pd)
+            pDatas.add(pd)
         }
         return pDatas
     }
 
-    private fun excludeZeroId(pd: PlayerData): Boolean {
-        getSession().getAll().forEach { player ->
-            if (pd.steamUserId == 0L) {
-                if (player.getDisplayName().equals(pd.displayName)) player.present = false
-                return true
-            }
-        }
-        return false
-    }
 
     override fun getMatchData(): MatchData {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

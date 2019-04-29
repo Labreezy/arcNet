@@ -19,7 +19,7 @@ class Session {
     fun runGameLoop() {
         gameLoop++
         GlobalScope.launch {
-            delay(256)
+            delay(32)
             if (xrdApi.isConnected()) updatePlayerData()
             runGameLoop()
         }
@@ -28,7 +28,7 @@ class Session {
     fun getAll() = players.values.toList()
         .sortedByDescending { item -> item.getRating() }
         .sortedByDescending { item -> item.getBounty() }
-        .sortedByDescending { item -> item.getIdle() > 0 }
+        .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
 
     fun updatePlayerData() {
         var loserChange = 0
@@ -65,5 +65,7 @@ class Session {
             }
         }
     }
+
+    fun getActivePlayerCount() = players.values.filter { !it.isIdle() }.size
 
 }

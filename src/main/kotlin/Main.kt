@@ -31,7 +31,7 @@ private class Start_lwjgl {
     init {
         glfw.init("3.0")
         DEBUG = false
-        window = GlfwWindow(WINDOW_HORZ, WINDOW_VERT, "arcNet \uD83D\uDCE1").apply { init() }
+        window = GlfwWindow(WINDOW_HORZ, WINDOW_VERT, "").apply { init() }
         window.resizable = false
         window.decorated = true
         glfw.swapInterval = VSync.ON
