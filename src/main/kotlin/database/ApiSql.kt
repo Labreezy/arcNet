@@ -1,5 +1,7 @@
 package database
 
+import org.jdbi.v3.sqlobject.customizer.Bind
+
 /**
  * database.SqlApi
  * provides [LegacyData]
@@ -33,12 +35,12 @@ interface SqlApi {
 }
 
 data class LegacyData(
-    val steamUserId: Long,
-    val displayName: String = "",
-    val matchesWon: Int = -1,
-    val matchesSum: Int = -1,
-    val bountyWon: Int = -1,
-    val bountySum: Int = -1
+        val steamId: Long,
+        val displayName: String = "",
+        val matchesWon: Int = -1,
+        val matchesSum: Int = -1,
+        val bountyWon: Int = -1,
+        val bountySum: Int = -1
 )
 
 data class FightData(

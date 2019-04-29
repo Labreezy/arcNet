@@ -6,12 +6,6 @@ import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
 
 class TwitchBot(accessToken: String) : BotApi {
-
-    override fun isConnected(): Boolean {
-        // TODO: Make this return the proper Boolean
-        return false
-    }
-
     private val messageCache: MutableList<Message> = mutableListOf()
     private val twitchClient: TwitchClient
 
@@ -20,6 +14,7 @@ class TwitchBot(accessToken: String) : BotApi {
         twitchClient = TwitchClientBuilder.builder().withChatAccount(credentials)
                 .withEnableChat(true)
                 .withEnableHelix(true)
+                .withEnableTMI(true)
                 .build()
         twitchClient.chat.eventManager
                 .onEvent(ChannelMessageEvent::class.java)
@@ -31,6 +26,10 @@ class TwitchBot(accessToken: String) : BotApi {
     override fun sendMessage(message: String) = twitchClient.chat.sendMessage("azedevs", message)
 
     override fun getMessages(): List<Message> = messageCache
+
+    override fun isConnected(): Boolean {
+        return twitchClient.messagingInterface.getChatters("azedevs").isFailedExecution
+    }
 
     fun <T> eval(callback: (client: TwitchClient) -> T): T = callback.invoke(twitchClient)
 }

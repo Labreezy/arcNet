@@ -31,7 +31,8 @@ dependencies {
     implementation("org.jdbi:jdbi3-kotlin-sqlobject:3.8.0")
     implementation("org.postgresql:postgresql:42.2.5")
     implementation("org.jdbi:jdbi3-core:3.8.0")
-  
+    implementation("org.slf4j:slf4j-nop:1.8.0-beta4")
+    
     implementation("com.github.twitch4j:twitch4j:1.0.0-alpha.13")
     
     implementation("org.lwjgl", "lwjgl", lwjglVersion)
