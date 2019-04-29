@@ -19,7 +19,7 @@ class Session {
     fun runGameLoop() {
         gameLoop++
         GlobalScope.launch {
-            delay(32)
+            delay(16)
             if (xrdApi.isConnected()) updatePlayerData()
             runGameLoop()
         }
@@ -43,8 +43,8 @@ class Session {
             players.values.forEach { s ->
                 if (s.getSteamId() == data.steamUserId) {
                     s.updatePlayerData(data)
-                    if (s.justLost()) {
-                        players.values.forEach { if (!it.justPlayed()) it.incrementIdle() }
+                    if (s.hasLost()) {
+                        players.values.forEach { if (!it.hasPlayed()) it.incrementIdle() }
                         s.changeChain(-1)
                         if (s.getBounty() > 0) loserChange = ((s.getChain() * s.getChain() * 10) + s.getBounty()).div(2)
                         s.changeBounty(-loserChange)
@@ -56,7 +56,7 @@ class Session {
             // Resolve changes to the winner
             players.values.forEach { s ->
                 if (s.getSteamId() == data.steamUserId) {
-                    if (s.justWon()) {
+                    if (s.hasWon()) {
                         gamesCount++
                         s.changeChain(1)
                         s.changeBounty(loserChange + (s.getChain() * s.getChain() * 100))
