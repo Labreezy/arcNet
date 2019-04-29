@@ -1,9 +1,10 @@
 package database
 
+import org.jdbi.v3.core.ConnectionException
 import org.jdbi.v3.core.Jdbi
-import org.jdbi.v3.core.result.ResultProducer
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
+import org.postgresql.util.PSQLException
 import java.util.*
 
 class DatabaseHandler(host: String, password: String, port: Int = 5432) : SqlApi {
@@ -14,13 +15,22 @@ class DatabaseHandler(host: String, password: String, port: Int = 5432) : SqlApi
         val credentials = Properties()
         credentials["user"] = "arcNet"
         credentials["password"] = password
-        connector = Jdbi.create("jdbc:postgresql://$host:$port/ArcNet", credentials)
-        connector.installPlugins()
+        try {
+            connector = Jdbi.create("jdbc:postgresql://$host:$port/ArcNet", credentials)
+        } catch (e: PSQLException) {
+            throw RuntimeException("Could not connect to database!", e)
+        }
+        connector?.installPlugins()
     }
 
-    // TODO: Return actual boolean representing database status
-    override fun isConnected(): Boolean = false
-
+    override fun isConnected(): Boolean {
+        try {
+            connector.open()
+        } catch(e: ConnectionException) {
+            return false
+        }
+        return true
+    }
     override fun getLegacyData(steamId: Long): LegacyData = useDao { it.getData(steamId) }
 
     override fun putLegacyData(legacy: LegacyData) = useDao { it.putData(legacy) }
