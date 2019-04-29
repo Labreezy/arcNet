@@ -8,6 +8,7 @@ import imgui.*
 import org.lwjgl.system.MemoryStack
 import session.Player
 import session.Session
+import window
 import imgui.ImGui as Ui
 import imgui.WindowFlag as Wf
 
@@ -20,8 +21,8 @@ fun getSession() = session
 fun runApplicationLoop(stack: MemoryStack) {
     // Initialize Application
     if (session.gameLoop == 0) { session.runGameLoop(); print("[${stack.address}]") }
-//    if (session.xrdApi.isConnected()) { window.title = "gearNet  -  CONNECTED \uD83D\uDCE1 ${getDots()}"
-//    } else window.title = "gearNet  -  DISCONNECTED ❌ ${getDots()}"
+    if (session.xrdApi.isConnected()) { window.title = "gearNet  -  CONNECTED \uD83D\uDCE1"
+    } else window.title = "gearNet  -  DISCONNECTED ❌"
 
     // Top row Function Buttons
     Ui.setNextWindowPos(Vec2(0f,0f), Cond.Always, Vec2(0f))
@@ -69,6 +70,9 @@ private fun generateMonitorViews() {
     Ui.textColored(Vec4(0, 1, 1, 1), "Player Count")
     Ui.sameLine(160)
     Ui.text("${session.players.size}")
+    Ui.textColored(Vec4(0, 1, 1, 1), "Active Players")
+    Ui.sameLine(160)
+    Ui.text("${session.getActivePlayerCount()}")
 }
 
 
@@ -82,42 +86,44 @@ fun generatePlayerView(player: Player, height: Float) {
         Ui.sameLine(60)
         Ui.beginGroup()
         // Name, & Status
-        Ui.textColored(statColor(player, player.getIdle(), Vec4(0.2,1,0.2,1)), player.getNameString())
+        Ui.textColored(if (player.present) Vec4(0.2,1,0.2,1) else Vec4(0.12,0.64,0.12,0.64), player.getNameString())
         Ui.sameLine(230)
         Ui.textColored(statColor(player, (player.getRating()*10).toInt(), Vec4(0.8,0.8,0.8,1)), "Rating:")
         Ui.sameLine(285)
         Ui.textColored(player.getRatingColor(), player.getRatingLetter())
         Ui.sameLine(325)
         Ui.pushItemWidth(Ui.calcItemWidth()/3)
-        if (player.present) Ui.progressBar(getLoadBarValue(player),  Vec2(160, 16), getLoadStatusString(player))
+        if (!player.isIdle()) Ui.progressBar(getLoadBarValue(player),  Vec2(160, 16), getLoadStatusString(player))
         else Ui.progressBar(0f, Vec2(160, 16), "Idle")
 
         // Character, & Cabinet
         Ui.textColored(statColor(player, player.getIdle(), Vec4(1,1,1,1)), player.getCharacter(false))
+        Ui.sameLine(230)
+        Ui.textColored(statColor(player, player.getChain(), Vec4(0.8,0.8,0.8,1)), "Chains:")
+        Ui.sameLine(285)
+        Ui.textColored(statColor(player, player.getChain(), Vec4(0.2, 1, 0.8, 1)), player.getChainString())
         Ui.sameLine(330)
         if (player.getCabinet().toInt() < 4) {
             when (player.getData().playerSide.toInt()) {
-                0 -> Ui.textColored(Vec4(0.8, 0.1, 0.1, 1), player.getCabinetString())
-                1 -> Ui.textColored(Vec4(0.1, 0.5, 0.9, 1), player.getCabinetString())
+                0 -> Ui.textColored(Vec4(0.8, 0.2, 0.2, 1), player.getCabinetString())
+                1 -> Ui.textColored(Vec4(0.1, 0.5, 0.8, 1), player.getCabinetString())
+                2 -> Ui.textColored(Vec4(0.7, 0.6, 0.0, 1), player.getCabinetString())
                 else -> Ui.textColored(Vec4(0.8, 0.8, 0.8, 1), player.getCabinetString())
             }
         } else Ui.textColored(Vec4(0.8,0.8,0.8,0.8), player.getCabinetString())
 
         // Bounty, Chain, & Record
         Ui.textColored(statColor(player, player.getBounty(), Vec4(1,0.8,0.2,1)), player.getBountyString())
-        Ui.sameLine(230)
-        Ui.textColored(statColor(player, player.getChain(), Vec4(0.8,0.8,0.8,1)), "Chains:")
-        Ui.sameLine(285)
-        Ui.textColored(statColor(player, player.getChain(), Vec4(0.2, 1, 0.8, 1)), player.getChainString())
+        Ui.sameLine(224)
+        Ui.textColored(if (player.getChange()>0) Vec4(0.2,0.8,0.2,1) else Vec4(0.8,0.2,0.2,0.5), player.getChangeString())
         Ui.sameLine(330)
-        Ui.textColored(Vec4(0.64,0.64,0.64,1), player.getRecordString())
+        Ui.textColored(statColor(player, player.getMatchesPlayed(), Vec4(0.8,0.8,0.8,1)), player.getRecordString())
         Ui.endGroup()
     }
 }
 
 private fun statColor(player:Player, value:Int, vec4:Vec4):Vec4 {
-    if (!player.present) return Vec4(0.8,0.8,0.8,0.8)
-    if (value <= 0) return Vec4(0.8,0.8,0.8,0.8)
+    if (!player.present || value <= 0) return Vec4(1,1,1,0.4)
     return vec4
 }
 
