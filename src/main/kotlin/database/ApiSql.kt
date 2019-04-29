@@ -1,7 +1,5 @@
 package database
 
-import org.jdbi.v3.sqlobject.customizer.Bind
-
 /**
  * database.SqlApi
  * provides [LegacyData]
@@ -47,5 +45,6 @@ data class FightData(
     val winnerId: Long,
     val fallenId: Long,
     val winnerChar: Int,
-    val fallenChar: Int
+    val fallenChar: Int,
+    val occurrences: Int
 )

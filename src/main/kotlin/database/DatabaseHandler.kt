@@ -56,10 +56,11 @@ interface SqlApiDao {
     fun getFightData(): List<FightData>
 
     @SqlUpdate(
-            "insert into " +
-                    "fightData(winnerId, fallenId, winnerChar, fallenChar) " +
-                    "values(:fight.winnerId, :fight.fallenId, :fight.winnerChar, :fight.fallenChar) " +
-                    "on conflict do nothing"
+            "insert into\n" +
+                    "  fightData(winnerId, fallenId, winnerChar, fallenChar, occurrences)\n" +
+                    "  values(:fight.winnerId, :fight.fallenId, :fight.winnerChar, :fight.fallenChar, 1)\n" +
+                    "  on conflict(winnerId, fallenId, winnerChar, fallenChar)\n" +
+                    "     do update set occurrences = fightData.occurrences + 1;"
     )
     fun putFightData(fight: FightData)
 }
