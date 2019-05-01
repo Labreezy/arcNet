@@ -6,6 +6,7 @@ import classes.addCommas
 import glm_.vec4.Vec4
 import memscan.PlayerData
 import kotlin.math.abs
+import kotlin.math.max
 
 class Player(playerData: PlayerData) {
 
@@ -19,7 +20,13 @@ class Player(playerData: PlayerData) {
     private fun oldData() = data.first
     fun getData() = data.second
 
-    fun updatePlayerData(updatedData: PlayerData) { data = Pair(getData(), updatedData); present = true; }
+    fun updatePlayerData(updatedData: PlayerData) {
+        data = Pair(getData(), updatedData);
+        if (hasLoaded()) {
+            present = true
+            idle = max(getSession().getActivePlayerCount(), 1)
+        }
+    }
 
     fun getDisplayName() = getData().displayName
 
@@ -50,15 +57,21 @@ class Player(playerData: PlayerData) {
 
     fun getBountyFormatted() = "${addCommas(getBounty().toString())} W$"
 
-    fun getBountyString() = if (getBounty() > 0) "Bounty: ${getBountyFormatted()}" else "Free"
+    fun getBountyString() = if (getBounty() > 0) "${getBountyFormatted()}" else "Free"
+
+    fun changeBounty(amount:Int) {
+        change = amount
+        bounty += amount
+        if (bounty < 100) bounty = 0
+    }
 
     fun getChain() = chain
 
-    fun getChainString():String = "${if (getChain()>0) getChain() else if (getChain()>=8) "MAX" else "-"}"
+    fun getChainString():String = if (getChain()>0) getChain().toString() else if (getChain()>=8) "MAX" else "-"
 
     fun changeChain(amount:Int): Int {
         // Amount replenished for idle is equal to active players
-        idle = getSession().getActivePlayerCount()
+        idle = max(getSession().getActivePlayerCount(), 1)
         chain += amount
         if (chain < 0) chain = 0
         if (chain > 8) chain = 8
@@ -68,9 +81,9 @@ class Player(playerData: PlayerData) {
     fun getChange() = change
 
     fun getChangeString(): String {
-        if (change > 0) return "+${addCommas(change.toString())} W$\n "
-        else if (change < 0) return " \n-${addCommas(abs(change).toString())} W$"
-        else return " \n "
+        if (change > 0) return "+${addCommas(change.toString())} W$"
+        else if (change < 0) return "-${addCommas(abs(change).toString())} W$"
+        else return ""
     }
 
     fun getMatchesWon() = getData().matchesWon
@@ -107,21 +120,17 @@ class Player(playerData: PlayerData) {
 
     fun getLoadPercent() = getData().loadingPct
 
-    fun justPlayed() = getData().matchesSum > oldData().matchesSum
+    fun hasLoaded() = getData().loadingPct > 0 && getData().loadingPct < 100
 
-    fun justLost() = getData().matchesWon == oldData().matchesWon && justPlayed()
+    fun hasPlayed() = getData().matchesSum > oldData().matchesSum
 
-    fun justWon() = getData().matchesWon > oldData().matchesWon && justPlayed()
+    fun hasLost() = getData().matchesWon == oldData().matchesWon && hasPlayed()
+
+    fun hasWon() = getData().matchesWon > oldData().matchesWon && hasPlayed()
 
     fun getRating():Float {
         if (getMatchesPlayed() > 0) return ((((getMatchesWon().toFloat() * 0.1) * getChain()) + getMatchesWon()) / (getMatchesPlayed().toFloat())).toFloat()
         else return 0F
-    }
-
-    fun changeBounty(amount:Int) {
-        change = amount
-        bounty += amount
-        if (bounty < 100) bounty = 0
     }
 
     fun getRatingLetter(): String {

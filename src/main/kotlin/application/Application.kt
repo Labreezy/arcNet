@@ -64,15 +64,12 @@ private fun generateMonitorViews() {
     Ui.progressBar(0.0f, Vec2(234, 16), "Player 1 HP: n/a")
     Ui.progressBar(0.0f, Vec2(234, 16), "Player 2 HP: n/a")
     Ui.separator()
-    Ui.textColored(Vec4(0, 1, 1, 1), "Games Count")
+    Ui.textColored(Vec4(0, 1, 1, 1), "Games Played")
     Ui.sameLine(160)
     Ui.text("${session.gamesCount}")
     Ui.textColored(Vec4(0, 1, 1, 1), "Player Count")
     Ui.sameLine(160)
-    Ui.text("${session.players.size}")
-    Ui.textColored(Vec4(0, 1, 1, 1), "Active Players")
-    Ui.sameLine(160)
-    Ui.text("${session.getActivePlayerCount()}")
+    Ui.text("${session.getActivePlayerCount()} / ${session.players.size}")
 }
 
 
@@ -86,9 +83,11 @@ fun generatePlayerView(player: Player, height: Float) {
         Ui.sameLine(60)
         Ui.beginGroup()
         // Name, & Status
-        Ui.textColored(if (player.present) Vec4(0.2,1,0.2,1) else Vec4(0.12,0.64,0.12,0.64), player.getNameString())
+        Ui.textColored(statColor(player, player.getIdle(), Col4.GRAY), "Bounty:")
+        Ui.sameLine(55)
+        Ui.textColored(if (player.present) Col4.ONLINE else Col4.OFFLINE, player.getNameString())
         Ui.sameLine(230)
-        Ui.textColored(statColor(player, (player.getRating()*10).toInt(), Vec4(0.8,0.8,0.8,1)), "Rating:")
+        Ui.textColored(statColor(player, (player.getRating()*10).toInt(), Col4.GRAY), "Rating:")
         Ui.sameLine(285)
         Ui.textColored(player.getRatingColor(), player.getRatingLetter())
         Ui.sameLine(325)
@@ -97,27 +96,31 @@ fun generatePlayerView(player: Player, height: Float) {
         else Ui.progressBar(0f, Vec2(160, 16), "Idle")
 
         // Character, & Cabinet
-        Ui.textColored(statColor(player, player.getIdle(), Vec4(1,1,1,1)), player.getCharacter(false))
+        Ui.textColored(statColor(player, player.getIdle(), Col4.GRAY), "System:")
+        Ui.sameLine(55)
+        Ui.textColored(if (player.present) Col4.BLUE else Col4.BLUE_DK, player.getCharacter(false))
         Ui.sameLine(230)
-        Ui.textColored(statColor(player, player.getChain(), Vec4(0.8,0.8,0.8,1)), "Chains:")
+        Ui.textColored(statColor(player, player.getChain(), Col4.GRAY), "Chains:")
         Ui.sameLine(285)
         Ui.textColored(statColor(player, player.getChain(), Vec4(0.2, 1, 0.8, 1)), player.getChainString())
         Ui.sameLine(330)
-        if (player.getCabinet().toInt() < 4) {
+        if (player.getCabinet().toInt() < 4 && !player.isIdle()) {
             when (player.getData().playerSide.toInt()) {
                 0 -> Ui.textColored(Vec4(0.8, 0.2, 0.2, 1), player.getCabinetString())
                 1 -> Ui.textColored(Vec4(0.1, 0.5, 0.8, 1), player.getCabinetString())
                 2 -> Ui.textColored(Vec4(0.7, 0.6, 0.0, 1), player.getCabinetString())
-                else -> Ui.textColored(Vec4(0.8, 0.8, 0.8, 1), player.getCabinetString())
+                else -> Ui.textColored(Col4.GRAY, player.getCabinetString())
             }
-        } else Ui.textColored(Vec4(0.8,0.8,0.8,0.8), player.getCabinetString())
+        } else Ui.textColored(Col4.GHOST, "-")
 
         // Bounty, Chain, & Record
-        Ui.textColored(statColor(player, player.getBounty(), Vec4(1,0.8,0.2,1)), player.getBountyString())
+        Ui.textColored(statColor(player, player.getIdle(), Col4.GRAY), "Reward:")
+        Ui.sameLine(55)
+        Ui.textColored(statColor(player, player.getBounty(), Col4.GOLD), player.getBountyString())
         Ui.sameLine(224)
-        Ui.textColored(if (player.getChange()>0) Vec4(0.2,0.8,0.2,1) else Vec4(0.8,0.2,0.2,0.5), player.getChangeString())
+        Ui.textColored(if (player.getChange()>0) Col4.GREEN else Col4.RED, player.getChangeString())
         Ui.sameLine(330)
-        Ui.textColored(statColor(player, player.getMatchesPlayed(), Vec4(0.8,0.8,0.8,1)), player.getRecordString())
+        Ui.textColored(statColor(player, player.getMatchesPlayed(), Col4.GRAY), player.getRecordString())
         Ui.endGroup()
     }
 }

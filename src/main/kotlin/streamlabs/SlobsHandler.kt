@@ -22,7 +22,7 @@ class SlobsHandler {
                     "Rating:\n" +
                     "${players.get(i).getRatingLetter()}\n" +
                     "Chain:\n" +
-                    "${if (players.get(i).getChain()>0) players.get(i).getChain() else " "}\n" +
+                    (if (players.get(i).getChain()>0) players.get(i).getChain() else " ") + "\n" +
                     "Change:\n" +
                     "${players.get(i).getChangeString()}\n" +
                     "Character:\n" +
