@@ -6,11 +6,11 @@
 //        classpath(kotlin("edu.sc.seis.gradle:launch4j", version = "2.4.6"))
 //    }
 //}
-
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.3.30"
     id("edu.sc.seis.launch4j") version "2.4.6"
-    application
+    //application
 }
 
 group = "com.azedevs"
@@ -33,7 +33,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
     implementation("com.github.kotlin-graphics:imgui:v1.68.01-00") //https://github.com/kotlin-graphics/imgui
     implementation("org.jire.kotmem:Kotmem:0.86")
-
+    implementation("net.java.dev.jna:jna:5.3.1")
+    implementation("net.java.dev.jna:jna-platform:5.3.1")
     implementation("edu.sc.seis.gradle:launch4j:2.4.6")
 
     // Database
@@ -48,6 +49,8 @@ dependencies {
     implementation("com.github.twitch4j:twitch4j:1.0.0-alpha.13")
 
     // GUI
+    implementation("com.github.kotlin-graphics:uno-sdk:0.7.6")
+    implementation("com.github.kotlin-graphics:glm:v1.0.1")
     implementation("com.github.kotlin-graphics:imgui:v1.68.01-00")
     implementation("org.lwjgl", "lwjgl", lwjglVersion)
     implementation("org.lwjgl", "lwjgl-assimp", lwjglVersion)
@@ -131,8 +134,14 @@ val fatJar = task("fatJar", type = Jar::class) {
         attributes["Implementation-Version"] = version
         attributes["Main-Class"] = "Main"
     }
-    from(configurations.runtime.map({ if (it.isDirectory) it else zipTree(it) }))
+    from(configurations.runtime.get().map({ if (it.isDirectory) it else zipTree(it) })) //delete .get() if your gradle is less than v5
     with(tasks["jar"] as CopySpec)
+}
+
+
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
 }
 
 tasks {
