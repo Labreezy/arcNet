@@ -2,6 +2,7 @@ package classes
 
 
 fun writeToFile(fileName: String, text: String) {
+    println("write \"${text}\" to ${fileName}.txt")
     // TODO: soon
 }
 

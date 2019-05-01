@@ -30,13 +30,13 @@ class Session {
         .sortedByDescending { item -> item.getBounty() }
         .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
 
-    fun updatePlayerData() {
+    private fun updatePlayerData() {
         var loserChange = 0
         val playerData = xrdApi.getPlayerData()
         playerData.forEach { data ->
             // Add new player if they didn't previously exist
             if (!players.containsKey(data.steamUserId) && data.steamUserId != 0L) {
-                players.put(data.steamUserId, Player(data))
+                players[data.steamUserId] = Player(data)
             }
 
             // Resolve changes to the loser

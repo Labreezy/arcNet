@@ -9,7 +9,11 @@ import org.jire.kotmem.win32.openProcess
 import org.jire.kotmem.win32.processIDByName
 import java.nio.ByteBuffer
 
+
 class MemHandler : XrdApi {
+    override fun getLobbyData(): LobbyData {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     var GG_PROC: Win32Process? = null;
 
@@ -23,7 +27,8 @@ class MemHandler : XrdApi {
         return true
     }
 
-    fun getByteBufferFromAddress(offsets: LongArray, numBytes: Int): ByteBuffer {
+    @UseExperimental(ExperimentalUnsignedTypes::class)
+    private fun getByteBufferFromAddress(offsets: LongArray, numBytes: Int): ByteBuffer {
         val procBaseAddr: Pointer = GG_PROC!!.modules["GuiltyGearXrd.exe"]!!.pointer
         var bufferMem = Memory(4L)
         var lastPointer: Pointer = procBaseAddr
@@ -32,8 +37,7 @@ class MemHandler : XrdApi {
             if (ReadProcessMemory(GG_PROC!!.handle.pointer, newPointer, bufferMem, 4, 0) == 0L) {
                 throw IllegalAccessError("ReadProcMemory returned 0!")
             }
-            lastPointer =
-                    Pointer(bufferMem.getInt(0L).toUInt().toLong()) //toUInt used due to sign issues explained earlier
+            lastPointer = Pointer(bufferMem.getInt(0L).toUInt().toLong()) //toUInt used due to sign issues explained earlier
         }
         var dataAddr = Pointer(Pointer.nativeValue(lastPointer) + offsets[offsets.size - 1])
         bufferMem = Memory(numBytes.toLong())

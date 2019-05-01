@@ -57,7 +57,7 @@ class Player(playerData: PlayerData) {
 
     fun getBountyFormatted() = "${addCommas(getBounty().toString())} W$"
 
-    fun getBountyString() = if (getBounty() > 0) "Bounty: ${getBountyFormatted()}" else "Free"
+    fun getBountyString() = if (getBounty() > 0) "${getBountyFormatted()}" else "Free"
 
     fun changeBounty(amount:Int) {
         change = amount
@@ -67,7 +67,7 @@ class Player(playerData: PlayerData) {
 
     fun getChain() = chain
 
-    fun getChainString():String = "${if (getChain()>0) getChain() else if (getChain()>=8) "MAX" else "-"}"
+    fun getChainString():String = if (getChain()>0) getChain().toString() else if (getChain()>=8) "MAX" else "-"
 
     fun changeChain(amount:Int): Int {
         // Amount replenished for idle is equal to active players
