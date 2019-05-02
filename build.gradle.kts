@@ -31,6 +31,7 @@ val lwjglNatives = "natives-windows"
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
+    implementation("com.github.kotlin-graphics:imgui:v1.68.01-00") //https://github.com/kotlin-graphics/imgui
     implementation("org.jire.kotmem:Kotmem:0.86")
     implementation("net.java.dev.jna:jna:4.2.2")
     implementation("net.java.dev.jna:jna-platform:4.2.2")
@@ -133,6 +134,7 @@ val fatJar = task("fatJar", type = Jar::class) {
         "Implementation-Version" to version,
         "Main-Class" to "MainKt")
     }
+
     dependsOn(configurations.runtimeClasspath)
     from(configurations.runtimeClasspath.get().filter{ it.name.endsWith("jar") }.map{ zipTree(it) })
     with(tasks["jar"] as CopySpec)
@@ -140,6 +142,7 @@ val fatJar = task("fatJar", type = Jar::class) {
 tasks.withType<KotlinCompile> {
     kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
 }
+
 tasks {
     "build" {
         dependsOn(fatJar)
