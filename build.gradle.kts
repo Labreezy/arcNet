@@ -6,11 +6,11 @@
 //        classpath(kotlin("edu.sc.seis.gradle:launch4j", version = "2.4.6"))
 //    }
 //}
-
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.3.30"
     id("edu.sc.seis.launch4j") version "2.4.6"
-    application
+    //application
 }
 
 group = "com.azedevs"
@@ -25,14 +25,15 @@ repositories {
     maven("https://jitpack.io")
 }
 
-val lwjglVersion = "3.2.1"
+val lwjglVersion = "3.2.2-SNAPSHOT"
 val lwjglNatives = "natives-windows"
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
     implementation("org.jire.kotmem:Kotmem:0.86")
-
+    implementation("net.java.dev.jna:jna:4.2.2")
+    implementation("net.java.dev.jna:jna-platform:4.2.2")
     implementation("edu.sc.seis.gradle:launch4j:2.4.6")
 
     // Database
@@ -47,6 +48,8 @@ dependencies {
     implementation("com.github.twitch4j:twitch4j:1.0.0-alpha.13")
 
     // GUI
+    implementation("com.github.kotlin-graphics:uno-sdk:60edf33067835253aa30ac79bd5129363fee953f")
+    implementation("com.github.kotlin-graphics.glm:glm:a1cafbd4e1bda500291b19a8d0cb75374f97688c")
     implementation("com.github.kotlin-graphics:imgui:v1.68.01-00")
     implementation("org.lwjgl", "lwjgl", lwjglVersion)
     implementation("org.lwjgl", "lwjgl-assimp", lwjglVersion)
@@ -126,14 +129,17 @@ launch4j {
 val fatJar = task("fatJar", type = Jar::class) {
     baseName = "${project.name}-fat"
     manifest {
-        attributes["Implementation-Title"] = "GearNet Xrd"
-        attributes["Implementation-Version"] = version
-        attributes["Main-Class"] = "Main"
+        attributes("Implementation-Title" to "GearNet Xrd",
+        "Implementation-Version" to version,
+        "Main-Class" to "MainKt")
     }
-    from(configurations.runtime.map({ if (it.isDirectory) it else zipTree(it) }))
+    dependsOn(configurations.runtimeClasspath)
+    from(configurations.runtimeClasspath.get().filter{ it.name.endsWith("jar") }.map{ zipTree(it) })
     with(tasks["jar"] as CopySpec)
 }
-
+tasks.withType<KotlinCompile> {
+    kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
+}
 tasks {
     "build" {
         dependsOn(fatJar)
