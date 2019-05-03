@@ -5,6 +5,7 @@ import WINDOW_VERT
 import glm_.vec2.Vec2
 import glm_.vec4.Vec4
 import imgui.*
+import objects.Col4
 import org.lwjgl.system.MemoryStack
 import session.Player
 import session.Session
@@ -83,8 +84,6 @@ fun generatePlayerView(player: Player, height: Float) {
         Ui.sameLine(60)
         Ui.beginGroup()
         // Name, & Status
-        Ui.textColored(statColor(player, player.getIdle(), Col4.GRAY), "Bounty:")
-        Ui.sameLine(55)
         Ui.textColored(if (player.present) Col4.ONLINE else Col4.OFFLINE, player.getNameString())
         Ui.sameLine(230)
         Ui.textColored(statColor(player, (player.getRating()*10).toInt(), Col4.GRAY), "Rating:")
@@ -96,8 +95,6 @@ fun generatePlayerView(player: Player, height: Float) {
         else Ui.progressBar(0f, Vec2(160, 16), "Idle")
 
         // Character, & Cabinet
-        Ui.textColored(statColor(player, player.getIdle(), Col4.GRAY), "System:")
-        Ui.sameLine(55)
         Ui.textColored(if (player.present) Col4.BLUE else Col4.BLUE_DK, player.getCharacter(false))
         Ui.sameLine(230)
         Ui.textColored(statColor(player, player.getChain(), Col4.GRAY), "Chains:")
@@ -114,8 +111,6 @@ fun generatePlayerView(player: Player, height: Float) {
         } else Ui.textColored(Col4.GHOST, "-")
 
         // Bounty, Chain, & Record
-        Ui.textColored(statColor(player, player.getIdle(), Col4.GRAY), "Reward:")
-        Ui.sameLine(55)
         Ui.textColored(statColor(player, player.getBounty(), Col4.GOLD), player.getBountyString())
         Ui.sameLine(224)
         Ui.textColored(if (player.getChange()>0) Col4.GREEN else Col4.RED, player.getChangeString())

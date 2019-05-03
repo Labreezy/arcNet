@@ -1,6 +1,6 @@
 package memscan
 
-import classes.truncate
+import azUtils.truncate
 import com.sun.jna.Memory
 import com.sun.jna.Pointer
 import org.jire.kotmem.win32.Kernel32.ReadProcessMemory

@@ -1,10 +1,10 @@
 package session
 
 import application.getSession
-import classes.Character.getCharacterName
-import classes.addCommas
+import azUtils.addCommas
 import glm_.vec4.Vec4
 import memscan.PlayerData
+import objects.Character.getCharacterName
 import kotlin.math.abs
 import kotlin.math.max
 

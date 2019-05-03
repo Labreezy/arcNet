@@ -36,7 +36,7 @@ private class Start_lwjgl {
         window.decorated = true
         glfw.swapInterval = VSync.ON
         context = Context()
-        imgui.ImGui.styleColorsDark()
+        Ui.styleColorsDark()
         lwjglGlfw = LwjglGlfw(window, true, LwjglGlfw.GlfwClientApi.OpenGL)
         window.loop(::mainLoop)
         lwjglGlfw.shutdown()
