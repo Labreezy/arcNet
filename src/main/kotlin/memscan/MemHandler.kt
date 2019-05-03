@@ -12,10 +12,10 @@ import java.nio.ByteBuffer
 
 class MemHandler : XrdApi {
     override fun getLobbyData(): LobbyData {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented")
     }
 
-    var GG_PROC: Win32Process? = null;
+    var GG_PROC: Win32Process? = null
 
     override fun isConnected(): Boolean {
         if (GG_PROC != null) return true
@@ -28,21 +28,28 @@ class MemHandler : XrdApi {
     }
 
     @UseExperimental(ExperimentalUnsignedTypes::class)
-    private fun getByteBufferFromAddress(offsets: LongArray, numBytes: Int): ByteBuffer {
+    private fun getByteBufferFromAddress(offsets: LongArray, numBytes: Int): ByteBuffer? {
+        if(GG_PROC == null){
+            if(!isConnected()){
+                return null
+            }
+        }
         val procBaseAddr: Pointer = GG_PROC!!.modules["GuiltyGearXrd.exe"]!!.pointer
         var bufferMem = Memory(4L)
         var lastPointer: Pointer = procBaseAddr
         for (i in 0..offsets.size - 2) {
             val newPointer = Pointer(Pointer.nativeValue(lastPointer) + offsets[i])
             if (ReadProcessMemory(GG_PROC!!.handle.pointer, newPointer, bufferMem, 4, 0) == 0L) {
-                throw IllegalAccessError("ReadProcMemory returned 0!")
+                return null
+//                throw IllegalAccessError("ReadProcMemory returned 0!")
             }
             lastPointer = Pointer(bufferMem.getInt(0L).toUInt().toLong()) //toUInt used due to sign issues explained earlier
         }
         var dataAddr = Pointer(Pointer.nativeValue(lastPointer) + offsets[offsets.size - 1])
         bufferMem = Memory(numBytes.toLong())
         if (ReadProcessMemory(GG_PROC!!.handle.pointer, dataAddr, bufferMem, numBytes, 0) == 0L) {
-            throw IllegalAccessError("ReadProcMemory returned 0!")
+            return null
+//            throw IllegalAccessError("ReadProcMemory returned 0!")
         }
         return bufferMem.getByteBuffer(0L, numBytes.toLong())
     }
@@ -54,6 +61,7 @@ class MemHandler : XrdApi {
         var pDatas = ArrayList<PlayerData>()
         for (i in 0..7) {
             var bb = getByteBufferFromAddress(offs, 0x48)
+            if (bb == null) return ArrayList()
             var dispbytes = ByteArray(0x24)
             var steamid = bb.getLong(0)
             var totalmatch = bb.get(8).toInt()
@@ -75,7 +83,7 @@ class MemHandler : XrdApi {
 
 
     override fun getMatchData(): MatchData {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented")
     }
 
 }
