@@ -1,14 +1,9 @@
-# arcNet *[working title]*
-### Netplay stat visualizer for Guilty Gear Xrd REV2
+# gearNet Xrd
+![gearNet](https://azedevs.com/images/github/bn_justice.png) 
+### Player stat tracking network for Guilty Gear Xrd REV2
+An open source fan project for tracking, persisting, and visualizing netplay match statistics for the PC 2D fighting game Guilty Gear Xrd REV2. In an effort to better understand where the work is needed to improve, use gearNet to automatically record your unique win ratio records for all character matchups.
 
-#### Contributors:
-- [azeDevs](https://github.com/azeDevs/)
-- [Labreezy](https://github.com/Labreezy/)
-- [depressingillusion](https://github.com/depressingillusion/)
+**Maintainer:** [aze](https://github.com/azeDevs/)  
+**Contributors:** [Labryz](https://github.com/Labreezy/), [Lost Illusion](https://github.com/depressingillusion/)
 
-#### Development Phases:
-1.  ~~XrdApi and Streamlabs OBS support interface~~
-2.  SQL Database and Twitch bot integration
-3.  Player network and Discord bot integration
-
-*Currently refactoring Phase 1 from [Kotlin/Native](https://github.com/azeDevs/gearNet) to [Kotlin/JVM](https://github.com/azeDevs/arcNet)*
+For more information, check out the [gearNet Wiki](https://github.com/azeDevs/gearNet-Xrd/wiki).

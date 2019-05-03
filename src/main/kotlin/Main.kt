@@ -1,32 +1,27 @@
-import application.*
+import application.runApplicationLoop
 import glm_.vec4.Vec4
 import gln.checkError
 import gln.glClearColor
 import gln.glViewport
 import imgui.Context
 import imgui.DEBUG
-import imgui.ImGui as Ui
 import imgui.impl.LwjglGlfw
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT
 import org.lwjgl.opengl.GL11.glClear
 import org.lwjgl.system.MemoryStack
-import org.lwjgl.system.Platform
 import uno.glfw.GlfwWindow
 import uno.glfw.VSync
 import uno.glfw.glfw
+import imgui.ImGui as Ui
 
 fun main(args: Array<String>) {
     Start_lwjgl()
 }
 
 lateinit var window: GlfwWindow
-private val WINDOW_TINT = Vec4(0.26f, 0.06f, 0.16f, 1.0f)
-private val WINDOW_HORZ = 720
-private val WINDOW_VERT = 480
+val WINDOW_TINT = Vec4(0.26f, 0.06f, 0.16f, 1.0f)
+val WINDOW_HORZ = 800
+val WINDOW_VERT = 600
 
 private class Start_lwjgl {
 
@@ -53,7 +48,7 @@ private class Start_lwjgl {
 
     fun mainLoop(stack: MemoryStack) {
         lwjglGlfw.newFrame()
-        Ui.run { newFrame(); runApplicationLoop() }
+        Ui.run { newFrame(); runApplicationLoop(stack) }
         Ui.render()
         glViewport(window.framebufferSize)
         glClearColor(WINDOW_TINT)

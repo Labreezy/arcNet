@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.gradle.internal.os.OperatingSystem
 
 plugins {
     kotlin("jvm") version "1.3.30"
+    id("edu.sc.seis.launch4j") version "2.4.6"
     application
 }
 
@@ -10,9 +10,11 @@ group = "com.azedevs"
 version = "1.0"
 
 repositories {
+    jcenter()
     mavenCentral()
-    maven("https://dl.bintray.com/kotlin/kotlin-dev")
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
+    maven("https://oss.jfrog.org/artifactory/libs-release")
+    maven("https://dl.bintray.com/kotlin/kotlin-dev")
     maven("https://jitpack.io")
 }
 
@@ -20,15 +22,27 @@ val lwjglVersion = "3.2.1"
 val lwjglNatives = "natives-windows"
 
 dependencies {
+    // Core
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
-    implementation("com.github.kotlin-graphics:imgui:v1.68.01-00")
-    implementation("org.jire.kotmem:Kotmem:0.86")
-    implementation("org.jdbi:jdbi3-core:3.3.0")
-    implementation("org.jdbi:jdbi3-bom:3.3.0") // http://jdbi.org/#_introduction_to_jdbi
-    implementation("mysql:mysql-connector-java:8.0.12") // http://zetcode.com/db/jdbi/
-    
+    implementation("edu.sc.seis.gradle:launch4j:2.4.6")
 
+    // Memscan
+    implementation("org.jire.kotmem:Kotmem:0.86")
+
+    // Twitch
+    implementation("com.github.twitch4j:twitch4j:1.0.0-alpha.13")
+    
+    // Database
+    implementation("org.jdbi:jdbi3-sqlobject:3.8.0") // http://jdbi.org/#_introduction_to_jdbi
+    implementation("org.jdbi:jdbi3-postgres:3.8.0")
+    implementation("org.jdbi:jdbi3-kotlin-sqlobject:3.8.0")
+    implementation("org.jdbi:jdbi3-core:3.8.0")
+    implementation("org.postgresql:postgresql:42.2.5")
+    implementation("org.slf4j:slf4j-nop:1.8.0-beta4")
+    
+    // GUI
+    implementation("com.github.kotlin-graphics:imgui:v1.68.01-00")
     implementation("org.lwjgl", "lwjgl", lwjglVersion)
     implementation("org.lwjgl", "lwjgl-assimp", lwjglVersion)
     implementation("org.lwjgl", "lwjgl-bgfx", lwjglVersion)
@@ -97,5 +111,31 @@ dependencies {
     runtimeOnly("org.lwjgl", "lwjgl-xxhash", lwjglVersion, classifier = lwjglNatives)
     runtimeOnly("org.lwjgl", "lwjgl-yoga", lwjglVersion, classifier = lwjglNatives)
     runtimeOnly("org.lwjgl", "lwjgl-zstd", lwjglVersion, classifier = lwjglNatives)
+}
 
+launch4j {
+    mainClassName = "MainKt"
+    icon = "${projectDir}/resources/ic_gearnet.ico"
+}
+
+val fatJar = task("fatJar", type = Jar::class) {
+    baseName = "${project.name}-fat"
+    manifest {
+        attributes("Implementation-Title" to "GearNet Xrd",
+            "Implementation-Version" to version,
+            "Main-Class" to "MainKt")
+    }
+
+    dependsOn(configurations.runtimeClasspath)
+    from(configurations.runtimeClasspath.filter{ it.name.endsWith("jar") }.map{ zipTree(it) })
+    with(tasks["jar"] as CopySpec)
+}
+tasks.withType<KotlinCompile> {
+    kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
+}
+
+tasks {
+    "build" {
+        dependsOn(fatJar)
+    }
 }
