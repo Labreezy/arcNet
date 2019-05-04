@@ -5,8 +5,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import memscan.MemHandler
+import memscan.PlayerData
 import memscan.XrdApi
 import twitch.TwitchBot
+import kotlin.math.max
 
 class Session {
     val xrdApi: XrdApi = MemHandler()
@@ -14,14 +16,24 @@ class Session {
     val botApi: TwitchBot = TwitchBot("")
     var players: MutableMap<Long, Player> = HashMap()
     var gamesCount: Int = 0
-    var gameLoop = 0
+    var memoryCycle = 0
+    var databaseCycle = 0
 
-    fun runGameLoop() {
-        gameLoop++
+    fun cycleMemoryScan() {
         GlobalScope.launch {
-            delay(16)
+            delay(32)
             if (xrdApi.isConnected()) updatePlayerData()
-            runGameLoop()
+            memoryCycle++
+            cycleMemoryScan()
+        }
+    }
+
+    fun cycleDatabase() {
+        GlobalScope.launch {
+            delay(256)
+            if (dataApi.isConnected()) updatePlayerLegacies()
+            databaseCycle++
+            cycleDatabase()
         }
     }
 
@@ -30,39 +42,53 @@ class Session {
         .sortedByDescending { item -> item.getBounty() }
         .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
 
+    private fun updatePlayerLegacies() {
+        // do something
+    }
+
     private fun updatePlayerData() {
         var loserChange = 0
         val playerData = xrdApi.getPlayerData()
         playerData.forEach { data ->
-            // Add new player if they didn't previously exist
-            if (!players.containsKey(data.steamUserId) && data.steamUserId != 0L) {
-                players[data.steamUserId] = Player(data)
-            }
+            addPlayerIfNew(data)
+            var currLoser = resolveTheLoser(data)
+            if (currLoser > 0) loserChange = currLoser
+        }
+        playerData.forEach { resolveTheWinner(it, loserChange) }
+    }
 
-            // Resolve changes to the loser
-            players.values.forEach { s ->
-                if (s.getSteamId() == data.steamUserId) {
-                    s.updatePlayerData(data)
-                    if (s.hasLost()) {
-                        players.values.forEach { if (!it.hasPlayed()) it.incrementIdle() }
-                        s.changeChain(-1)
-                        if (s.getBounty() > 0) loserChange = ((s.getChain() * s.getChain() * 10) + s.getBounty()).div(2)
-                        s.changeBounty(-loserChange)
-                    }
+    private fun resolveTheWinner(data: PlayerData, loserChange: Int) {
+        players.values.forEach { s ->
+            if (s.getSteamId() == data.steamUserId) {
+                if (s.hasWon()) {
+                    gamesCount++
+                    s.changeChain(1)
+                    s.changeBounty(loserChange + (s.getChain() * s.getChain() * 100))
                 }
             }
         }
-        playerData.forEach { data ->
-            // Resolve changes to the winner
-            players.values.forEach { s ->
-                if (s.getSteamId() == data.steamUserId) {
-                    if (s.hasWon()) {
-                        gamesCount++
-                        s.changeChain(1)
-                        s.changeBounty(loserChange + (s.getChain() * s.getChain() * 100))
-                    }
+    }
+
+    private fun resolveTheLoser(data: PlayerData): Int {
+        var loserChange = 0
+        players.values.forEach { s ->
+            if (s.getSteamId() == data.steamUserId) {
+                s.updatePlayerData(data)
+                if (s.hasLost()) {
+                    players.values.forEach { if (!it.hasPlayed()) it.incrementIdle() }
+                    s.changeChain(-1)
+                    if (s.getBounty() > 0) loserChange = max(((s.getChain() * s.getChain() * 10) + s.getBounty()).div(2), s.getBounty())
+                    s.changeBounty(-loserChange)
+                    return loserChange
                 }
             }
+        }
+        return 0
+    }
+
+    private fun addPlayerIfNew(data: PlayerData) {
+        if (!players.containsKey(data.steamUserId) && data.steamUserId != 0L) {
+            players[data.steamUserId] = Player(data)
         }
     }
 

@@ -1,12 +1,13 @@
 package database
 
+import azUtils.getTokenFromFile
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.result.ResultProducer
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import java.util.*
 
-class DatabaseHandler(host: String = "", password: String = "", port: Int = 5432) : SqlApi {
+class DatabaseHandler(host: String = "AZEHOME", password: String = getTokenFromFile("keys", "database.txt"), port: Int = 5432) : SqlApi {
     private val connector: Jdbi
     private val daoClass = SqlApiDao::class.java
 
@@ -19,7 +20,7 @@ class DatabaseHandler(host: String = "", password: String = "", port: Int = 5432
     }
 
     // TODO: Return actual boolean representing database status
-    override fun isConnected(): Boolean = false
+    override fun isConnected(): Boolean = true
 
     override fun getLegacyData(steamId: Long): LegacyData = useDao { it.getData(steamId) }
 
