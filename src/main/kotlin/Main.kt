@@ -12,7 +12,6 @@ import org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT
 import org.lwjgl.opengl.GL11.glClear
 import org.lwjgl.system.MemoryStack
 import uno.glfw.GlfwWindow
-import uno.glfw.VSync
 import uno.glfw.glfw
 import imgui.ImGui as Ui
 
@@ -30,14 +29,16 @@ private class Start_lwjgl {
     init {
         glfw.init("3.0")
         DEBUG = false
+
         window = GlfwWindow(WINDOW_HORZ, WINDOW_VERT, "").apply { init() }
         window.resizable = false
         window.decorated = true
-        glfw.swapInterval = VSync.ON
         context = Context()
         Ui.styleColorsDark()
         lwjglGlfw = LwjglGlfw(window, true, LwjglGlfw.GlfwClientApi.OpenGL)
-        window.loop(::mainLoop)
+
+        window.loop { mainLoop(it) }
+
         lwjglGlfw.shutdown()
         context.destroy()
         window.destroy()

@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.3.30"
     id("edu.sc.seis.launch4j") version "2.4.6"
-    application
 }
 
 group = "com.azedevs"
@@ -18,7 +17,7 @@ repositories {
     maven("https://jitpack.io")
 }
 
-val lwjglVersion = "3.2.1"
+val lwjglVersion = "3.2.2-SNAPSHOT"
 val lwjglNatives = "natives-windows"
 
 dependencies {
@@ -26,6 +25,13 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
     implementation("edu.sc.seis.gradle:launch4j:2.4.6")
+
+    /* / / / ⚠ IN CASE OF BUILD FAILURE, UNCOMMENT THIS BLOCK ⚠ / / / */
+//    implementation("net.java.dev.jna:jna:4.2.2")
+//    implementation("net.java.dev.jna:jna-platform:4.2.2")
+//    implementation("com.github.kotlin-graphics:uno-sdk:60edf33067835253aa30ac79bd5129363fee953f")
+//    implementation("com.github.kotlin-graphics.glm:glm:a1cafbd4e1bda500291b19a8d0cb75374f97688c")
+    /* / / / ⚠ IN CASE OF BUILD FAILURE, UNCOMMENT THIS BLOCK ⚠ / / / */
 
     // Memscan
     implementation("org.jire.kotmem:Kotmem:0.86")
