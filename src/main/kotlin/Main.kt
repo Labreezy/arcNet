@@ -1,5 +1,7 @@
+import application.WINDOW_HORZ
+import application.WINDOW_TINT
+import application.WINDOW_VERT
 import application.runApplicationLoop
-import glm_.vec4.Vec4
 import gln.checkError
 import gln.glClearColor
 import gln.glViewport
@@ -19,9 +21,6 @@ fun main(args: Array<String>) {
 }
 
 lateinit var window: GlfwWindow
-val WINDOW_TINT = Vec4(0.26f, 0.06f, 0.16f, 1.0f)
-val WINDOW_HORZ = 800
-val WINDOW_VERT = 600
 
 private class Start_lwjgl {
 

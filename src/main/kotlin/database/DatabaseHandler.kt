@@ -20,7 +20,7 @@ class DatabaseHandler(host: String = "AZEHOME", password: String = getTokenFromF
     }
 
     // TODO: Return actual boolean representing database status
-    override fun isConnected(): Boolean = true
+    override fun isConnected(): Boolean = false
 
     override fun getLegacyData(steamId: Long): LegacyData = useDao { it.getData(steamId) }
 

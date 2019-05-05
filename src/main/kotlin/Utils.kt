@@ -179,8 +179,8 @@ fun loopRun(interval: Long, runnable: Runnable) = Timer().schedule(object : Time
  */
 fun truncate(name: String, length: Int): String {
     val re = Regex("[^A-Za-z0-9 ]")
-    if (name.length > length) return re.replace(name, "X").substring(0, length)
-    else return re.replace(name, "X")
+    if (name.length > length) return re.replace(name, "?").substring(0, length)
+    else return re.replace(name, "?")
 }
 
 
