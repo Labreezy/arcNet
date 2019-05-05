@@ -41,7 +41,7 @@ object Playerviews {
             Ui.sameLine(210)
             Ui.textColored(statColor(player, player.getChain(), Col4.GRY_L), "Chains:")
             Ui.sameLine(270)
-            Ui.textColored(statColor(player, player.getChain(), Col4.BLU_L), player.getChainString())
+            Ui.textColored(player.getChainColor(), player.getChainString())
             // Record
             Ui.sameLine(325)
             Ui.textColored(statColor(player, player.getMatchesWon(), Col4.GRY_L), player.getMatchesWonString())

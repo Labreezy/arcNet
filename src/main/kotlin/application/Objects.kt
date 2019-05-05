@@ -5,8 +5,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import session.Player
-import kotlin.math.max
-import kotlin.math.min
 
 
 class ColF(val delay:Long, val interval:Long, val c0:Vec4, val c1:Vec4) {
@@ -43,7 +41,7 @@ object Col4 {
         return vec4
     }
 
-    val RED_M = Vec4(0.8,0.2,0.2,1)
+    val RED_M = Vec4(0.9,0.3,0.3,1)
     val YLW_M = Vec4(0.9,0.7,0.0,1)
     val GRN_M = Vec4(0.2,0.8,0.2,1)
     val BLU_L = Vec4(0.3,0.9,0.8,1)

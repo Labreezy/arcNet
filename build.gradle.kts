@@ -32,7 +32,7 @@ dependencies {
 
     // Twitch
     implementation("com.github.twitch4j:twitch4j:1.0.0-alpha.13")
-    
+
     // Database
     implementation("org.jdbi:jdbi3-sqlobject:3.8.0") // http://jdbi.org/#_introduction_to_jdbi
     implementation("org.jdbi:jdbi3-postgres:3.8.0")
@@ -40,7 +40,7 @@ dependencies {
     implementation("org.jdbi:jdbi3-core:3.8.0")
     implementation("org.postgresql:postgresql:42.2.5")
     implementation("org.slf4j:slf4j-nop:1.8.0-beta4")
-    
+
     // GUI
     implementation("com.github.kotlin-graphics:imgui:v1.68.01-00")
     implementation("org.lwjgl", "lwjgl", lwjglVersion)
