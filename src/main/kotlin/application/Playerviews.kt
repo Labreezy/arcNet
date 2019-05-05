@@ -1,75 +1,87 @@
 package application
 
 import glm_.vec2.Vec2
-import glm_.vec4.Vec4
 import imgui.*
 import objects.Col4
+import objects.Col4.statColor
 import session.Player
+import imgui.ImGui as Ui
 
 object Playerviews {
     private val CELL_FLAGS = WindowFlag.NoTitleBar or WindowFlag.NoCollapse or WindowFlag.NoScrollbar or WindowFlag.NoResize or WindowFlag.NoSavedSettings
 
     fun generatePlayerView(player: Player, height: Float) {
-        ImGui.setNextWindowPos(Vec2(ImGui.io.displaySize[0].toFloat() - 550f, (70f * height) + 40f), Cond.Always, Vec2(0f))
-        ImGui.setNextWindowSize(Vec2(550f, 70f))
-        ImGui.setNextWindowBgAlpha(0.8f)
-        ImGui.pushStyleVar(StyleVar.WindowRounding, 0f)
+        Ui.setNextWindowPos(Vec2(Ui.io.displaySize[0].toFloat() - 550f, (70f * height) + 40f), Cond.Always, Vec2(0f))
+        Ui.setNextWindowSize(Vec2(550f, 70f))
+        Ui.setNextWindowBgAlpha(0.8f)
+        Ui.pushStyleVar(StyleVar.WindowRounding, 0f)
         functionalProgramming.withWindow("title${height}", null, CELL_FLAGS) {
             // Portrait
-            ImGui.image(2, Vec2(40,52))
-            ImGui.sameLine(60)
-            ImGui.beginGroup()
+            Ui.image(2, Vec2(40,52))
+            Ui.sameLine(60)
+            Ui.beginGroup()
 
             // ------------------ TOP ROW ------------------
             // Player
-            ImGui.textColored(if (player.present) Col4.ONLINE else Col4.OFFLINE, player.getNameString())
+            Ui.textColored(Col4.name(player.present), player.getNameString())
             // Rating
-            ImGui.sameLine(230)
-            ImGui.textColored(statColor(player, (player.getRating()*10).toInt(), Col4.GRAY), "Rating:")
-            ImGui.sameLine(285)
-            ImGui.textColored(player.getRatingColor(), player.getRatingLetter())
+            Ui.sameLine(210)
+            Ui.textColored(statColor(player, (player.getRating()*10).toInt(), Col4.GRY_L), "Rating:")
+            Ui.sameLine(270)
+            Ui.textColored(player.getRatingColor(), player.getRatingLetter())
             // Status
-            ImGui.sameLine(325)
-            ImGui.pushItemWidth(ImGui.calcItemWidth()/3)
-            if (!player.isIdle()) ImGui.progressBar(getLoadBarValue(player),  Vec2(160, 16), getLoadStatusString(player))
-            else ImGui.progressBar(0f, Vec2(160, 16), "Idle")
+            Ui.sameLine(320)
+            Ui.pushItemWidth(Ui.calcItemWidth()/3)
+            Ui.progressBar(getLoadBarValue(player),  Vec2(160, 16), getLoadStatusString(player))
 
             // ------------------ MID ROW ------------------
             // Character
-            ImGui.textColored(if (player.present) Col4.BLUE else Col4.BLUE_DK, player.getCharacter(false))
+            Ui.textColored(if (player.present) Col4.BLU_M else Col4.BLU_D, player.getCharacter(false))
             // Chains
-            ImGui.sameLine(230)
-            ImGui.textColored(statColor(player, player.getChain(), Col4.GRAY), "Chains:")
-            ImGui.sameLine(285)
-            ImGui.textColored(statColor(player, player.getChain(), Vec4(0.2, 1, 0.8, 1)), player.getChainString())
-            // Location
-            ImGui.sameLine(330)
-            if (player.getCabinet().toInt() < 4 && !player.isIdle()) {
-                when (player.getData().playerSide.toInt()) {
-                    0 -> ImGui.textColored(Vec4(0.8, 0.2, 0.2, 1), player.getCabinetString())
-                    1 -> ImGui.textColored(Vec4(0.1, 0.5, 0.8, 1), player.getCabinetString())
-                    2 -> ImGui.textColored(Vec4(0.7, 0.6, 0.0, 1), player.getCabinetString())
-                    else -> ImGui.textColored(Col4.GRAY, player.getCabinetString())
-                }
-            } else ImGui.textColored(Col4.GHOST, "-")
+            Ui.sameLine(210)
+            Ui.textColored(statColor(player, player.getChain(), Col4.GRY_L), "Chains:")
+            Ui.sameLine(270)
+            Ui.textColored(player.getChainColor(), player.getChainString())
+            // Record
+            Ui.sameLine(325)
+            Ui.textColored(statColor(player, player.getMatchesWon(), Col4.GRY_L), player.getMatchesWonString())
+            Ui.sameLine(405)
+            Ui.textColored(statColor(player, player.getMatchesPlayed(), Col4.GRY_L), player.getMatchesPlayedString())
 
             // ------------------ BOT ROW ------------------
             // Bounty
-            ImGui.textColored(statColor(player, player.getBounty(), Col4.GOLD), player.getBountyString())
+            Ui.textColored(statColor(player, player.getBounty(), Col4.GOLD), player.getBountyString(player.changeCol.getAnim()))
             // Change
-            ImGui.sameLine(224)
-            ImGui.textColored(if (player.getChange()>0) Col4.GREEN else Col4.RED, player.getChangeString())
-            // Record
-            ImGui.sameLine(330)
-            ImGui.textColored(statColor(player, player.getMatchesPlayed(), Col4.GRAY), player.getRecordString())
-            ImGui.endGroup()
+            Ui.sameLine(205 * player.changeCol.getAnim())
+            Ui.textColored(player.getChangeColor(), player.getChangeString(player.changeCol.getAnim()))
+            // Location
+            Ui.sameLine(325)
+            if (player.getCabinet().toInt() < 4 && !player.isIdle()) {
+                when (player.getData().cabinetLoc.toInt()) {
+                    0 -> Ui.textColored(Col4.RED_M, player.getCabinetString())
+                    1 -> Ui.textColored(Col4.YLW_M, player.getCabinetString())
+                    2 -> Ui.textColored(Col4.GRN_M, player.getCabinetString())
+                    3 -> Ui.textColored(Col4.BLU_M, player.getCabinetString())
+                    else -> Ui.textColored(Col4.GRY_L, player.getCabinetString())
+                }
+            } else Ui.textColored(Col4.GHOST, "-")
+            Ui.sameLine(405)
+            if (player.getCabinet().toInt() < 4 && !player.isIdle()) {
+                when (player.getData().cabinetLoc.toInt()) {
+                    0 -> Ui.textColored(Col4.RED_M, player.getPlaySideString())
+                    1 -> Ui.textColored(Col4.YLW_M, player.getPlaySideString())
+                    2 -> Ui.textColored(Col4.GRN_M, player.getPlaySideString())
+                    3 -> Ui.textColored(Col4.BLU_M, player.getPlaySideString())
+                    else -> Ui.textColored(Col4.GRY_L, player.getPlaySideString())
+                }
+            } else Ui.textColored(Col4.GHOST, "-")
+
+            Ui.endGroup()
+
         }
     }
 
-    private fun statColor(player: Player, value:Int, vec4: Vec4): Vec4 {
-        if (!player.present || value <= 0) return Vec4(1,1,1,0.4)
-        return vec4
-    }
+
 
     private fun getLoadBarValue(player: Player):Float {
         when (player.getLoadPercent()) {
@@ -79,11 +91,17 @@ object Playerviews {
         }
     }
 
+    var fighting = false
     private fun getLoadStatusString(player: Player):String {
+        if (player.hasPlayed()) fighting = false
+        if (player.isIdle()) return "Idle"
         when(player.getLoadPercent()) {
             0 -> return "Standby [${player.getIdle()}]"
-            100 -> return "Standby [${player.getIdle()}]"
-            else -> return "Loading ${player.getLoadPercent()}%"
+            100 -> return if (fighting) "Fighting..." else "Standby [${player.getIdle()}]"
+            else -> {
+                fighting = true
+                return "Loading ${player.getLoadPercent()}%"
+            }
         }
     }
 }

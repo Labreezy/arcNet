@@ -8,7 +8,6 @@ import memscan.MemHandler
 import memscan.PlayerData
 import memscan.XrdApi
 import twitch.TwitchBot
-import kotlin.math.max
 
 class Session {
     val xrdApi: XrdApi = MemHandler()
@@ -63,7 +62,7 @@ class Session {
                 if (s.hasWon()) {
                     gamesCount++
                     s.changeChain(1)
-                    s.changeBounty(loserChange + (s.getChain() * s.getChain() * 100))
+                    s.changeBounty(s.getChain()*s.getMatchesWon()+s.getMatchesPlayed()+loserChange + (s.getChain() * s.getChain() * 100))
                 }
             }
         }
@@ -77,7 +76,7 @@ class Session {
                 if (s.hasLost()) {
                     players.values.forEach { if (!it.hasPlayed()) it.incrementIdle() }
                     s.changeChain(-1)
-                    if (s.getBounty() > 0) loserChange = max(((s.getChain() * s.getChain() * 10) + s.getBounty()).div(2), s.getBounty())
+                    if (s.getBounty() > 0) loserChange = s.getBounty().div(3)
                     s.changeBounty(-loserChange)
                     return loserChange
                 }

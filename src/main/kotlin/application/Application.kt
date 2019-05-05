@@ -1,20 +1,19 @@
 package application
 
-import WINDOW_HORZ
-import WINDOW_VERT
 import application.Playerviews.generatePlayerView
 import application.Topbar.generateFunctionButtons
 import glm_.vec2.Vec2
 import glm_.vec4.Vec4
 import imgui.*
-import objects.Col4
 import org.lwjgl.system.MemoryStack
-import session.Player
 import session.Session
 import window
 import imgui.ImGui as Ui
 import imgui.WindowFlag as Wf
 
+val WINDOW_TINT = Vec4(0.26f, 0.06f, 0.16f, 1.0f)
+val WINDOW_HORZ = 800
+val WINDOW_VERT = 600
 private val SECTION_FLAGS = Wf.NoTitleBar or Wf.NoCollapse or Wf.NoScrollbar or Wf.NoResize or Wf.NoSavedSettings or Wf.NoFocusOnAppearing or Wf.NoBringToFrontOnFocus
 private val session: Session = Session()
 
@@ -22,8 +21,8 @@ fun getSession() = session
 
 fun runApplicationLoop(stack: MemoryStack) {
     // Initialize Application
-    if (session.memoryCycle == 0) { session.cycleMemoryScan(); print("[${stack.address}]") }
-    if (session.databaseCycle == 0) { session.cycleDatabase() }
+    if (session.databaseCycle == 0) { session.cycleDatabase(); print("[${stack.address}] ") }
+    if (session.memoryCycle == 0) { session.cycleMemoryScan() }
     if (session.xrdApi.isConnected()) { window.title = "gearNet  -  CONNECTED \uD83D\uDCE1"
     } else window.title = "gearNet  -  DISCONNECTED ❌"
 
