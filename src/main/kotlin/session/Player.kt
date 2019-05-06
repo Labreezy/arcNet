@@ -1,7 +1,7 @@
 package session
 
-import application.getSession
 import azUtils.addCommas
+import getSession
 import memscan.Character.getCharacterName
 import memscan.PlayerData
 import kotlin.math.abs

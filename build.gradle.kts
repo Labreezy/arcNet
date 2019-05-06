@@ -33,7 +33,7 @@ dependencies {
     implementation("com.github.twitch4j:twitch4j:1.0.0-alpha.13")
 
     // Database
-    implementation("org.jdbi:jdbi3-sqlobject:3.8.0") // http://jdbi.org/#_introduction_to_jdbi
+    implementation("org.jdbi:jdbi3-sqlobject:3.8.0")
     implementation("org.jdbi:jdbi3-postgres:3.8.0")
     implementation("org.jdbi:jdbi3-kotlin-sqlobject:3.8.0")
     implementation("org.jdbi:jdbi3-core:3.8.0")

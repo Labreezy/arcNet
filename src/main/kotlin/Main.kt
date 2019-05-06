@@ -1,23 +1,30 @@
 import azUtils.pathHome
 import javafx.beans.property.SimpleStringProperty
-import javafx.scene.image.Image
+import javafx.css.converter.FontConverter
 import javafx.scene.layout.BorderStrokeStyle
+import javafx.scene.paint.Color
+import javafx.scene.paint.Paint
 import javafx.scene.shape.StrokeLineCap
 import javafx.scene.shape.StrokeLineJoin
 import javafx.scene.shape.StrokeType
+import javafx.scene.text.Font
+import javafx.scene.text.FontPosture
+import javafx.scene.text.FontWeight
+import javafx.stage.Stage
+import org.intellij.lang.annotations.JdkConstants
 import session.Session
 import tornadofx.*
 
 private val session: Session = Session()
 fun getSession() = session
 
-fun main(args: Array<String>) {
-    launch<MyApp>(args)
-}
-
-class MyApp: App(MyView::class, Styles::class) {
-    init {
-        reloadStylesheetsOnFocus()
+fun main(args: Array<String>) { launch<MyApp>(args) }
+class MyApp: App(MyView::class, Styles::class) { init { reloadStylesheetsOnFocus() }
+    override fun start(stage: Stage) {
+        super.start(stage)
+        stage.width = 960.0
+        stage.height = 720.0
+        stage.isResizable = false
     }
 }
 
@@ -26,6 +33,15 @@ class MyView : View() {
     val input = SimpleStringProperty()
 
     override val root = form {
+        addClass(Styles.wrapper)
+        label("it's a label") {
+            addClass(Styles.alice)
+            text = getSession().xrdApi.isConnected().toString()
+        }
+        label("it's another label") {
+            addClass(Styles.bob)
+            text = getSession().xrdApi.isConnected().toString()
+        }
         fieldset {
             field("Input") {
                 input.value = ""
@@ -39,6 +55,7 @@ class MyView : View() {
                         input.value = ""
                     }
                 }
+                addClass(Styles.dangerButton)
             }
             piechart("Desktop/Laptop OS Market Share") {
                 data("Windows", 77.62)
@@ -49,16 +66,10 @@ class MyView : View() {
             }
         }
         val testImage = "${pathHome.toUri().toURL()}src/main/resources/ino_test.png"
-        println(testImage)
-        run {
-            val start = System.currentTimeMillis()
-            imageview(testImage) {
 
+            imageview(testImage) {
                 setPrefSize(512.0, 512.0)
-                println("loaded for ${System.currentTimeMillis() - start} msecs")
             }
-            println("finished after ${System.currentTimeMillis() - start} msecs")
-        }
     }
 }
 
@@ -76,6 +87,7 @@ class Styles : Stylesheet() {
         val wrapper by cssclass()
         val bob by cssclass()
         val alice by cssclass()
+        val dangerButton by cssclass()
 
         // Define our colors
         val dangerColor = c("#a94442")
@@ -83,15 +95,25 @@ class Styles : Stylesheet() {
     }
 
     init {
+        dangerButton {
+            minWidth = 200.px
+            padding = box(16.px)
+            backgroundInsets += box(4.px)
+            font = Font.font("paladins")
+            fontSize = 20.px
+        }
+
         wrapper {
-            padding = box(10.px)
-            spacing = 10.px
+            padding = box(40.px)
+            spacing = 40.px
+            backgroundColor += c("#111111")
         }
 
         label {
             fontSize = 16.px
             padding = box(5.px, 10.px)
             maxWidth = infinity
+            textFill = c("#666666")
 
             and(bob, alice) {
                 borderColor += box(dangerColor)
