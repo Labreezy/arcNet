@@ -1,19 +1,16 @@
 import azUtils.pathHome
 import javafx.beans.property.SimpleStringProperty
-import javafx.css.converter.FontConverter
+import javafx.geometry.Pos
+import javafx.geometry.Rectangle2D
 import javafx.scene.layout.BorderStrokeStyle
-import javafx.scene.paint.Color
-import javafx.scene.paint.Paint
+import javafx.scene.layout.HBox
 import javafx.scene.shape.StrokeLineCap
 import javafx.scene.shape.StrokeLineJoin
 import javafx.scene.shape.StrokeType
-import javafx.scene.text.Font
-import javafx.scene.text.FontPosture
-import javafx.scene.text.FontWeight
 import javafx.stage.Stage
-import org.intellij.lang.annotations.JdkConstants
 import session.Session
 import tornadofx.*
+import java.net.URI
 
 private val session: Session = Session()
 fun getSession() = session
@@ -34,42 +31,30 @@ class MyView : View() {
 
     override val root = form {
         addClass(Styles.wrapper)
+        hbox {
+            alignment = Pos.CENTER
+            label("GuiltyGear") {
+                if (getSession().xrdApi.isConnected()) addClass(Styles.online)
+                else addClass(Styles.title)
+            }
+            label("GearNet") {
+                addClass(Styles.online)
+            }
+            label("Database") {
+                if (getSession().dataApi.isConnected()) addClass(Styles.online)
+                else addClass(Styles.title)
+            }
+            children.filter { it is HBox }.addClass(title)
+        }
         label("it's a label") {
-            addClass(Styles.alice)
+            addClass(Styles.title)
             text = getSession().xrdApi.isConnected().toString()
         }
-        label("it's another label") {
-            addClass(Styles.bob)
-            text = getSession().xrdApi.isConnected().toString()
+        imageview("${pathHome.toUri().toURL()}src/main/resources/gn_atlas.png") {
+            setPreserveRatio(true)
+            setViewport(Rectangle2D(512.0,0.0,64.0,64.0))
+            setPrefSize(64.0, 64.0)
         }
-        fieldset {
-            field("Input") {
-                input.value = ""
-                textfield(input)
-            }
-
-            button("Commit") {
-                action {
-                    if (!input.value.isEmpty()) {
-                        controller.writeToDb(input.value)
-                        input.value = ""
-                    }
-                }
-                addClass(Styles.dangerButton)
-            }
-            piechart("Desktop/Laptop OS Market Share") {
-                data("Windows", 77.62)
-                data("OS X", 9.52)
-                data("Other", 3.06)
-                data("Linux", 1.55)
-                data("Chrome OS", 0.55)
-            }
-        }
-        val testImage = "${pathHome.toUri().toURL()}src/main/resources/ino_test.png"
-
-            imageview(testImage) {
-                setPrefSize(512.0, 512.0)
-            }
     }
 }
 
@@ -83,46 +68,36 @@ class MyController: Controller() {
 
 class Styles : Stylesheet() {
     companion object {
-        // Define our styles
         val wrapper by cssclass()
-        val bob by cssclass()
-        val alice by cssclass()
-        val dangerButton by cssclass()
-
-        // Define our colors
-        val dangerColor = c("#a94442")
-        val hoverColor = c("#d49942")
+        val title by cssclass()
+        val online by cssclass()
     }
 
     init {
-        dangerButton {
-            minWidth = 200.px
-            padding = box(16.px)
-            backgroundInsets += box(4.px)
-            font = Font.font("paladins")
-            fontSize = 20.px
-        }
-
         wrapper {
-            padding = box(40.px)
-            spacing = 40.px
-            backgroundColor += c("#111111")
+            val myURI = URI("${pathHome.toUri().toURL()}src/main/resources/gn_background.png")
+            padding = box(16.px)
+            spacing = 8.px
+            backgroundImage += myURI
         }
 
         label {
             fontSize = 16.px
             padding = box(5.px, 10.px)
             maxWidth = infinity
-            textFill = c("#666666")
+            textFill = c("#cccccc")
 
-            and(bob, alice) {
-                borderColor += box(dangerColor)
-                borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 0.0, listOf(25.0, 5.0))
-                borderWidth += box(5.px)
-
-                and(hover) {
-                    backgroundColor += hoverColor
-                }
+            and(title) {
+                backgroundColor += c("#222222")
+                borderColor += box(c("#34081c"))
+                borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.ROUND, StrokeLineCap.SQUARE, 10.0, 0.0, arrayListOf(1.0))
+                borderWidth += box(2.px)
+            }
+            and(online) {
+                backgroundColor += c("#222222")
+                borderColor += box(c("#fd9a26"))
+                borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.ROUND, StrokeLineCap.SQUARE, 10.0, 0.0, arrayListOf(1.0))
+                borderWidth += box(2.px)
             }
         }
     }
