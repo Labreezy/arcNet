@@ -7,11 +7,13 @@ import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import java.util.*
 
-class DatabaseHandler(host: String = "AZEHOME", password: String = getTokenFromFile("keys", "database.txt"), port: Int = 5432) : SqlApi {
+//
+class DatabaseHandler(host: String, password: String, port: Int = 5432) : SqlApi {
     private val connector: Jdbi
     private val daoClass = SqlApiDao::class.java
 
     init {
+        // DatabaseHandler's init first executes on line 14 in Session.kt
         val credentials = Properties()
         credentials["user"] = "arcNet"
         credentials["password"] = password
