@@ -28,7 +28,9 @@ dependencies {
 
     // Memscan
     implementation("org.jire.kotmem:Kotmem:0.86")
-
+    implementation("net.java.dev.jna:jna:4.2.2")
+    implementation("net.java.dev.jna:jna-platform:4.2.2")
+    
     // Twitch
     implementation("com.github.twitch4j:twitch4j:1.0.0-alpha.13")
 
