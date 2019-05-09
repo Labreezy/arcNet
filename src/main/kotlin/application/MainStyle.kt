@@ -77,6 +77,7 @@ class MainStyle : Stylesheet() {
                 fontFamily = "Paladins"
             }
             and(playerHandle) {
+//                rotate = 1.deg
                 fontSize = 18.px
                 padding = box(-2.px, 0.px, 0.px, 8.px)
                 textFill = c("#33ff33")
@@ -86,6 +87,7 @@ class MainStyle : Stylesheet() {
                 minWidth = 256.px
             }
             and(playerBounty) {
+//                rotate = -1.deg
                 fontSize = 32.px
                 padding = box(-8.px, 10.px, 4.px, 8.px)
                 textFill = c("#ffcc33")
