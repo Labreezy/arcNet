@@ -155,21 +155,21 @@ class Player(playerData: PlayerData) {
         if (getMatchesWon() >= 34 && getRating() >= 1.4f) grade = "S"
         if (getMatchesWon() >= 55 && getRating() >= 1.6f) grade = "S+"
 
-        return grade // "${grade} ${(getRating()*10).toInt()}"
+        return grade // "${grade} ${(getPlayerRating()*10).toInt()}"
     }
 
 //    fun getRatingColor(): Vec4 {
 //        var color = Col4.GHOST
-//        if (getMatchesWon() >= 1 && getRating() > 0.0f) color    = Vec4(0.10, 0.90, 0.90, 1) // D
-//        if (getMatchesWon() >= 1 && getRating() >= 0.1f) color   = Vec4(0.00, 0.60, 0.90, 1) // D+
-//        if (getMatchesWon() >= 2 && getRating() >= 0.2f) color  = Vec4(0.20, 0.80, 0.10, 1) // C
-//        if (getMatchesWon() >= 3 && getRating() >= 0.3f) color  = Vec4(0.40, 0.90, 0.10, 1) // C+
-//        if (getMatchesWon() >= 5 && getRating() >= 0.4f) color  = Vec4(0.90, 0.90, 0.00, 1) // B
-//        if (getMatchesWon() >= 8 && getRating() >= 0.6f) color  = Vec4(0.98, 0.64, 0.10, 1) // B+
-//        if (getMatchesWon() >= 13 && getRating() >= 1.0f) color  = Vec4(0.98, 0.50, 0.00, 1) // A
-//        if (getMatchesWon() >= 21 && getRating() >= 1.2f) color = Vec4(0.98, 0.25, 0.10, 1) // A+
-//        if (getMatchesWon() >= 34 && getRating() >= 1.4f) color = Vec4(0.95, 0.20, 0.70, 1) // S
-//        if (getMatchesWon() >= 55 && getRating() >= 1.6f) color = Vec4(0.90, 0.10, 0.95, 1) // S+
+//        if (getMatchesWon() >= 1 && getPlayerRating() > 0.0f) color    = Vec4(0.10, 0.90, 0.90, 1) // D
+//        if (getMatchesWon() >= 1 && getPlayerRating() >= 0.1f) color   = Vec4(0.00, 0.60, 0.90, 1) // D+
+//        if (getMatchesWon() >= 2 && getPlayerRating() >= 0.2f) color  = Vec4(0.20, 0.80, 0.10, 1) // C
+//        if (getMatchesWon() >= 3 && getPlayerRating() >= 0.3f) color  = Vec4(0.40, 0.90, 0.10, 1) // C+
+//        if (getMatchesWon() >= 5 && getPlayerRating() >= 0.4f) color  = Vec4(0.90, 0.90, 0.00, 1) // B
+//        if (getMatchesWon() >= 8 && getPlayerRating() >= 0.6f) color  = Vec4(0.98, 0.64, 0.10, 1) // B+
+//        if (getMatchesWon() >= 13 && getPlayerRating() >= 1.0f) color  = Vec4(0.98, 0.50, 0.00, 1) // A
+//        if (getMatchesWon() >= 21 && getPlayerRating() >= 1.2f) color = Vec4(0.98, 0.25, 0.10, 1) // A+
+//        if (getMatchesWon() >= 34 && getPlayerRating() >= 1.4f) color = Vec4(0.95, 0.20, 0.70, 1) // S
+//        if (getMatchesWon() >= 55 && getPlayerRating() >= 1.6f) color = Vec4(0.90, 0.10, 0.95, 1) // S+
 //        return color
 //    }
 //
