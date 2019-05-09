@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.3.30"
     id("edu.sc.seis.launch4j") version "2.4.6"
+    id("org.openjfx.javafxplugin") version "0.0.7"
 }
 
 group = "com.azedevs"
@@ -49,6 +50,11 @@ dependencies {
 launch4j {
     mainClassName = "MainKt"
     icon = "${projectDir}/resources/ic_gearnet.ico"
+}
+
+javafx {
+    version = "11"
+    modules = listOf("javafx.controls", "javafx.graphics")
 }
 
 val fatJar = task("fatJar", type = Jar::class) {

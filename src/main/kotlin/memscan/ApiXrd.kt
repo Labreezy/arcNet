@@ -44,13 +44,14 @@ data class PlayerData(
 )
 
 data class MatchData(
-    val players: Pair<PlayerData, PlayerData>,
-    val tension: Pair<Float, Float>,
+    //val players: Pair<PlayerData, PlayerData>, TBA, maybe yoink steam id through login + DB or something
+    val tension: Pair<Int, Int>,
     val health: Pair<Int, Int>,
-    val burst: Pair<Int, Int>,
+    val burst: Pair<Boolean, Boolean>,
     val risc: Pair<Int, Int>,
-    val beats: Pair<Int, Int>,
-    val timer: Int
+    val isHit: Pair<Boolean, Boolean>
+    //val beats: Pair<Int, Int>,
+    //val timer: Int
     // Connection? : Int
     // Score marks? : Pair<Int, Int>
     // Damage taken? : Pair<Int, Int>
