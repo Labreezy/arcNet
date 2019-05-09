@@ -11,7 +11,7 @@ import twitch.TwitchBot
 
 class Session {
     val xrdApi: XrdApi = MemHandler()
-    val dataApi: DatabaseHandler = DatabaseHandler("", "")
+    val dataApi: DatabaseHandler = DatabaseHandler("159.89.112.213", password = "", username = "")
     val botApi: TwitchBot = TwitchBot("")
     var players: MutableMap<Long, Player> = HashMap()
     var gamesCount: Int = 0

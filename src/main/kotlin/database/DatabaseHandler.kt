@@ -1,39 +1,46 @@
 package database
 
-import azUtils.getTokenFromFile
-import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.ConnectionException
+import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import org.postgresql.util.PSQLException
 import java.util.*
 
-//
-class DatabaseHandler(host: String, password: String, port: Int = 5432) : SqlApi {
+//Soon to be Deprecated in favor of Web API
+class DatabaseHandler(host: String, password: String, username: String = "arcNet", port: Int = 5432) : SqlApi {
     private val connector: Jdbi
     private val daoClass = SqlApiDao::class.java
 
     init {
         // DatabaseHandler's init first executes on line 14 in Session.kt
+        //Init credentials
         val credentials = Properties()
-        credentials["user"] = "arcNet"
+        credentials["user"] = username
         credentials["password"] = password
-        try {
-            connector = Jdbi.create("jdbc:postgresql://$host:$port/ArcNet", credentials)
-        } catch (e: PSQLException) {
-            throw RuntimeException("Could not connect to database!", e)
+        //Login
+        connector = Jdbi.create("jdbc:postgresql://$host:$port/ArcNet", credentials)
+        //Install kotlin extensions, etc.
+        connector.installPlugins()
+        //CREATES DATA TABLES IF DOESNT EXIST
+        if(isConnected()) {
+            connector.open().use {
+                //CREATES fightData TABLE IF DOESNT EXIST
+                it.execute("create table if not exists fightdata (winnerid bigint, winnerchar smallint, fallenid bigint, fallenchar smallint, occurences int, unique(winnerid, winnerchar, fallenid, fallenchar))")
+                //CREATES userData TABLE IF DOESNT EXIST
+                it.execute("create table if not exists userdata(id bigint unique, displayname text, matcheswon int, matchessum int, bountywon int, bountysum int)")
+            }
         }
-        connector?.installPlugins()
     }
 
     override fun isConnected(): Boolean {
-        try {
-            connector.open()
+        return try {
+            connector.open().use { true }
         } catch(e: ConnectionException) {
-            return false
+            false
         }
-        return true
     }
+
     override fun getLegacyData(steamId: Long): LegacyData = useDao { it.getData(steamId) }
 
     override fun putLegacyData(legacy: LegacyData) = useDao { it.putData(legacy) }
