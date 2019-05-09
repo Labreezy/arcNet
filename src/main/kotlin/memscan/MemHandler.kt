@@ -41,7 +41,6 @@ class MemHandler : XrdApi {
             val newPointer = Pointer(Pointer.nativeValue(lastPointer) + offsets[i])
             if (ReadProcessMemory(GG_PROC!!.handle.pointer, newPointer, bufferMem, 4, 0) == 0L) {
                 return null
-//                throw IllegalAccessError("ReadProcMemory returned 0!")
             }
             lastPointer = Pointer(bufferMem.getInt(0L).toUInt().toLong()) //toUInt used due to sign issues explained earlier
         }
@@ -49,7 +48,8 @@ class MemHandler : XrdApi {
         bufferMem = Memory(numBytes.toLong())
         if (ReadProcessMemory(GG_PROC!!.handle.pointer, dataAddr, bufferMem, numBytes, 0) == 0L) {
             return null
-//            throw IllegalAccessError("ReadProcMemory returned 0!")
+//          throw IllegalAccessError("ReadProcMemory returned 0!")
+
         }
         return bufferMem.getByteBuffer(0L, numBytes.toLong())
     }
@@ -83,7 +83,30 @@ class MemHandler : XrdApi {
 
 
     override fun getMatchData(): MatchData {
-        TODO("not implemented")
+        val sortedStructOffs = longArrayOf(0x9CCL, 0x2888L, 0xA0F4L, 0x22960, 0x2AC64)
+        var p1offs = longArrayOf(0x1B18C78L,0L)
+        var p2offs = p1offs
+        p2offs[0] += 4L
+        try {
+            p1offs[1] = sortedStructOffs[0]
+            p2offs[1] = sortedStructOffs[0]
+            var healths = Pair(getByteBufferFromAddress(p1offs, 4)!!.getInt(), getByteBufferFromAddress(p2offs, 4)!!.getInt())
+            p1offs[1] = sortedStructOffs[1]
+            p2offs[1] = sortedStructOffs[1]
+            var isHits = Pair(getByteBufferFromAddress(p1offs, 4)!!.getInt() == 1, getByteBufferFromAddress(p2offs, 4)!!.getInt() == 1)
+            p1offs[1] = sortedStructOffs[2]
+            p2offs[1] = sortedStructOffs[2]
+            var burstReadies = Pair(getByteBufferFromAddress(p1offs, 4)!!.getInt() == 1, getByteBufferFromAddress(p2offs, 4)!!.getInt() == 1)
+            p1offs[1] = sortedStructOffs[3]
+            p2offs[1] = sortedStructOffs[3]
+            var riscs = Pair(getByteBufferFromAddress(p1offs, 4)!!.getInt(), getByteBufferFromAddress(p2offs, 4)!!.getInt())
+            p1offs[1] = sortedStructOffs[4]
+            p2offs[1] = sortedStructOffs[4]
+            var tensions = Pair(getByteBufferFromAddress(p1offs, 4)!!.getInt(), getByteBufferFromAddress(p2offs, 4)!!.getInt())
+            return MatchData(tensions, healths, burstReadies, riscs, isHits)
+        } catch (e : NullPointerException) {
+            return MatchData(Pair(0,0), Pair(0,0), Pair(false, false), Pair(0,0), Pair(false, false))
+        }
     }
 
 }

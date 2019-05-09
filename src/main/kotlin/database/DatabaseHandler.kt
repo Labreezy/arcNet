@@ -4,6 +4,7 @@ import org.jdbi.v3.core.ConnectionException
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
+import org.postgresql.util.PSQLException
 import java.util.*
 
 //Soon to be Deprecated in favor of Web API
@@ -75,10 +76,11 @@ interface SqlApiDao {
     fun getFightData(): List<FightData>
 
     @SqlUpdate(
-            "insert into " +
-                    "fightData(winnerId, fallenId, winnerChar, fallenChar) " +
-                    "values(:fight.winnerId, :fight.fallenId, :fight.winnerChar, :fight.fallenChar) " +
-                    "on conflict do nothing"
+            "insert into\n" +
+                    "  fightData(winnerId, fallenId, winnerChar, fallenChar, occurrences)\n" +
+                    "  values(:fight.winnerId, :fight.fallenId, :fight.winnerChar, :fight.fallenChar, 1)\n" +
+                    "  on conflict(winnerId, fallenId, winnerChar, fallenChar)\n" +
+                    "     do update set occurrences = fightData.occurrences + 1;"
     )
     fun putFightData(fight: FightData)
 }
