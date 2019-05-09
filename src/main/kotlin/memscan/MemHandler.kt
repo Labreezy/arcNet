@@ -1,6 +1,6 @@
 package memscan
 
-import classes.truncate
+import azUtils.truncate
 import com.sun.jna.Memory
 import com.sun.jna.Pointer
 import org.jire.kotmem.win32.Kernel32.ReadProcessMemory
@@ -12,10 +12,10 @@ import java.nio.ByteBuffer
 
 class MemHandler : XrdApi {
     override fun getLobbyData(): LobbyData {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented")
     }
 
-    var GG_PROC: Win32Process? = null;
+    var GG_PROC: Win32Process? = null
 
     override fun isConnected(): Boolean {
         if (GG_PROC != null) return true
@@ -48,6 +48,8 @@ class MemHandler : XrdApi {
         bufferMem = Memory(numBytes.toLong())
         if (ReadProcessMemory(GG_PROC!!.handle.pointer, dataAddr, bufferMem, numBytes, 0) == 0L) {
             return null
+//          throw IllegalAccessError("ReadProcMemory returned 0!")
+
         }
         return bufferMem.getByteBuffer(0L, numBytes.toLong())
     }
@@ -81,7 +83,7 @@ class MemHandler : XrdApi {
 
 
     override fun getMatchData(): MatchData {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented")
     }
 
 }
