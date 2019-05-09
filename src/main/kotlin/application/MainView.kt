@@ -28,7 +28,7 @@ class MainView : View() {
                 hbox {
                     addClass(MainStyle.debuggable)
                     setSpacing(8.0)
-                    minWidth = 420.0
+                    minWidth = 520.0
                     alignment = Pos.CENTER
                     label("Guilty Gear Xrd") {
                         if (getSession().xrdApi.isConnected()) addClass(MainStyle.moduleOnline) else addClass(
@@ -44,7 +44,7 @@ class MainView : View() {
                 }
                 hbox {
                     addClass(MainStyle.debuggable)
-                    minWidth = 520.0
+                    minWidth = 420.0
                     alignment = Pos.CENTER_RIGHT
                     setPadding(Insets(0.0, 32.0, 0.0, 0.0))
                     label("LOBBY_MAX_LENGTH") { addClass(MainStyle.lobbyName) }
@@ -57,8 +57,8 @@ class MainView : View() {
                     addClass(MainStyle.debuggable)
                     // SIDE INFO SOMETHING ???
                     setPadding(Insets(0.0, 16.0, 16.0, 16.0))
-                    minWidth = 420.0
-                    maxWidth = 420.0
+                    minWidth = 520.0
+                    maxWidth = 520.0
                     hbox {
                         vbox {
                             addClass(MainStyle.debuggable)
@@ -80,8 +80,8 @@ class MainView : View() {
                     addClass(MainStyle.debuggable)
                     setPadding(Insets(0.0, 16.0, 0.0, 16.0))
                     setSpacing(4.0)
-                    minWidth = 520.0
-                    maxWidth = 520.0
+                    minWidth = 420.0
+                    maxWidth = 420.0
                     for (i in 0..7) {
                         hbox {
                             // PLAYER VIEW
@@ -98,32 +98,31 @@ class MainView : View() {
                             }
                             vbox {
                                 addClass(MainStyle.playerStatsSection)
-                                hbox {
-                                    progressbar(Random.nextDouble(1.0)) {
-                                        minWidth = 100.0
-                                        maxHeight = 16.0
-                                    }
+//                                hbox {
+//                                    progressbar(Random.nextDouble(1.0)) {
+//                                        minWidth = 100.0
+//                                        maxHeight = 16.0
+//                                    }
+//                                }
+//                                hbox {
+//                                    vbox {
+//                                        addClass(MainStyle.debuggable)
+//                                        label("Rating: A") { addClass(MainStyle.playerRating) }
+//                                        label("Chains: 8") { addClass(MainStyle.playerChains) }
+//                                    }
+//                                    vbox {
+//                                        addClass(MainStyle.debuggable)
+//                                        label("Wins: 80") { addClass(MainStyle.playerRating) }
+//                                        label("Games: 160") { addClass(MainStyle.playerChains) }
+//                                    }
+//
+//                                }
+                                imageview("${pathHome.toUri().toURL()}src/main/resources/gn_atlas.png") {
+                                    setPreserveRatio(true)
+                                    setViewport(Rectangle2D(Random.nextInt(15) * 64.0, 256.0, 64.0, 64.0))
+                                    setPrefSize(64.0, 64.0)
                                 }
-                                hbox {
-                                    vbox {
-                                        addClass(MainStyle.debuggable)
-                                        label("Rating: A") { addClass(MainStyle.playerRating) }
-                                        label("Chains: 8") { addClass(MainStyle.playerChains) }
-                                    }
-                                    vbox {
-                                        addClass(MainStyle.debuggable)
-                                        label("Wins: 80") { addClass(MainStyle.playerRating) }
-                                        label("Games: 160") { addClass(MainStyle.playerChains) }
-                                    }
-                                    progressindicator {
-                                        thread {
-                                            for (i in 1..100) {
-                                                Platform.runLater { progress = i.toDouble() / 100.0 }
-                                                Thread.sleep(100)
-                                            }
-                                        }
-                                    }
-                                }
+//                                progressindicator().progress = Random.nextDouble(1.0)
                             }
                         }
                     }

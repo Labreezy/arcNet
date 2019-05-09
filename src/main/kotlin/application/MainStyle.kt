@@ -59,7 +59,8 @@ class MainStyle : Stylesheet() {
         }
 
         playerStatsSection {
-            minWidth = 150.px
+//            minWidth = 150.px
+            minWidth = 50.px
             padding = box(0.px)
             alignment = Pos.CENTER_RIGHT
         }
