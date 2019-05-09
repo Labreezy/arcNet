@@ -2,6 +2,7 @@ package database
 
 import azUtils.getTokenFromFile
 import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.ConnectionException
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import org.postgresql.util.PSQLException
