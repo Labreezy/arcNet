@@ -3,12 +3,10 @@ package application
 import azUtils.addCommas
 import azUtils.pathHome
 import getSession
-import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
 import tornadofx.*
-import kotlin.concurrent.thread
 import kotlin.random.Random
 
 class MainView : View() {
@@ -119,7 +117,7 @@ class MainView : View() {
 //                                }
                                 imageview("${pathHome.toUri().toURL()}src/main/resources/gn_atlas.png") {
                                     setPreserveRatio(true)
-                                    setViewport(Rectangle2D(Random.nextInt(15) * 64.0, 256.0, 64.0, 64.0))
+                                    setViewport(Rectangle2D(Random.nextInt(12) * 64.0, 256.0, 64.0, 64.0))
                                     setPrefSize(64.0, 64.0)
                                 }
 //                                progressindicator().progress = Random.nextDouble(1.0)

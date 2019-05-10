@@ -9,7 +9,6 @@ import javafx.scene.shape.StrokeType
 import javafx.scene.text.FontPosture
 import javafx.scene.text.FontWeight
 import tornadofx.*
-import tornadofx.Stylesheet.Companion.box
 import java.net.URI
 
 class MainStyle : Stylesheet() {
