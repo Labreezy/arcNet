@@ -4,6 +4,7 @@ import database.DatabaseHandler
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import memscan.LobbyData
 import memscan.MemHandler
 import memscan.PlayerData
 import memscan.XrdApi
@@ -21,8 +22,10 @@ class Session {
     fun cycleMemoryScan() {
         GlobalScope.launch {
             delay(32)
-            if (xrdApi.isConnected()) updatePlayerData()
-            memoryCycle++
+            if (xrdApi.isConnected()) {
+                updatePlayerData()
+                if (memoryCycle++ > 7) memoryCycle = 0
+            }
             cycleMemoryScan()
         }
     }

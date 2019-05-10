@@ -1,32 +1,28 @@
 import application.MainStyle
 import application.MainView
 import javafx.stage.Stage
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import session.Session
 import tornadofx.App
-import tornadofx.Controller
+import tornadofx.UIComponent
 import tornadofx.launch
 import tornadofx.reloadStylesheetsOnFocus
 
-private val session: Session = Session()
+fun main(args: Array<String>) { launch<MyApp>(args) }
 fun getSession() = session
+private val session: Session = Session()
 
-fun main(args: Array<String>) {
-    gameLoop()
-    launch<MyApp>(args)
-}
+class MyApp : App(MainView::class, MainStyle::class) {
 
-private fun gameLoop() {
-    GlobalScope.launch {
-        delay(256)
+    init {
+        reloadStylesheetsOnFocus()
+        session.cycleMemoryScan()
     }
-}
 
-class MyApp : App(MainView::class, MainStyle::class) { init {
-    reloadStylesheetsOnFocus()
-}
+    override fun onBeforeShow(view: UIComponent) {
+        super.onBeforeShow(view)
+        view.title = "ＧｅａｒＮｅｔ  //  0.4.81"
+
+    }
 
     override fun start(stage: Stage) {
         super.start(stage)
@@ -34,10 +30,5 @@ class MyApp : App(MainView::class, MainStyle::class) { init {
         stage.height = 720.0
         stage.isResizable = false
     }
-}
 
-class MainController : Controller() {
-    fun writeToDb(inputValue: String) {
-        println("Writing $inputValue to database!")
-    }
 }

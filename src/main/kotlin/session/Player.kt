@@ -2,8 +2,8 @@ package session
 
 import azUtils.addCommas
 import getSession
-import memscan.Character.getCharacterName
 import memscan.PlayerData
+import session.Character.getCharacterName
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -34,7 +34,7 @@ class Player(playerData: PlayerData) {
 
     fun getSteamId() = getData().steamUserId
 
-    fun getCharacter(shortened: Boolean) = getCharacterName(getData().characterId, shortened)
+    fun getCharacter() = getCharacterName(getData().characterId)
 
     fun isScoreboardWorthy() = getBounty() > 0 && idle > 0 && getMatchesWon() > 0
 

@@ -25,8 +25,7 @@ class SlobsHandler {
                     "Change:\n" +
                     "${players.get(i).getChangeString(0f)}\n" +
                     "Character:\n" +
-                    "${players.get(i).getCharacter(true)}\n" +
-                    "${players.get(i).getCharacter(false)}\n" +
+                    "${players.get(i).getCharacter()}\n" +
                     ""
             writeToFile("remote${i}", remote)
         } else writeToFile("remote${i}", "")
