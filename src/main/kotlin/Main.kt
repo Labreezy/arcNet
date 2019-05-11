@@ -1,21 +1,17 @@
 import application.MainStyle
 import application.MainView
 import javafx.stage.Stage
-import session.Session
 import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
 import tornadofx.reloadStylesheetsOnFocus
 
 fun main(args: Array<String>) { launch<MyApp>(args) }
-fun getSession() = session
-private val session: Session = Session()
 
 class MyApp : App(MainView::class, MainStyle::class) {
 
     init {
         reloadStylesheetsOnFocus()
-        session.cycleMemoryScan()
     }
 
     override fun onBeforeShow(view: UIComponent) {

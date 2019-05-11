@@ -1,23 +1,29 @@
 package session
 
 import database.DatabaseHandler
+import javafx.collections.FXCollections
+import javafx.collections.ObservableMap
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import memscan.LobbyData
 import memscan.MemHandler
 import memscan.PlayerData
 import memscan.XrdApi
-import twitch.TwitchBot
+import tornadofx.bind
+import tornadofx.observableList
+
 
 class Session {
     val xrdApi: XrdApi = MemHandler()
     val dataApi: DatabaseHandler = DatabaseHandler("159.89.112.213", password = "", username = "")
-    val botApi: TwitchBot = TwitchBot("")
-    var players: MutableMap<Long, Player> = HashMap()
+    val players: ObservableMap<Long, Player> = FXCollections.observableHashMap<Long, Player>()
+    val leaderboard = observableList<Player>()
     var gamesCount: Int = 0
     var memoryCycle = 0
-    var databaseCycle = 0
+
+    init {
+        leaderboard.bind(players){k,v->v}
+    }
 
     fun cycleMemoryScan() {
         GlobalScope.launch {
@@ -28,24 +34,6 @@ class Session {
             }
             cycleMemoryScan()
         }
-    }
-
-    fun cycleDatabase() {
-        GlobalScope.launch {
-            delay(256)
-            if (dataApi.isConnected()) updatePlayerLegacies()
-            databaseCycle++
-            cycleDatabase()
-        }
-    }
-
-    fun getAll() = players.values.toList()
-        .sortedByDescending { item -> item.getRating() }
-        .sortedByDescending { item -> item.getBounty() }
-        .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
-
-    private fun updatePlayerLegacies() {
-        // do something
     }
 
     private fun updatePlayerData() {
@@ -90,10 +78,28 @@ class Session {
 
     private fun addPlayerIfNew(data: PlayerData) {
         if (!players.containsKey(data.steamUserId) && data.steamUserId != 0L) {
-            players[data.steamUserId] = Player(data)
+            players.put(data.steamUserId, Player(data))
         }
     }
 
     fun getActivePlayerCount() = players.values.filter { !it.isIdle() }.size
+
+//    fun cycleDatabase() {
+//        GlobalScope.launch {
+//            delay(256)
+//            if (dataApi.isConnected()) updatePlayerLegacies()
+//            databaseCycle++
+//            cycleDatabase()
+//        }
+//    }
+//
+//    fun getAll(): ObservableList<Player> = FXCollections.observableArrayList(players.values.toList()
+//        .sortedByDescending { item -> item.getRating() }
+//        .sortedByDescending { item -> item.getBounty() }
+//        .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 })
+//
+//    private fun updatePlayerLegacies() {
+//        // do something
+//    }
 
 }

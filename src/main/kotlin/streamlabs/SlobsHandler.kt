@@ -15,7 +15,7 @@ class SlobsHandler {
                     "Backdrop:\n" +
                     "${getFullscreen(true)}\n" +
                     "Name:\n" +
-                    "${players.get(i).getDisplayName()}\n" +
+                    "${players.get(i).getNameString()}\n" +
                     "Bounty:\n" +
                     "${players.get(i).getBountyFormatted(0f)}\n" +
                     "Rating:\n" +

@@ -1,7 +1,6 @@
 package session
 
 import azUtils.addCommas
-import getSession
 import memscan.PlayerData
 import session.Character.getCharacterName
 import kotlin.math.abs
@@ -24,13 +23,12 @@ class Player(playerData: PlayerData) {
         data = Pair(getData(), updatedData);
         if (hasLoaded()) {
             present = true
-            idle = max(getSession().getActivePlayerCount(), 1)
+//            idle = max(session.getActivePlayerCount(), 1)
         }
     }
 
-    fun getDisplayName() = getData().displayName
 
-    fun getNameString() = "${getDisplayName()}"
+    fun getNameString() = "${getData().displayName}"
 
     fun getSteamId() = getData().steamUserId
 
@@ -73,7 +71,7 @@ class Player(playerData: PlayerData) {
     fun getChainString():String = if (getChain()>=8) "8 MAX" else if (getChain()>0) getChain().toString() else "-"
 
     fun changeChain(amount:Int): Int {
-        idle = max(getSession().getActivePlayerCount(), 1)
+//        idle = max(session.getActivePlayerCount(), 1)
         chain += amount
         if (chain < 0) chain = 0
         if (chain > 8) chain = 8
