@@ -30,79 +30,65 @@ class MainView : View() {
     }
 
     init {
-        with(root) {
-            addClass(MainStyle.appContainer)
-            // TOP BAR
-            hbox {
-                alignment = Pos.CENTER
-                maxHeight = 16.0
-                setPadding(Insets(12.0, 0.0, 12.0, 0.0))
-                hbox {
-                    addClass(MainStyle.debuggable)
-                    setSpacing(8.0)
-                    minWidth = 520.0
-                    alignment = Pos.CENTER
-                    stackpane {
-                        session.modulesApi.get(0).backdrop = imageview(getRes("gn_atlas.png").toString()) {
-                            if (session.xrdApi.isConnected()) addClass(MainStyle.moduleTitle) else addClass(MainStyle.moduleTitle)
-                            setViewport(Rectangle2D(512.0, if (session.xrdApi.isConnected())  256.0 else 288.0, 128.0, 32.0))
-                            setPrefSize(128.0, 32.0)
-                        }
-                        session.modulesApi.get(0).moduleName = label("Guilty Gear Xrd") {
-                            if (session.xrdApi.isConnected()) addClass(MainStyle.moduleTitle) else addClass(MainStyle.moduleTitle)
-                        }
-                    }
-                    stackpane { addClass(MainStyle.debuggable)
-                        session.modulesApi.get(1).backdrop = imageview(getRes("gn_atlas.png").toString()) { addClass(MainStyle.debuggable)
-                            setViewport(Rectangle2D(512.0, 256.0, 128.0, 32.0))
-                            setPrefSize(128.0, 32.0)
-                        }
-                        session.modulesApi.get(1).moduleName = label("GearNet Client") { addClass(MainStyle.moduleTitle, MainStyle.debuggable) }
-                    }
-                    stackpane {
-                        session.modulesApi.get(2).backdrop = imageview(getRes("gn_atlas.png").toString()) {
-                            if (session.dataApi.isConnected()) addClass(MainStyle.moduleTitle) else addClass(MainStyle.moduleTitle)
-                            setViewport(Rectangle2D(512.0, if (session.dataApi.isConnected())  256.0 else 288.0, 128.0, 32.0))
-                            setPrefSize(128.0, 32.0)
-                        }
-                        session.modulesApi.get(2).moduleName = label("Stats Database") {
-                            if (session.dataApi.isConnected()) addClass(MainStyle.moduleTitle) else addClass(MainStyle.moduleTitle)
-                        }
-                    }
-                }
-                hbox {
-                    addClass(MainStyle.debuggable)
-                    minWidth = 420.0
-                    alignment = Pos.CENTER_RIGHT
-                    setPadding(Insets(0.0, 32.0, 0.0, 0.0))
-                    label("LOBBY_MAX_LENGTH") { addClass(MainStyle.lobbyName) }
-                }
-            }
-            hbox {
-                alignment = Pos.CENTER
-                vbox {
-                    addClass(MainStyle.debuggable)
-                    // SIDE INFO
-                    setPadding(Insets(0.0, 16.0, 16.0, 16.0))
+        with(root) { addClass(MainStyle.appContainer)
+
+            hbox { addClass(MainStyle.debuggable); alignment = Pos.TOP_CENTER
+                setPadding(Insets(16.0, 0.0, 0.0, 0.0))
+                vbox { addClass(MainStyle.debuggable); alignment = Pos.TOP_CENTER; setSpacing(4.0)
                     minWidth = 520.0
                     maxWidth = 520.0
+                    // MODULE STATUS
+                    hbox { addClass(MainStyle.debuggable); alignment = Pos.CENTER
+                        stackpane {
+                            session.modulesApi.get(0).backdrop = imageview(getRes("gn_atlas.png").toString()) {
+                                if (session.xrdApi.isConnected()) addClass(MainStyle.moduleTitle) else addClass(MainStyle.moduleTitle)
+                                setViewport(Rectangle2D(512.0, if (session.xrdApi.isConnected())  256.0 else 288.0, 128.0, 32.0))
+                                setPrefSize(128.0, 32.0)
+                            }
+                            session.modulesApi.get(0).moduleName = label("Guilty Gear Xrd") {
+                                if (session.xrdApi.isConnected()) addClass(MainStyle.moduleTitle) else addClass(MainStyle.moduleTitle)
+                            }
+                        }
+                        stackpane {
+                            session.modulesApi.get(1).backdrop = imageview(getRes("gn_atlas.png").toString()) {
+                                setViewport(Rectangle2D(512.0, 256.0, 128.0, 32.0))
+                                setPrefSize(128.0, 32.0)
+                            }
+                            session.modulesApi.get(1).moduleName = label("GearNet Client") { addClass(MainStyle.moduleTitle) }
+                        }
+                        stackpane {
+                            session.modulesApi.get(2).backdrop = imageview(getRes("gn_atlas.png").toString()) {
+                                if (session.dataApi.isConnected()) addClass(MainStyle.moduleTitle) else addClass(MainStyle.moduleTitle)
+                                setViewport(Rectangle2D(512.0, if (session.dataApi.isConnected())  256.0 else 288.0, 128.0, 32.0))
+                                setPrefSize(128.0, 32.0)
+                            }
+                            session.modulesApi.get(2).moduleName = label("Stats Database") {
+                                if (session.dataApi.isConnected()) addClass(MainStyle.moduleTitle) else addClass(MainStyle.moduleTitle)
+                            }
+                        }
+                    }
+                    // SIDE INFO
+                    hbox { addClass(MainStyle.matchContainer) }
+                    hbox { addClass(MainStyle.matchContainer) }
+                    hbox { addClass(MainStyle.matchContainer) }
+                    hbox { addClass(MainStyle.matchContainer) }
+
                 }
-                vbox {
-                    addClass(MainStyle.debuggable)
-                    setPadding(Insets(0.0, 16.0, 0.0, 16.0))
-                    setSpacing(4.0)
-                    minWidth = 420.0
-                    maxWidth = 420.0
+                vbox { addClass(MainStyle.debuggable); alignment = Pos.TOP_CENTER; setSpacing(4.0)
+                    // LOBBY INFO
+                    hbox {
+                        addClass(MainStyle.debuggable)
+                        label("LOBBY_MAX_LENGTH") { addClass(MainStyle.lobbyName) }
+                    }
                     // PLAYER VIEWS
                     for (i in 0..7) {
                         session.guiApi.add(PlayerGui())
-                        hbox {
+                        hbox { addClass(MainStyle.debuggable)
                             addClass(MainStyle.playerContainer)
                             session.guiApi.get(i).character = imageview(getRes("gn_atlas.png").toString()) {
                                 setViewport(Rectangle2D(576.0, 192.0, 64.0, 64.0))
                                 setPrefSize(64.0, 64.0)
                             }
-
                             vbox {
                                 session.guiApi.get(i).handle = label("") {
                                     addClass(MainStyle.playerHandle)

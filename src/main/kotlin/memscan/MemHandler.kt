@@ -18,9 +18,8 @@ class MemHandler : XrdApi {
     var GG_PROC: Win32Process? = null
 
     override fun isConnected(): Boolean {
-        try {
-            GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
-            return GG_PROC!!.modules["GuiltyGearXrd.exe"]!!.pointer != null
+        try { GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
+            return true
         } catch (e: IllegalStateException) {
             return false
         }
