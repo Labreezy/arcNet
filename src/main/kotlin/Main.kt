@@ -22,8 +22,8 @@ class MyApp : App(MainView::class, MainStyle::class) {
 
     override fun start(stage: Stage) {
         super.start(stage)
-        stage.width = 960.0
-        stage.height = 720.0
+        stage.width  = 976.0 // 960
+        stage.height = 759.0 // 720
         stage.isResizable = false
     }
 

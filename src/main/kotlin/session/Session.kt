@@ -26,7 +26,7 @@ class Session: Controller() {
             if (xrdApi.isConnected() && updatePlayers()) {
                 updateAppUi()
             }
-            delay(512)
+            delay(256)
             cycleMemoryScan()
         }
     }
@@ -52,7 +52,7 @@ class Session: Controller() {
                 players.get(data.steamUserId)!!.updatePlayerData(data)
                 somethingChanged = true
             }
-            var currLoser = resolveTheLoser(data)
+            val currLoser = resolveTheLoser(data)
             if (currLoser > 0) {
                 loserChange = currLoser
                 somethingChanged = true

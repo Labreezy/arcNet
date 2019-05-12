@@ -37,7 +37,7 @@ class MainView : View() {
                 vbox { addClass(MainStyle.debuggable); alignment = Pos.TOP_CENTER; setSpacing(4.0)
                     minWidth = 520.0
                     maxWidth = 520.0
-                    // MODULE STATUS
+                    // MODULE INFO
                     hbox { addClass(MainStyle.debuggable); alignment = Pos.CENTER
                         stackpane {
                             session.modulesApi.get(0).backdrop = imageview(getRes("gn_atlas.png").toString()) {
@@ -67,11 +67,19 @@ class MainView : View() {
                             }
                         }
                     }
-                    // SIDE INFO
-                    hbox { addClass(MainStyle.matchContainer) }
-                    hbox { addClass(MainStyle.matchContainer) }
-                    hbox { addClass(MainStyle.matchContainer) }
-                    hbox { addClass(MainStyle.matchContainer) }
+                    // MATCH VIEWS
+                    hbox { addClass(MainStyle.matchContainer)
+                        label("MatchView 0").addClass(MainStyle.matchTitle)
+                    }
+                    hbox { addClass(MainStyle.matchContainer)
+                        label("MatchView 1").addClass(MainStyle.matchTitle)
+                    }
+                    hbox { addClass(MainStyle.matchContainer)
+                        label("MatchView 2").addClass(MainStyle.matchTitle)
+                    }
+                    hbox { addClass(MainStyle.matchContainer)
+                        label("MatchView 3").addClass(MainStyle.matchTitle)
+                    }
 
                 }
                 vbox { addClass(MainStyle.debuggable); alignment = Pos.TOP_CENTER; setSpacing(4.0)
@@ -108,24 +116,13 @@ class MainView : View() {
 }
 
 class PlayerGui {
-    var player = Pair(Player(), Player())
     lateinit var character: ImageView
     lateinit var handle: Label
 
     fun applyData(playerUpdate: Player) {
         Platform.runLater({
-            this.player = Pair(this.player.second, playerUpdate)
-            if (!player.second.getSteamId().equals(-1L)) {
-                if (player.first.getCharacterId().equals(player.second.getCharacterId())) {
-                    character.setViewport(getCharacterPortrait(player.second.getData().characterId))
-                }
-                if (!player.first.getNameString().equals(player.second.getNameString())) {
-                    handle.text = player.second.getNameString()
-                }
-            } else {
-                character.setViewport(Rectangle2D(576.0, 192.0, 64.0, 64.0))
-                handle.text = ""
-            }
+            character.setViewport(getCharacterPortrait(playerUpdate.getData().characterId))
+            handle.text = playerUpdate.getNameString()
         })
     }
 }

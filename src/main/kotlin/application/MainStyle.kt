@@ -23,6 +23,7 @@ class MainStyle : Stylesheet() {
         val appContainer by cssclass()
         val playerContainer by cssclass()
         val matchContainer by cssclass()
+        val matchTitle by cssclass()
         val playerHandle by cssclass()
         val playerBounty by cssclass()
         val playerBounty2 by cssclass()
@@ -80,7 +81,7 @@ class MainStyle : Stylesheet() {
             minHeight = 140.px
             maxHeight = 140.px
             padding = box(8.px)
-            alignment = Pos.TOP_LEFT
+            alignment = Pos.CENTER
         }
 
         label {
@@ -97,6 +98,11 @@ class MainStyle : Stylesheet() {
                 minHeight = 32.px
                 alignment = Pos.CENTER
                 textFill = c("#cccccc")
+            }
+            and(matchTitle) {
+                fontPaladinsStraight?.let { font = it }
+                fontSize = 18.px
+                textFill = c("#471129cc")
             }
             and(playerHandle) {
                 fontFiraCodeBold?.let { font = it }
