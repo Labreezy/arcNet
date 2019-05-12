@@ -3,8 +3,6 @@ package session
 import application.ModuleGui
 import application.PlayerGui
 import database.DatabaseHandler
-import javafx.collections.FXCollections
-import javafx.collections.ObservableList
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -25,7 +23,9 @@ class Session: Controller() {
     fun cycleMemoryScan() {
         GlobalScope.launch {
             modulesApi.get(0).reset(xrdApi.isConnected())
-            if (xrdApi.isConnected() && updatePlayerData()) updateAppUi()
+            if (xrdApi.isConnected() && updatePlayers()) {
+                updateAppUi()
+            }
             delay(512)
             cycleMemoryScan()
         }
@@ -39,13 +39,17 @@ class Session: Controller() {
         }
     }
 
-    private fun updatePlayerData(): Boolean {
+    private fun updatePlayers(): Boolean {
         var somethingChanged = false
         var loserChange = 0
         val playerData = xrdApi.getPlayerData()
         playerData.forEach { data ->
-            if (!players.containsKey(data.steamUserId) && data.steamUserId != 0L) {
+            if (data.steamUserId != 0L && !players.containsKey(data.steamUserId)) {
                 players.put(data.steamUserId, Player(data))
+                somethingChanged = true
+            }
+            if (players.containsKey(data.steamUserId) && !players.get(data.steamUserId)!!.getData().equals(data)) {
+                players.get(data.steamUserId)!!.updatePlayerData(data)
                 somethingChanged = true
             }
             var currLoser = resolveTheLoser(data)
@@ -74,7 +78,6 @@ class Session: Controller() {
         var loserChange = 0
         players.values.forEach { s ->
             if (s.getSteamId() == data.steamUserId) {
-                s.updatePlayerData(data)
                 if (s.hasLost()) {
                     players.values.forEach { if (!it.hasPlayed()) it.incrementIdle() }
                     s.changeChain(-1)
@@ -87,17 +90,20 @@ class Session: Controller() {
         return 0
     }
 
-    fun getAll(): ObservableList<Player> = FXCollections.observableArrayList(players.values.toList()
-        .sortedByDescending { item -> item.getRating() }
-        .sortedByDescending { item -> item.getBounty() }
-        .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 })
-
-
     fun updateAppUi() {
         modulesApi.get(1).reset(true)
-        val uiUpdate: List<Player> = getAll()
-        for (i in 0..7) if (uiUpdate.size > i) guiApi.get(i).applyData(uiUpdate.get(i))
-        else guiApi.get(i).applyData(Player())
+        val uiUpdate: List<Player> = players.values.toList()
+            .sortedByDescending { item -> item.getRating() }
+            .sortedByDescending { item -> item.getBounty() }
+            .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
+        for (i in 0..7) {
+            if (uiUpdate.size > i) {
+                guiApi.get(i).applyData(uiUpdate.get(i))
+            } else {
+                guiApi.get(i).applyData(Player())
+            }
+        }
+        println("updateAppUi")
     }
 
 }

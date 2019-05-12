@@ -41,7 +41,15 @@ data class PlayerData(
     // Lobby mini-health?
     // Lobby score marks?
     // Readied up?
-)
+) {
+    fun equals(other: PlayerData) = other.displayName.equals(displayName) &&
+                other.characterId == characterId &&
+                other.cabinetLoc == cabinetLoc &&
+                other.playerSide == playerSide &&
+                other.matchesWon == matchesWon &&
+                other.matchesSum == matchesSum &&
+                other.loadingPct == loadingPct
+}
 
 data class MatchData(
     //val players: Pair<PlayerData, PlayerData>, TBA, maybe yoink steam id through login + DB or something

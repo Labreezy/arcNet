@@ -129,9 +129,13 @@ class PlayerGui {
     fun applyData(playerUpdate: Player) {
         Platform.runLater({
             this.player = Pair(this.player.second, playerUpdate)
-            if (player.second.getSteamId() != -1L) {
-                if (player.first.getCharacterId() != player.second.getCharacterId()) character.setViewport(getCharacterPortrait(player.second.getData().characterId))
-                if (!player.first.getNameString().equals(player.second.getNameString())) handle.text = player.second.getNameString()
+            if (!player.second.getSteamId().equals(-1L)) {
+                if (player.first.getCharacterId().equals(player.second.getCharacterId())) {
+                    character.setViewport(getCharacterPortrait(player.second.getData().characterId))
+                }
+                if (!player.first.getNameString().equals(player.second.getNameString())) {
+                    handle.text = player.second.getNameString()
+                }
             } else {
                 character.setViewport(Rectangle2D(576.0, 192.0, 64.0, 64.0))
                 handle.text = ""
