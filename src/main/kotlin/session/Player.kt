@@ -7,7 +7,8 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class Player(playerData: PlayerData) {
+
+class Player(playerData: PlayerData = PlayerData()) {
 
     var present = true
     private var bounty = 0
@@ -31,6 +32,8 @@ class Player(playerData: PlayerData) {
     fun getNameString() = "${getData().displayName}"
 
     fun getSteamId() = getData().steamUserId
+
+    fun getCharacterId() = getData().characterId
 
     fun getCharacter() = getCharacterName(getData().characterId)
 
@@ -57,6 +60,8 @@ class Player(playerData: PlayerData) {
     else "${addCommas(max(getBounty()-getChange()+(getChange()*ramp).toInt(), getBounty()).toString())} W$"
 
     fun getBountyString(ramp:Float) = if (getBounty() > 0) "${getBountyFormatted(if (change!=0) ramp else 1f)}" else "Free"
+
+    fun getRecordString() = "Chain: ${getChain()}  [ W:${getMatchesWon()} / M:${getMatchesPlayed()} ]"
 
     fun changeBounty(amount:Int) {
         change = amount
@@ -124,6 +129,10 @@ class Player(playerData: PlayerData) {
             else -> return "[${getData().playerSide.toInt()}]"
         }
     }
+
+    val MAX_IDLE = 8
+    fun getStatusString() = if (idle == 0) "Idle: ${idle}   [${getLoadPercent()}%]" else "Standby: ${idle}  [${getLoadPercent()}%]"
+
 
     fun getLoadPercent() = getData().loadingPct
 

@@ -1,8 +1,5 @@
 package memscan
 
-import javafx.geometry.Rectangle2D
-import kotlin.random.Random
-
 /**
  * memscan.XrdApi
  * provides [PlayerData]
@@ -33,14 +30,14 @@ interface XrdApi {
 }
 
 data class PlayerData(
-    val steamUserId: Long,
-    val displayName: String,
-    val characterId: Byte,
-    val cabinetLoc: Byte,
-    val playerSide: Byte,
-    val matchesWon: Int,
-    val matchesSum: Int,
-    val loadingPct: Int
+    val steamUserId: Long = -1L,
+    val displayName: String = "",
+    val characterId: Byte = -0x1,
+    val cabinetLoc: Byte = -0x1,
+    val playerSide: Byte = -0x1,
+    val matchesWon: Int = -1,
+    val matchesSum: Int = -1,
+    val loadingPct: Int = -1
     // Lobby mini-health?
     // Lobby score marks?
     // Readied up?
@@ -48,11 +45,11 @@ data class PlayerData(
 
 data class MatchData(
     //val players: Pair<PlayerData, PlayerData>, TBA, maybe yoink steam id through login + DB or something
-    val tension: Pair<Int, Int>,
-    val health: Pair<Int, Int>,
-    val burst: Pair<Boolean, Boolean>,
-    val risc: Pair<Int, Int>,
-    val isHit: Pair<Boolean, Boolean>
+    val tension: Pair<Int, Int> = Pair(-1,-1),
+    val health: Pair<Int, Int> = Pair(-1,-1),
+    val burst: Pair<Boolean, Boolean> = Pair(false,false),
+    val risc: Pair<Int, Int> = Pair(-1,-1),
+    val isHit: Pair<Boolean, Boolean> = Pair(false,false)
     //val beats: Pair<Int, Int>,
     //val timer: Int
     // Connection? : Int
@@ -65,7 +62,7 @@ data class MatchData(
 )
 
 data class LobbyData(
-    val lobbyName: String
+    val lobbyName: String = ""
     // Open cabinets? : Int
     // Points for win? : Int
     // Time per match? : Int
@@ -77,7 +74,7 @@ data class LobbyData(
 )
 
 class LobbyMessage(
-    val userId: Long,
-    val text: String
+    val userId: Long = -1L,
+    val text: String = ""
 )
 

@@ -1,50 +1,61 @@
 package session
 
+import application.ModuleGui
+import application.PlayerGui
 import database.DatabaseHandler
 import javafx.collections.FXCollections
-import javafx.collections.ObservableMap
+import javafx.collections.ObservableList
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import memscan.MemHandler
 import memscan.PlayerData
 import memscan.XrdApi
-import tornadofx.bind
-import tornadofx.observableList
+import tornadofx.Controller
 
 
-class Session {
+class Session: Controller() {
+    val modulesApi: MutableList<ModuleGui> = ArrayList(listOf(ModuleGui(), ModuleGui(), ModuleGui()))
+    val guiApi: MutableList<PlayerGui> = ArrayList()
     val xrdApi: XrdApi = MemHandler()
     val dataApi: DatabaseHandler = DatabaseHandler("159.89.112.213", password = "", username = "")
-    val players: ObservableMap<Long, Player> = FXCollections.observableHashMap<Long, Player>()
-    val leaderboard = observableList<Player>()
+    val players: HashMap<Long, Player> = HashMap()
     var gamesCount: Int = 0
-    var memoryCycle = 0
-
-    init {
-        leaderboard.bind(players){k,v->v}
-    }
 
     fun cycleMemoryScan() {
         GlobalScope.launch {
-            delay(32)
-            if (xrdApi.isConnected()) {
-                updatePlayerData()
-                if (memoryCycle++ > 7) memoryCycle = 0
-            }
+            modulesApi.get(0).reset(xrdApi.isConnected())
+            if (xrdApi.isConnected() && updatePlayerData()) updateAppUi()
+            delay(512)
             cycleMemoryScan()
         }
     }
 
-    private fun updatePlayerData() {
+    fun cycleDatabase() {
+        GlobalScope.launch {
+            modulesApi.get(2).reset(dataApi.isConnected())
+            delay(4096)
+            cycleDatabase()
+        }
+    }
+
+    private fun updatePlayerData(): Boolean {
+        var somethingChanged = false
         var loserChange = 0
         val playerData = xrdApi.getPlayerData()
         playerData.forEach { data ->
-            addPlayerIfNew(data)
+            if (!players.containsKey(data.steamUserId) && data.steamUserId != 0L) {
+                players.put(data.steamUserId, Player(data))
+                somethingChanged = true
+            }
             var currLoser = resolveTheLoser(data)
-            if (currLoser > 0) loserChange = currLoser
+            if (currLoser > 0) {
+                loserChange = currLoser
+                somethingChanged = true
+            }
         }
         playerData.forEach { resolveTheWinner(it, loserChange) }
+        return somethingChanged
     }
 
     private fun resolveTheWinner(data: PlayerData, loserChange: Int) {
@@ -76,30 +87,16 @@ class Session {
         return 0
     }
 
-    private fun addPlayerIfNew(data: PlayerData) {
-        if (!players.containsKey(data.steamUserId) && data.steamUserId != 0L) {
-            players.put(data.steamUserId, Player(data))
-        }
+    fun getAll(): ObservableList<Player> = FXCollections.observableArrayList(players.values.toList()
+        .sortedByDescending { item -> item.getRating() }
+        .sortedByDescending { item -> item.getBounty() }
+        .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 })
+
+
+    fun updateAppUi() {
+        modulesApi.get(1).reset(true)
+        val uiUpdate: List<Player> = getAll()
+        for (i in 0..7) if (uiUpdate.size > i) guiApi.get(i).applyData(uiUpdate.get(i))
     }
-
-    fun getActivePlayerCount() = players.values.filter { !it.isIdle() }.size
-
-//    fun cycleDatabase() {
-//        GlobalScope.launch {
-//            delay(256)
-//            if (dataApi.isConnected()) updatePlayerLegacies()
-//            databaseCycle++
-//            cycleDatabase()
-//        }
-//    }
-//
-//    fun getAll(): ObservableList<Player> = FXCollections.observableArrayList(players.values.toList()
-//        .sortedByDescending { item -> item.getRating() }
-//        .sortedByDescending { item -> item.getBounty() }
-//        .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 })
-//
-//    private fun updatePlayerLegacies() {
-//        // do something
-//    }
 
 }

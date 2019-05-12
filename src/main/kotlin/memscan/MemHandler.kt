@@ -18,21 +18,18 @@ class MemHandler : XrdApi {
     var GG_PROC: Win32Process? = null
 
     override fun isConnected(): Boolean {
-        if (GG_PROC != null) return true
         try {
             GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
+            return GG_PROC!!.modules["GuiltyGearXrd.exe"]!!.pointer != null
         } catch (e: IllegalStateException) {
             return false
         }
-        return true
     }
 
     @UseExperimental(ExperimentalUnsignedTypes::class)
     private fun getByteBufferFromAddress(offsets: LongArray, numBytes: Int): ByteBuffer? {
-        if(GG_PROC == null){
-            if(!isConnected()){
-                return null
-            }
+        if(!isConnected()){
+            return null
         }
         val procBaseAddr: Pointer = GG_PROC!!.modules["GuiltyGearXrd.exe"]!!.pointer
         var bufferMem = Memory(4L)
