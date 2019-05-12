@@ -21,7 +21,7 @@ class Player(playerData: PlayerData = PlayerData()) {
     fun getData() = data.second
 
     fun updatePlayerData(updatedData: PlayerData) {
-        data = Pair(getData(), updatedData);
+        data = Pair(getData(), updatedData)
         if (hasLoaded()) {
             present = true
 //            idle = max(session.getActivePlayerCount(), 1)

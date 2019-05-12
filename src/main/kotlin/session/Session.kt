@@ -97,6 +97,7 @@ class Session: Controller() {
         modulesApi.get(1).reset(true)
         val uiUpdate: List<Player> = getAll()
         for (i in 0..7) if (uiUpdate.size > i) guiApi.get(i).applyData(uiUpdate.get(i))
+        else guiApi.get(i).applyData(Player())
     }
 
 }

@@ -6,7 +6,6 @@ import javafx.scene.layout.BorderStrokeStyle
 import javafx.scene.shape.StrokeLineCap
 import javafx.scene.shape.StrokeLineJoin
 import javafx.scene.shape.StrokeType
-import javafx.scene.text.FontPosture
 import tornadofx.*
 
 class MainStyle : Stylesheet() {
@@ -23,7 +22,6 @@ class MainStyle : Stylesheet() {
 
         val appContainer by cssclass()
         val playerContainer by cssclass()
-        val playerScoreSection by cssclass()
         val playerHandle by cssclass()
         val playerBounty by cssclass()
         val playerBounty2 by cssclass()
@@ -44,7 +42,7 @@ class MainStyle : Stylesheet() {
         }
 
         debuggable {
-//                        // Comment out to disable
+//            // Comment out to disable
 //            borderColor += box(c("#113322CC"))
 //            backgroundColor += c("#11332288")
 //            borderWidth += box(1.px)
@@ -52,7 +50,7 @@ class MainStyle : Stylesheet() {
         }
 
         playerContainer {
-            borderWidth += box(3.px)
+            borderWidth += box(2.px)
             borderColor += box(c("#34081c"))
             borderStyle += BorderStrokeStyle(
                 StrokeType.INSIDE,
@@ -64,17 +62,13 @@ class MainStyle : Stylesheet() {
             )
             backgroundColor += c("#23041288")
             padding = box(2.px)
-        }
-
-        playerScoreSection {
-            minWidth = 260.px
-            padding = box(0.px)
-            alignment = Pos.CENTER_LEFT
+            minWidth = 350.px
+            alignment = Pos.TOP_LEFT
         }
 
         label {
             fontSize = 14.px
-            padding = box(2.px, 4.px)
+            padding = box(0.px)
             textFill = c("#cccccc")
 
             and(lobbyName) {
@@ -84,13 +78,10 @@ class MainStyle : Stylesheet() {
                 textFill = c("#cccccc")
             }
             and(playerHandle) {
-                fontPaladins?.let { font = it }
+                fontFiraCodeBold?.let { font = it }
                 fontSize = 18.px
-                padding = box(3.px, 0.px, 3.px, 24.px)
+                padding = box(0.px)
                 textFill = c("#25dc88")
-                fontStyle = FontPosture.ITALIC
-                fillWidth = true
-                backgroundColor += c("#34081c")
             }
             and(playerBounty) {
                 fontRED?.let { font = it }
