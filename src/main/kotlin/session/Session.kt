@@ -1,59 +1,39 @@
 package session
 
 import database.DatabaseHandler
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import memscan.MemHandler
 import memscan.PlayerData
 import memscan.XrdApi
-import twitch.TwitchBot
+import tornadofx.Controller
 
-class Session {
+
+class Session: Controller() {
     val xrdApi: XrdApi = MemHandler()
     val dataApi: DatabaseHandler = DatabaseHandler("159.89.112.213", password = "", username = "")
-    val botApi: TwitchBot = TwitchBot("")
-    var players: MutableMap<Long, Player> = HashMap()
+    val players: HashMap<Long, Player> = HashMap()
     var gamesCount: Int = 0
-    var memoryCycle = 0
-    var databaseCycle = 0
 
-    fun cycleMemoryScan() {
-        GlobalScope.launch {
-            delay(32)
-            if (xrdApi.isConnected()) updatePlayerData()
-            memoryCycle++
-            cycleMemoryScan()
-        }
-    }
-
-    fun cycleDatabase() {
-        GlobalScope.launch {
-            delay(256)
-            if (dataApi.isConnected()) updatePlayerLegacies()
-            databaseCycle++
-            cycleDatabase()
-        }
-    }
-
-    fun getAll() = players.values.toList()
-        .sortedByDescending { item -> item.getRating() }
-        .sortedByDescending { item -> item.getBounty() }
-        .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
-
-    private fun updatePlayerLegacies() {
-        // do something
-    }
-
-    private fun updatePlayerData() {
+    fun updatePlayers(): Boolean {
+        var somethingChanged = false
         var loserChange = 0
         val playerData = xrdApi.getPlayerData()
         playerData.forEach { data ->
-            addPlayerIfNew(data)
-            var currLoser = resolveTheLoser(data)
-            if (currLoser > 0) loserChange = currLoser
+            if (data.steamUserId != 0L && !players.containsKey(data.steamUserId)) {
+                players.put(data.steamUserId, Player(data))
+                somethingChanged = true
+            }
+            if (players.containsKey(data.steamUserId) && !players.get(data.steamUserId)!!.getData().equals(data)) {
+                players.get(data.steamUserId)!!.updatePlayerData(data)
+                somethingChanged = true
+            }
+            val currLoser = resolveTheLoser(data)
+            if (currLoser > 0) {
+                loserChange = currLoser
+                somethingChanged = true
+            }
         }
         playerData.forEach { resolveTheWinner(it, loserChange) }
+        return somethingChanged
     }
 
     private fun resolveTheWinner(data: PlayerData, loserChange: Int) {
@@ -72,7 +52,6 @@ class Session {
         var loserChange = 0
         players.values.forEach { s ->
             if (s.getSteamId() == data.steamUserId) {
-                s.updatePlayerData(data)
                 if (s.hasLost()) {
                     players.values.forEach { if (!it.hasPlayed()) it.incrementIdle() }
                     s.changeChain(-1)
@@ -84,13 +63,5 @@ class Session {
         }
         return 0
     }
-
-    private fun addPlayerIfNew(data: PlayerData) {
-        if (!players.containsKey(data.steamUserId) && data.steamUserId != 0L) {
-            players[data.steamUserId] = Player(data)
-        }
-    }
-
-    fun getActivePlayerCount() = players.values.filter { !it.isIdle() }.size
 
 }

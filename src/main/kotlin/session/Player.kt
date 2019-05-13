@@ -1,14 +1,14 @@
 package session
 
 import azUtils.addCommas
-import getSession
-import memscan.Character.getCharacterName
 import memscan.PlayerData
+import session.Character.getCharacterName
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class Player(playerData: PlayerData) {
+
+class Player(playerData: PlayerData = PlayerData()) {
 
     var present = true
     private var bounty = 0
@@ -21,20 +21,21 @@ class Player(playerData: PlayerData) {
     fun getData() = data.second
 
     fun updatePlayerData(updatedData: PlayerData) {
-        data = Pair(getData(), updatedData);
+        data = Pair(getData(), updatedData)
         if (hasLoaded()) {
             present = true
-            idle = max(getSession().getActivePlayerCount(), 1)
+//            idle = max(session.getActivePlayerCount(), 1)
         }
     }
 
-    fun getDisplayName() = getData().displayName
 
-    fun getNameString() = "${getDisplayName()}"
+    fun getNameString() = "${getData().displayName}"
 
     fun getSteamId() = getData().steamUserId
 
-    fun getCharacter(shortened: Boolean) = getCharacterName(getData().characterId, shortened)
+    fun getCharacterId() = getData().characterId
+
+    fun getCharacter() = getCharacterName(getData().characterId)
 
     fun isScoreboardWorthy() = getBounty() > 0 && idle > 0 && getMatchesWon() > 0
 
@@ -60,6 +61,8 @@ class Player(playerData: PlayerData) {
 
     fun getBountyString(ramp:Float) = if (getBounty() > 0) "${getBountyFormatted(if (change!=0) ramp else 1f)}" else "Free"
 
+    fun getRecordString() = "Chain: ${getChain()}  [ W:${getMatchesWon()} / M:${getMatchesPlayed()} ]"
+
     fun changeBounty(amount:Int) {
         change = amount
         bounty += amount
@@ -73,7 +76,7 @@ class Player(playerData: PlayerData) {
     fun getChainString():String = if (getChain()>=8) "8 MAX" else if (getChain()>0) getChain().toString() else "-"
 
     fun changeChain(amount:Int): Int {
-        idle = max(getSession().getActivePlayerCount(), 1)
+//        idle = max(session.getActivePlayerCount(), 1)
         chain += amount
         if (chain < 0) chain = 0
         if (chain > 8) chain = 8
@@ -126,6 +129,10 @@ class Player(playerData: PlayerData) {
             else -> return "[${getData().playerSide.toInt()}]"
         }
     }
+
+    val MAX_IDLE = 8
+    fun getStatusString() = if (idle == 0) "Idle: ${idle}   [${getLoadPercent()}%]" else "Standby: ${idle}  [${getLoadPercent()}%]"
+
 
     fun getLoadPercent() = getData().loadingPct
 

@@ -3,6 +3,7 @@ package azUtils
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileReader
+import java.net.URI
 import java.nio.file.Paths
 import java.time.Instant
 import java.time.ZoneId
@@ -205,4 +206,15 @@ fun addCommas(inStr: String):String {
  */
 fun writeToFile(fileName: String, text: String) {
     File(fileName).writeText(text)
+}
+
+
+/**
+ * TODO: WTF DOES THIS DO?
+ *
+ * @param fileName soon.
+ * @return the file path as a `URI`
+ */
+fun getRes(fileName: String): URI {
+    return URI("${pathHome.toUri().toURL()}src/main/resources/${fileName}")
 }

@@ -1,27 +1,32 @@
 import application.MainStyle
 import application.MainView
+import application.MatchStyle
+import application.PlayerStyle
 import javafx.stage.Stage
-import session.Session
 import tornadofx.App
-import tornadofx.Controller
+import tornadofx.UIComponent
 import tornadofx.launch
 import tornadofx.reloadStylesheetsOnFocus
 
-private val session: Session = Session()
-fun getSession() = session
-
 fun main(args: Array<String>) { launch<MyApp>(args) }
-class MyApp: App(MainView::class, MainStyle::class) { init { reloadStylesheetsOnFocus() }
+
+class MyApp : App(MainView::class, MainStyle::class, MatchStyle::class, PlayerStyle::class) {
+
+    init {
+        reloadStylesheetsOnFocus()
+    }
+
+    override fun onBeforeShow(view: UIComponent) {
+        super.onBeforeShow(view)
+        view.title = "ＧｅａｒＮｅｔ  //  0.4.81"
+
+    }
+
     override fun start(stage: Stage) {
         super.start(stage)
-        stage.width = 960.0
-        stage.height = 720.0
+        stage.width  = 976.0 // 960
+        stage.height = 759.0 // 720
         stage.isResizable = false
     }
-}
 
-class MainController: Controller() {
-    fun writeToDb(inputValue: String) {
-        println("Writing $inputValue to database!")
-    }
 }
