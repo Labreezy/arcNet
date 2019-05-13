@@ -14,6 +14,7 @@ class MatchStyle : Stylesheet() {
 
         val matchContainer by cssclass()
         val matchTitle by cssclass()
+        val chartChill by cssclass()
     }
 
     init {
@@ -31,9 +32,13 @@ class MatchStyle : Stylesheet() {
             backgroundColor += c("#23041288")
             minWidth = 500.px
             maxWidth = 500.px
-            minHeight = 140.px
-            maxHeight = 140.px
+            minHeight = 132.px
+            maxHeight = 132.px
             alignment = Pos.CENTER
+        }
+
+        chartChill {
+            backgroundColor += c("#00000000")
         }
 
         label {

@@ -17,8 +17,14 @@ class PlayerView(override val root: Parent) : Fragment() {
 
     init { with(root) {
         hbox { addClass(PlayerStyle.playerContainer)
-            character = imageview(getRes("gn_atlas.png").toString()) { setViewport(Rectangle2D(576.0, 192.0, 64.0, 64.0)) }
+            character = imageview(getRes("gn_atlas.png").toString()) {
+                setViewport(Rectangle2D(576.0, 192.0, 64.0, 64.0))
+                translateY -= 2.0
+                translateX -= 2.0
+            }
             vbox {
+                minWidth = 100.0
+                maxWidth = 100.0
                 handle = label("") {
                     addClass(PlayerStyle.playerHandle)
                     translateY += 2.0

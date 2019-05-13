@@ -1,12 +1,12 @@
 package application
 
+import azUtils.getRes
+import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.control.Label
 import javafx.scene.image.ImageView
-import tornadofx.Fragment
-import tornadofx.addClass
-import tornadofx.hbox
-import tornadofx.label
+import tornadofx.*
+
 
 class MatchView(override val root: Parent) : Fragment() {
 
@@ -15,8 +15,12 @@ class MatchView(override val root: Parent) : Fragment() {
 
     init { 
         with(root) {
-            hbox { addClass(MatchStyle.matchContainer)
-                label("MatchView").addClass(MatchStyle.matchTitle)
+            stackpane {
+                imageview(getRes("gn_atlas.png").toString()) { setViewport(Rectangle2D(6.0, 768.0, 500.0, 128.0)) }
+                hbox {
+                    addClass(MatchStyle.matchContainer)
+                    label("MatchView").addClass(MatchStyle.matchTitle)
+                }
             }
         }
     }

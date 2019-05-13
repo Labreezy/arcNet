@@ -35,18 +35,20 @@ class PlayerStyle : Stylesheet() {
             backgroundColor += c("#23041288")
             minWidth = 400.px
             maxWidth = 400.px
+            minHeight = 64.px
+            maxHeight = 64.px
             alignment = Pos.TOP_LEFT
         }
 
         label {
             fontFiraCodeMedium?.let { font = it }
-            textFill = c("#cccccc")
+            textFill = c("#78cbab")
             fontSize = 14.px
 
             and(playerHandle) {
                 fontFiraCodeBold?.let { font = it }
                 fontSize = 18.px
-                textFill = c("#25dc88")
+                textFill = c("#3befaa")
             }
             and(playerBounty) {
                 fontRED?.let { font = it }
