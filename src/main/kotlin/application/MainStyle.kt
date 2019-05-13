@@ -16,21 +16,16 @@ class MainStyle : Stylesheet() {
     }
 
     init {
-        appContainer {
-            padding = box(0.px)
-            spacing = 0.px
-            backgroundImage += getRes("gn_background.png")
-            alignment = Pos.TOP_CENTER
-        }
+        appContainer { backgroundImage += getRes("gn_background.png") }
 
-        debuggable {
-//            /* Comment out to toggle debug view */ borderColor += box(c("#113322CC")); backgroundColor += c("#11332288"); borderWidth += box(1.px); borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.ROUND, StrokeLineCap.SQUARE, 10.0, 0.0, arrayListOf(1.0))
+        star {
+//            /**** Comment out to toggle debug view ****/  borderColor += box(c("#228844DD")); backgroundColor += c("#22664411"); borderWidth += box(1.px); borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 5.0, 5.0, arrayListOf(1.0))
         }
 
         label {
-            fontSize = 14.px
-            padding = box(0.px)
+            fontFiraCodeRegular?.let { font = it }
             textFill = c("#cccccc")
+            fontSize = 14.px
 
             and(lobbyName) {
                 fontPaladins?.let { font = it }
@@ -40,7 +35,6 @@ class MainStyle : Stylesheet() {
                 maxHeight = 32.px
                 minHeight = 32.px
                 alignment = Pos.CENTER
-                textFill = c("#cccccc")
             }
             and(moduleTitle) {
                 fontFiraCodeRegular?.let { font = it }
@@ -50,7 +44,6 @@ class MainStyle : Stylesheet() {
                 minWidth = 128.px
                 maxHeight = 32.px
                 minHeight = 32.px
-                padding = box(-2.px, 0.px, 0.px, 0.px)
                 alignment = Pos.CENTER
             }
         }

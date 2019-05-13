@@ -39,15 +39,13 @@ class PlayerStyle : Stylesheet() {
         }
 
         label {
-            fontSize = 12.px
-            padding = box(0.px)
+            MainStyle.fontFiraCodeRegular?.let { font = it }
             textFill = c("#cccccc")
-            fontFiraCodeMedium?.let { font = it }
+            fontSize = 14.px
 
             and(playerHandle) {
                 fontFiraCodeBold?.let { font = it }
                 fontSize = 18.px
-                padding = box(0.px)
                 textFill = c("#25dc88")
             }
             and(playerBounty) {

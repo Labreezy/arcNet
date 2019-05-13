@@ -16,6 +16,7 @@ class MatchStyle : Stylesheet() {
     }
 
     init {
+
         matchContainer {
             borderWidth += box(2.px)
             borderColor += box(c("#34081c"))
@@ -37,9 +38,9 @@ class MatchStyle : Stylesheet() {
         }
 
         label {
-            fontSize = 14.px
-            padding = box(0.px)
+            MainStyle.fontFiraCodeRegular?.let { font = it }
             textFill = c("#cccccc")
+            fontSize = 14.px
 
             and(matchTitle) {
                 fontPaladinsStraight?.let { font = it }
