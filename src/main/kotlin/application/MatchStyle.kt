@@ -11,12 +11,12 @@ class MatchStyle : Stylesheet() {
 
     companion object {
         val fontPaladinsStraight = loadFont("/fonts/Paladins-Straight.ttf", 16.0)
+
         val matchContainer by cssclass()
         val matchTitle by cssclass()
     }
 
     init {
-
         matchContainer {
             borderWidth += box(2.px)
             borderColor += box(c("#34081c"))
@@ -33,7 +33,6 @@ class MatchStyle : Stylesheet() {
             maxWidth = 500.px
             minHeight = 140.px
             maxHeight = 140.px
-            padding = box(8.px)
             alignment = Pos.CENTER
         }
 

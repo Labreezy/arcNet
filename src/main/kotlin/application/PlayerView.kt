@@ -10,7 +10,7 @@ import session.Character.getCharacterPortrait
 import session.Player
 import tornadofx.*
 
-class PlayerGui(override val root: Parent) : Fragment() {
+class PlayerView(override val root: Parent) : Fragment() {
 
     lateinit var character: ImageView
     lateinit var handle: Label
@@ -18,7 +18,8 @@ class PlayerGui(override val root: Parent) : Fragment() {
     init { with(root) {
         hbox { addClass(PlayerStyle.playerContainer)
             character = imageview(getRes("gn_atlas.png").toString()) { setViewport(Rectangle2D(576.0, 192.0, 64.0, 64.0)) }
-            vbox { handle = label("") {
+            vbox {
+                handle = label("") {
                     addClass(PlayerStyle.playerHandle)
                     translateY += 2.0
                     translateX += 8.0

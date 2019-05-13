@@ -8,7 +8,7 @@ import javafx.scene.control.Label
 import javafx.scene.image.ImageView
 import tornadofx.*
 
-class ModuleGui(override val root: Parent, modTitle: String): Fragment() {
+class ModuleView(override val root: Parent, modTitle: String): Fragment() {
 
     lateinit var backdrop: ImageView
     lateinit var moduleName: Label
@@ -41,6 +41,5 @@ class ModuleGui(override val root: Parent, modTitle: String): Fragment() {
         enabled = connected
         frame = 0
     }
-
 
 }

@@ -39,7 +39,7 @@ class PlayerStyle : Stylesheet() {
         }
 
         label {
-            MainStyle.fontFiraCodeRegular?.let { font = it }
+            fontFiraCodeMedium?.let { font = it }
             textFill = c("#cccccc")
             fontSize = 14.px
 
