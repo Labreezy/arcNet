@@ -1,5 +1,7 @@
 import application.MainStyle
 import application.MainView
+import application.MatchStyle
+import application.PlayerStyle
 import javafx.stage.Stage
 import tornadofx.App
 import tornadofx.UIComponent
@@ -8,7 +10,7 @@ import tornadofx.reloadStylesheetsOnFocus
 
 fun main(args: Array<String>) { launch<MyApp>(args) }
 
-class MyApp : App(MainView::class, MainStyle::class) {
+class MyApp : App(MainView::class, MainStyle::class, MatchStyle::class, PlayerStyle::class) {
 
     init {
         reloadStylesheetsOnFocus()

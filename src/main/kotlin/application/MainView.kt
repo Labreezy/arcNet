@@ -68,17 +68,17 @@ class MainView : View() {
                         }
                     }
                     // MATCH VIEWS
-                    hbox { addClass(MainStyle.matchContainer)
-                        label("MatchView 0").addClass(MainStyle.matchTitle)
+                    hbox { addClass(MatchStyle.matchContainer)
+                        label("MatchView 0").addClass(MatchStyle.matchTitle)
                     }
-                    hbox { addClass(MainStyle.matchContainer)
-                        label("MatchView 1").addClass(MainStyle.matchTitle)
+                    hbox { addClass(MatchStyle.matchContainer)
+                        label("MatchView 1").addClass(MatchStyle.matchTitle)
                     }
-                    hbox { addClass(MainStyle.matchContainer)
-                        label("MatchView 2").addClass(MainStyle.matchTitle)
+                    hbox { addClass(MatchStyle.matchContainer)
+                        label("MatchView 2").addClass(MatchStyle.matchTitle)
                     }
-                    hbox { addClass(MainStyle.matchContainer)
-                        label("MatchView 3").addClass(MainStyle.matchTitle)
+                    hbox { addClass(MatchStyle.matchContainer)
+                        label("MatchView 3").addClass(MatchStyle.matchTitle)
                     }
 
                 }
@@ -92,14 +92,14 @@ class MainView : View() {
                     for (i in 0..7) {
                         session.guiApi.add(PlayerGui())
                         hbox { addClass(MainStyle.debuggable)
-                            addClass(MainStyle.playerContainer)
+                            addClass(PlayerStyle.playerContainer)
                             session.guiApi.get(i).character = imageview(getRes("gn_atlas.png").toString()) {
                                 setViewport(Rectangle2D(576.0, 192.0, 64.0, 64.0))
                                 setPrefSize(64.0, 64.0)
                             }
                             vbox {
                                 session.guiApi.get(i).handle = label("") {
-                                    addClass(MainStyle.playerHandle)
+                                    addClass(PlayerStyle.playerHandle)
                                     translateY += 2.0
                                     translateX += 8.0
                                 }
