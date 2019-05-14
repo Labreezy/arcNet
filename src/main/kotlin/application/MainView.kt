@@ -75,7 +75,7 @@ class MainView : View() {
                 stackpane { translateY += 10
                     imageview(getRes("gn_atlas.png").toString()) { setViewport(Rectangle2D(20.0, 910.0, 920.0, 100.0)) }
                     hbox {
-                        addClass(MainStyle.utilsContainer); setPadding(Insets(5.0))
+                        addClass(MainStyle.utilsContainer); setPadding(Insets(10.0,10.0,10.0,15.0))
                         minWidth = 920.0
                         maxWidth = 920.0
                         minHeight = 100.0

@@ -95,7 +95,7 @@ object Character {
     }
 
     fun getCharacterPortrait(integer: Int) = getCharacterPortrait(integer.toByte())
-    fun getCharacterPortrait(byte: Byte): Rectangle2D {
+    fun getCharacterPortrait(byte: Byte = -0x1): Rectangle2D {
         when (byte) {
             SO -> return Rectangle2D(0.0, 0.0, 64.0, 64.0)
             KY -> return Rectangle2D(64.0, 0.0, 64.0, 64.0)

@@ -18,7 +18,7 @@ class MyApp : App(MainView::class, MainStyle::class, MatchStyle::class, PlayerSt
 
     override fun onBeforeShow(view: UIComponent) {
         super.onBeforeShow(view)
-        view.title = "ＧｅａｒＮｅｔ  //  0.4.96"
+        view.title = "ＧｅａｒＮｅｔ  //  0.5.0"
 
     }
 
