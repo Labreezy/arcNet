@@ -36,6 +36,12 @@ class Session: Controller() {
         return somethingChanged
     }
 
+    private fun addPlayerIfNew(data: PlayerData) {
+        if (!players.containsKey(data.steamUserId) && data.steamUserId != 0L) {
+            players[data.steamUserId] = Player(data)
+        }
+    }
+
     private fun resolveTheWinner(data: PlayerData, loserChange: Int) {
         players.values.forEach { s ->
             if (s.getSteamId() == data.steamUserId) {
@@ -63,5 +69,7 @@ class Session: Controller() {
         }
         return 0
     }
+
+    fun getActivePlayerCount() = players.values.filter { !it.isIdle() }.size
 
 }

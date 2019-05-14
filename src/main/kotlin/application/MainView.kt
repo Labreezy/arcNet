@@ -11,6 +11,7 @@ import session.Player
 import session.Session
 import tornadofx.*
 
+var globalSession:Session? = null
 
 class MainView : View() {
     override val root: Form = Form()
@@ -23,13 +24,16 @@ class MainView : View() {
     fun cycleDatabase() { GlobalScope.launch {
         modulesGui.get(2).reset(session.dataApi.isConnected())
         delay(2048); cycleDatabase() } }
+
     fun cycleMemScan() { GlobalScope.launch {
         modulesGui.get(0).reset(session.xrdApi.isConnected())
         if (session.xrdApi.isConnected() && session.updatePlayers()) redrawAppUi()
         delay(256); cycleMemScan() } }
+
     fun cycleUi() { GlobalScope.launch {
         modulesGui.forEach { it.nextFrame() }
         delay(64); cycleUi() } }
+
     fun redrawAppUi() {
         modulesGui.get(1).reset(true)
         val uiUpdate: List<Player> = session.players.values.toList().sortedByDescending { item -> item.getRating() }.sortedByDescending { item -> item.getBounty() }.sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
@@ -37,6 +41,7 @@ class MainView : View() {
         else playersGui.get(i).applyData(Player()) }
 
     init {
+        globalSession = session
         with(root) { addClass(MainStyle.appContainer)
             translateY -= 5.0
             hbox {
