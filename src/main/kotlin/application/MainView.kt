@@ -10,8 +10,9 @@ import kotlinx.coroutines.launch
 import session.Player
 import session.Session
 import tornadofx.*
+import kotlin.math.max
 
-var globalSession:Session? = null
+var playersActive = 0
 
 class MainView : View() {
     override val root: Form = Form()
@@ -28,6 +29,7 @@ class MainView : View() {
     fun cycleMemScan() { GlobalScope.launch {
         modulesGui.get(0).reset(session.xrdApi.isConnected())
         if (session.xrdApi.isConnected() && session.updatePlayers()) redrawAppUi()
+        playersActive = max(session.getActivePlayerCount(), 1)
         delay(256); cycleMemScan() } }
 
     fun cycleUi() { GlobalScope.launch {
@@ -41,7 +43,6 @@ class MainView : View() {
         else playersGui.get(i).applyData(Player()) }
 
     init {
-        globalSession = session
         with(root) { addClass(MainStyle.appContainer)
             translateY -= 5.0
             hbox {

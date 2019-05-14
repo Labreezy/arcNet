@@ -108,7 +108,6 @@ class PlayerStyle : Stylesheet() {
             }
             and(recordText) {
                 fontFiraCodeBold?.let { font = it }
-                padding = box(4.px, 0.px, 0.px, 0.px)
                 fontSize = 9.px
                 minWidth = 200.px
                 maxWidth = 200.px

@@ -1,6 +1,6 @@
 package session
 
-import application.globalSession
+import application.playersActive
 import azUtils.addCommas
 import memscan.PlayerData
 import session.Character.getCharacterName
@@ -25,7 +25,7 @@ class Player(playerData: PlayerData = PlayerData()) {
         data = Pair(getData(), updatedData)
         if (hasLoaded()) {
             present = true
-            idle = max(globalSession!!.getActivePlayerCount(), 1)
+            idle = playersActive
         }
     }
 
@@ -75,7 +75,7 @@ class Player(playerData: PlayerData = PlayerData()) {
     fun getChainString():String = if (getChain()>=8) "★" else if (getChain()>0) getChain().toString() else ""
 
     fun changeChain(amount:Int): Int {
-        idle = max(globalSession!!.getActivePlayerCount(), 1)
+        idle = playersActive
         chain += amount
         if (chain < 0) chain = 0
         if (chain > 8) chain = 8
@@ -106,11 +106,12 @@ class Player(playerData: PlayerData = PlayerData()) {
             1 -> return "Cabinet B"
             2 -> return "Cabinet C"
             3 -> return "Cabinet D"
-            else -> return "-"
+            else -> return ""
         }
     }
 
     fun getPlaySideString(): String {
+        if (getCabinet().toInt() > 3) return ""
         when(getData().playerSide.toInt()) {
             0 -> return "Player One"
             1 -> return "Player Two"
