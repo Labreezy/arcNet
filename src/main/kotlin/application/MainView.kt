@@ -40,7 +40,11 @@ class MainView : View() {
         modulesGui.get(1).reset(true)
         val uiUpdate: List<Player> = session.players.values.toList().sortedByDescending { item -> item.getRating() }.sortedByDescending { item -> item.getBounty() }.sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
         for (i in 0..7) if (uiUpdate.size > i) playersGui.get(i).applyData(uiUpdate.get(i))
-        else playersGui.get(i).applyData(Player()) }
+        else playersGui.get(i).applyData(Player())
+
+        // TODO: UPDATE MATCH GUI HERE
+
+    }
 
     init {
         with(root) { addClass(MainStyle.appContainer)

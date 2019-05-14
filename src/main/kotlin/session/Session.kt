@@ -11,6 +11,7 @@ class Session: Controller() {
     val xrdApi: XrdApi = MemHandler()
     val dataApi: DatabaseHandler = DatabaseHandler("159.89.112.213", password = "", username = "")
     val players: HashMap<Long, Player> = HashMap()
+    val matches: HashMap<Long, Match> = HashMap()
     var lobbyGamesCounter: Int = 0
 
     fun updatePlayers(): Boolean {
