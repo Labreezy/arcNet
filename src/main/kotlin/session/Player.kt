@@ -56,24 +56,22 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     fun getBounty() = bounty
 
-    fun getBountyFormatted(ramp:Float) = if (getBounty() > 0) "${addCommas(min(getBounty()-getChange()+(getChange()*ramp).toInt(), getBounty()).toString())} W$"
+    fun getBountyFormatted(ramp:Float = 1f) = if (getBounty() > 0) "${addCommas(min(getBounty()-getChange()+(getChange()*ramp).toInt(), getBounty()).toString())} W$"
     else "${addCommas(max(getBounty()-getChange()+(getChange()*ramp).toInt(), getBounty()).toString())} W$"
 
-    fun getBountyString(ramp:Float) = if (getBounty() > 0) "${getBountyFormatted(if (change!=0) ramp else 1f)}" else "Free"
+    fun getBountyString(ramp:Float = 1f) = if (getBounty() > 0) "${getBountyFormatted(if (change!=0) ramp else 1f)}" else "Free"
 
-    fun getRecordString() = "Chain: ${getChain()}  [ W:${getMatchesWon()} / M:${getMatchesPlayed()} ]"
+    fun getRecordString() = "W:${getMatchesWon()}  /  M:${getMatchesPlayed()}"
 
     fun changeBounty(amount:Int) {
         change = amount
         bounty += amount
-//        if (getChange()>0) changeCol = ColF(changeColDelay, changeColInterval, Vec4(1,1,1,0), Vec4(0.2,0.8,0.2,1))
-//        else changeCol = ColF(changeColDelay+80, changeColInterval, Vec4(1,1,1,0), Vec4(0.8,0.2,0.2,1))
         if (bounty < 100) bounty = 0
     }
 
     fun getChain() = chain
 
-    fun getChainString():String = if (getChain()>=8) "8 MAX" else if (getChain()>0) getChain().toString() else "-"
+    fun getChainString():String = if (getChain()>=8) "MAX 8" else if (getChain()>0) getChain().toString() else ""
 
     fun changeChain(amount:Int): Int {
 //        idle = max(session.getActivePlayerCount(), 1)
@@ -85,7 +83,7 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     fun getChange() = change
 
-    fun getChangeString(ramp:Float): String {
+    fun getChangeString(ramp:Float = 1f, change:Int = this.change): String {
         if (change > 0) return "+${addCommas(min(change*ramp, change.toFloat()).toInt().toString())} W$"
         else if (change < 0) return "-${addCommas(abs(max(change*ramp, change.toFloat()).toInt()).toString())} W$"
         else return ""
@@ -131,7 +129,7 @@ class Player(playerData: PlayerData = PlayerData()) {
     }
 
     val MAX_IDLE = 8
-    fun getStatusString() = if (idle == 0) "Idle: ${idle}   [${getLoadPercent()}%]" else "Standby: ${idle}  [${getLoadPercent()}%]"
+    fun getStatusString() = if (idle == 0) "Idle: ${idle} [${getLoadPercent()}%]" else "Standby: ${idle} [${getLoadPercent()}%]"
 
 
     fun getLoadPercent() = getData().loadingPct

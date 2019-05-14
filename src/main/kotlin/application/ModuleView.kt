@@ -17,6 +17,7 @@ class ModuleView(override val root: Parent, modTitle: String): Fragment() {
 
     init { with(root) {
             stackpane {
+                maxHeight = 32.0
                 backdrop = imageview(getRes("gn_atlas.png").toString()) { setViewport(Rectangle2D(512.0, if (enabled)  256.0 else 288.0, 128.0, 32.0)) }
                 moduleName = label(modTitle) { addClass(MainStyle.moduleTitle) }
             }

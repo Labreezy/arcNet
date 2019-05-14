@@ -1,7 +1,9 @@
 package application
 
+import azUtils.getRes
 import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.geometry.Rectangle2D
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -20,7 +22,7 @@ class MainView : View() {
 
     fun cycleDatabase() { GlobalScope.launch {
         modulesGui.get(2).reset(session.dataApi.isConnected())
-        delay(4096); cycleDatabase() } }
+        delay(2048); cycleDatabase() } }
     fun cycleMemScan() { GlobalScope.launch {
         modulesGui.get(0).reset(session.xrdApi.isConnected())
         if (session.xrdApi.isConnected() && session.updatePlayers()) redrawAppUi()
@@ -36,37 +38,59 @@ class MainView : View() {
 
     init {
         with(root) { addClass(MainStyle.appContainer)
-            hbox { alignment = Pos.TOP_CENTER; addClass(MainStyle.debuggable)
-                setPadding(Insets(16.0, 0.0, 0.0, 0.0))
+            translateY -= 5.0
+            hbox {
 
-                // LEFT SIDE COLUMN ========
-                vbox { alignment = Pos.TOP_CENTER; addClass(MainStyle.debuggable); setSpacing(2.0)
+                // ======== LEFT SIDE COLUMN ========
+                vbox { alignment = Pos.TOP_CENTER; setSpacing(2.0)
                     minWidth = 520.0
                     maxWidth = 520.0
 
-                    // MODULE INFO
-                    hbox { alignment = Pos.CENTER; addClass(MainStyle.debuggable)
-                        vbox { modulesGui.add(ModuleView(parent, "Guilty Gear Xrd")); addClass(MainStyle.debuggable) }
-                        vbox { modulesGui.add(ModuleView(parent, "GearNet Client")); addClass(MainStyle.debuggable) }
-                        vbox { modulesGui.add(ModuleView(parent, "Stats Database")); addClass(MainStyle.debuggable) }
-                    }
-
+                    // MATCH INFO
+                    label("MATCH MONITORS") { addClass(MainStyle.lobbyName) }
                     // MATCH VIEWS
-                    for (i in 0..3) hbox { matchesGui.add(MatchView(parent)); addClass(MainStyle.debuggable) }
+                    for (i in 0..3) hbox { matchesGui.add(MatchView(parent)) }
 
                 }
 
-                // RIGHT SIDE COLUMN ========
-                vbox { alignment = Pos.TOP_CENTER; addClass(MainStyle.debuggable); setSpacing(2.0)
+                // ======== RIGHT SIDE COLUMN ========
+                vbox { alignment = Pos.TOP_CENTER; setSpacing(2.0)
+                    minWidth = 420.0
+                    maxWidth = 420.0
 
-                    // LOBBY INFO
-                    hbox { addClass(MainStyle.debuggable)
-                        label("LOBBY_MAX_LENGTH") { addClass(MainStyle.lobbyName) }
-                    }
-
+                    // LOBBY NAME
+                    label("LOBBY_TITLE_FULL") { addClass(MainStyle.lobbyName) }
                     // PLAYER VIEWS
-                    for (i in 0..7) hbox { playersGui.add(PlayerView(parent)); addClass(MainStyle.debuggable) }
+                    for (i in 0..7) hbox { playersGui.add(PlayerView(parent)) }
                 }
+
+            }
+
+            // ======== BOTTOM UTILS ========
+            hbox { alignment = Pos.BOTTOM_CENTER
+                minWidth = 940.0
+                maxWidth = 940.0
+                minHeight = 120.0
+                maxHeight = 120.0
+                stackpane { translateY += 10
+                    imageview(getRes("gn_atlas.png").toString()) { setViewport(Rectangle2D(20.0, 910.0, 920.0, 100.0)) }
+                    hbox {
+                        addClass(MainStyle.utilsContainer); setPadding(Insets(10.0,10.0,10.0,15.0))
+                        minWidth = 920.0
+                        maxWidth = 920.0
+                        minHeight = 100.0
+                        maxHeight = 100.0
+                        hbox {
+                            alignment = Pos.BOTTOM_LEFT
+                            minWidth = 384.0
+                            maxWidth = 384.0
+                            hbox { modulesGui.add(ModuleView(parent, "Guilty Gear Xrd")) }
+                            hbox { modulesGui.add(ModuleView(parent, "GearNet Client")) }
+                            hbox { modulesGui.add(ModuleView(parent, "Stats Database")) }
+                        }
+                    }
+                }
+
             }
 
             cycleDatabase()
