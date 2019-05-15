@@ -26,6 +26,8 @@ import memscan.MatchData
 
 class Match(matchData: MatchData = MatchData()) {
 
+//    private var p1data = ArrayList<Snap>()
+//    private var p2data = ArrayList<Snap>()
     private var data = Pair(matchData, matchData)
 
     private fun oldData() = data.first
@@ -34,5 +36,9 @@ class Match(matchData: MatchData = MatchData()) {
     fun updateMatchData(updatedData: MatchData) {
         data = Pair(getData(), updatedData)
     }
+
+//    class Snap(updatedData: MatchData) {
+//
+//    }
 
 }

@@ -1,6 +1,5 @@
 package session
 
-import application.playersActive
 import azUtils.addCommas
 import memscan.PlayerData
 import session.Character.getCharacterName
@@ -21,7 +20,7 @@ class Player(playerData: PlayerData = PlayerData()) {
     private fun oldData() = data.first
     fun getData() = data.second
 
-    fun updatePlayerData(updatedData: PlayerData) {
+    fun updatePlayerData(updatedData: PlayerData, playersActive: Int) {
         data = Pair(getData(), updatedData)
         if (hasLoaded()) {
             present = true
@@ -30,7 +29,7 @@ class Player(playerData: PlayerData = PlayerData()) {
     }
 
 
-    fun getNameString() = "${getData().displayName}"
+    fun getNameString() = getData().displayName
 
     fun getSteamId() = getData().steamUserId
 
@@ -60,7 +59,7 @@ class Player(playerData: PlayerData = PlayerData()) {
     fun getBountyFormatted(ramp:Float = 1f) = if (getBounty() > 0) "${addCommas(min(getBounty()-getChange()+(getChange()*ramp).toInt(), getBounty()).toString())} W$"
     else "${addCommas(max(getBounty()-getChange()+(getChange()*ramp).toInt(), getBounty()).toString())} W$"
 
-    fun getBountyString(ramp:Float = 1f) = if (getBounty() > 0) "${getBountyFormatted(if (change!=0) ramp else 1f)}" else ""
+    fun getBountyString(ramp:Float = 1f) = if (getBounty() > 0) getBountyFormatted(if (change!=0) ramp else 1f) else ""
 
     fun getRecordString() = "W:${getMatchesWon()}  /  M:${getMatchesPlayed()}"
 
@@ -75,7 +74,6 @@ class Player(playerData: PlayerData = PlayerData()) {
     fun getChainString():String = if (getChain()>=8) "★" else if (getChain()>0) getChain().toString() else ""
 
     fun changeChain(amount:Int): Int {
-        idle = playersActive
         chain += amount
         if (chain < 0) chain = 0
         if (chain > 8) chain = 8

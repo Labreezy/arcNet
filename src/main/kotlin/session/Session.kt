@@ -5,6 +5,7 @@ import memscan.MemHandler
 import memscan.PlayerData
 import memscan.XrdApi
 import tornadofx.Controller
+import kotlin.math.max
 
 
 class Session: Controller() {
@@ -12,7 +13,7 @@ class Session: Controller() {
     val dataApi: DatabaseHandler = DatabaseHandler("159.89.112.213", password = "", username = "")
     val players: HashMap<Long, Player> = HashMap()
     val matches: HashMap<Long, Match> = HashMap()
-    var lobbyGamesCounter: Int = 0
+    var totalMatchesPlayed: Int = 0
 
     fun updatePlayers(): Boolean {
         var somethingChanged = false
@@ -23,12 +24,12 @@ class Session: Controller() {
             if (data.steamUserId != 0L) {
                 // Add player if they aren't already stored
                 if (!players.containsKey(data.steamUserId)) {
-                    players.put(data.steamUserId, Player(data)); somethingChanged = true }
+                    players[data.steamUserId] = Player(data); somethingChanged = true }
 
                 // The present is now the past, and the future is now the present
-                val player = players.get(data.steamUserId)!!
+                val player = players[data.steamUserId]!!
                 if (!player.getData().equals(data)) { somethingChanged = true }
-                player.updatePlayerData(data)
+                player.updatePlayerData(data, getActivePlayerCount())
 
                 // Resolve if a game occured and what the reward will be
                 val bountyLost = resolveEveryoneElse(data)
@@ -43,11 +44,11 @@ class Session: Controller() {
     }
 
     private fun resolveTheWinner(data: PlayerData, loserChange: Int) {
-        players.values.filter { it.getSteamId().equals(data.steamUserId) && it.hasWon() }.forEach { w ->
+        players.values.filter { it.getSteamId() == data.steamUserId && it.hasWon() }.forEach { w ->
             w.changeChain(1)
             val payout = w.getChain() * w.getMatchesWon() + w.getMatchesPlayed() + loserChange + (w.getChain() * w.getChain() * 100)
             w.changeBounty(payout)
-            lobbyGamesCounter++
+            totalMatchesPlayed++
         }
     }
 
@@ -63,6 +64,6 @@ class Session: Controller() {
         return 0
     }
 
-    fun getActivePlayerCount() = players.values.filter { !it.isIdle() }.size
+    fun getActivePlayerCount() = max(players.values.filter { !it.isIdle() }.size, 1)
 
 }

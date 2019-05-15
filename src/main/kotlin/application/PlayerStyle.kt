@@ -101,7 +101,7 @@ class PlayerStyle : Stylesheet() {
                 alignment = Pos.BOTTOM_RIGHT
             }
             and(statusText) {
-                padding = box(0.px, 8.px, 0.px, 8.px)
+                padding = box(0.0.px, 8.0.px)
                 textFill = c("#0094a4")
                 fontSize = 10.px
                 alignment = Pos.CENTER_RIGHT

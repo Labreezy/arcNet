@@ -18,29 +18,29 @@ import kotlin.random.Random
 
 class PlayerView(override val root: Parent) : Fragment() {
 
-    lateinit var character: ImageView
-    lateinit var handle: Label
-    lateinit var statusBar: HBox
-    lateinit var status: Label
+    private lateinit var character: ImageView
+    private lateinit var statusBar: HBox
+    private lateinit var handle: Label
+    private lateinit var status: Label
 
-    lateinit var bounty1: Label
-    lateinit var bounty2: Label
+    private lateinit var bounty1: Label
+    private lateinit var bounty2: Label
 
-    lateinit var chain1: Label
-    lateinit var chain2: Label
+    private lateinit var chain1: Label
+    private lateinit var chain2: Label
 
-    lateinit var change: Label
+    private lateinit var change: Label
 
-    lateinit var record: Label
-    lateinit var cabinet: Label
-    lateinit var location: Label
+    private lateinit var record: Label
+    private lateinit var cabinet: Label
+    private lateinit var location: Label
 
     init { with(root) {
         hbox { addClass(PlayerStyle.playerContainer)
             minWidth = 400.0
             maxWidth = 400.0
             character = imageview(getRes("gn_atlas.png").toString()) {
-                setViewport(Rectangle2D(576.0, 192.0, 64.0, 64.0))
+                viewport = Rectangle2D(576.0, 192.0, 64.0, 64.0)
                 translateY -= 2.0
                 translateX -= 2.0
             }
@@ -49,7 +49,7 @@ class PlayerView(override val root: Parent) : Fragment() {
                 minWidth = 340.0
                 maxWidth = 340.0
                 stackpane { alignment = Pos.CENTER_LEFT
-                    statusBar = hbox { addClass(PlayerStyle.statusBar);
+                    statusBar = hbox { addClass(PlayerStyle.statusBar)
                         translateY += 1.0
                         maxWidth = 0.0
                     }
@@ -101,7 +101,7 @@ class PlayerView(override val root: Parent) : Fragment() {
                         cabinet = label("") { addClass(PlayerStyle.recordText) }
                         location = label("") { addClass(PlayerStyle.recordText) }
                     }
-                    vbox { setPadding(Insets(0.0,0.0,0.0,8.0))
+                    vbox { padding = Insets(0.0,0.0,0.0,8.0)
                         translateX -= 525.0
                         translateY += 5.0
                         change = label("") { addClass(PlayerStyle.changeText) }
@@ -111,14 +111,13 @@ class PlayerView(override val root: Parent) : Fragment() {
         }
     } }
 
-    fun applyData(p: Player) {
-        Platform.runLater({
-            if (false) applyRandomData(p) else
+    fun applyData(p: Player) = Platform.runLater {
+        if (false) applyRandomData(p) else
             if (p.getSteamId() > 0L) {
 
-                character.setViewport(getCharacterPortrait(p.getData().characterId, p.isIdle()))
+                character.viewport = getCharacterPortrait(p.getData().characterId, p.isIdle())
 
-                handle.text = p.getNameString(); handle.setVisible(true)
+                handle.text = p.getNameString(); handle.isVisible = true
                 statusBar.maxWidth = 335.0 * (p.getLoadPercent()*0.01)
                 status.text = p.getStatusString()
 
@@ -128,7 +127,7 @@ class PlayerView(override val root: Parent) : Fragment() {
                 chain1.text = p.getChainString()
                 chain2.text = p.getChainString()
 
-                if (p.getChange() > 0) change.setTextFill(c("#84c928")) else change.setTextFill(c("#d22e44"))
+                if (p.getChange() > 0) change.textFill = c("#84c928") else change.textFill = c("#d22e44")
                 change.text = p.getChangeString()
 
                 record.text = p.getRecordString()
@@ -136,8 +135,8 @@ class PlayerView(override val root: Parent) : Fragment() {
                 location.text = p.getPlaySideString()
 
             } else {
-                character.setViewport(Rectangle2D(576.0, 192.0, 64.0, 64.0))
-                handle.text = ""; handle.setVisible(false)
+                character.viewport = Rectangle2D(576.0, 192.0, 64.0, 64.0)
+                handle.text = ""; handle.isVisible = false
                 statusBar.maxWidth = 0.0
                 status.text = ""
                 bounty1.text = ""
@@ -149,7 +148,6 @@ class PlayerView(override val root: Parent) : Fragment() {
                 cabinet.text = ""
                 location.text = ""
             }
-        })
     }
 
     private fun applyRandomData(p: Player) {
@@ -158,18 +156,18 @@ class PlayerView(override val root: Parent) : Fragment() {
         val changeInt = Random.nextInt(-444555, 666777)
         val chainInt = Random.nextInt(0, 9)
         val winsInt = Random.nextInt(44)
-        character.setViewport(Rectangle2D(Random.nextInt(8) * 64.0, Random.nextInt(4) * 64.0, 64.0, 64.0))
+        character.viewport = Rectangle2D(Random.nextInt(8) * 64.0, Random.nextInt(4) * 64.0, 64.0, 64.0)
         handle.text = generateRandomName()
         statusBar.maxWidth = 335.0 * (loadingInt * 0.01)
-        bounty1.text = "${bountyStr} W$"
-        bounty2.text = "${bountyStr} W$"
+        bounty1.text = "$bountyStr W$"
+        bounty2.text = "$bountyStr W$"
         chain1.text = if (chainInt >= 8) "★" else if (chainInt > 0) chainInt.toString() else ""
         chain2.text = if (chainInt >= 8) "★" else if (chainInt > 0) chainInt.toString() else ""
-        if (changeInt > 0) change.setTextFill(c("#84c928")) else change.setTextFill(c("#d22e44"))
+        if (changeInt > 0) change.textFill = c("#84c928") else change.textFill = c("#d22e44")
         change.text = p.getChangeString(1f, changeInt)
-        record.text = "W:${winsInt}  /  M:${winsInt + Random.nextInt(44)}"
+        record.text = "W:$winsInt  /  M:${winsInt + Random.nextInt(44)}"
         location.text = "Roaming Lobby"
-        status.text = "Standby: ${Random.nextInt(1, 8)} [${loadingInt}%]"
+        status.text = "Standby: ${Random.nextInt(1, 8)} [$loadingInt%]"
     }
 
 }
