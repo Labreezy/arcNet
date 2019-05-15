@@ -20,16 +20,16 @@ class Player(playerData: PlayerData = PlayerData()) {
     private fun oldData() = data.first
     fun getData() = data.second
 
-    fun updatePlayerData(updatedData: PlayerData) {
+    fun updatePlayerData(updatedData: PlayerData, playersActive: Int) {
         data = Pair(getData(), updatedData)
         if (hasLoaded()) {
             present = true
-//            idle = max(session.getActivePlayerCount(), 1)
+            idle = playersActive
         }
     }
 
 
-    fun getNameString() = "${getData().displayName}"
+    fun getNameString() = getData().displayName
 
     fun getSteamId() = getData().steamUserId
 
@@ -59,7 +59,7 @@ class Player(playerData: PlayerData = PlayerData()) {
     fun getBountyFormatted(ramp:Float = 1f) = if (getBounty() > 0) "${addCommas(min(getBounty()-getChange()+(getChange()*ramp).toInt(), getBounty()).toString())} W$"
     else "${addCommas(max(getBounty()-getChange()+(getChange()*ramp).toInt(), getBounty()).toString())} W$"
 
-    fun getBountyString(ramp:Float = 1f) = if (getBounty() > 0) "${getBountyFormatted(if (change!=0) ramp else 1f)}" else "Free"
+    fun getBountyString(ramp:Float = 1f) = if (getBounty() > 0) getBountyFormatted(if (change!=0) ramp else 1f) else ""
 
     fun getRecordString() = "W:${getMatchesWon()}  /  M:${getMatchesPlayed()}"
 
@@ -71,10 +71,9 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     fun getChain() = chain
 
-    fun getChainString():String = if (getChain()>=8) "MAX 8" else if (getChain()>0) getChain().toString() else ""
+    fun getChainString():String = if (getChain()>=8) "★" else if (getChain()>0) getChain().toString() else ""
 
     fun changeChain(amount:Int): Int {
-//        idle = max(session.getActivePlayerCount(), 1)
         chain += amount
         if (chain < 0) chain = 0
         if (chain > 8) chain = 8
@@ -88,11 +87,6 @@ class Player(playerData: PlayerData = PlayerData()) {
         else if (change < 0) return "-${addCommas(abs(max(change*ramp, change.toFloat()).toInt()).toString())} W$"
         else return ""
     }
-
-//    val changeColDelay = 320L
-//    val changeColInterval = 16L
-//    var changeCol = ColF(changeColDelay, changeColInterval, Vec4(0), Vec4(0))
-//    fun getChangeColor() = changeCol.getCol()
 
     fun getMatchesWon() = getData().matchesWon
 
@@ -110,11 +104,12 @@ class Player(playerData: PlayerData = PlayerData()) {
             1 -> return "Cabinet B"
             2 -> return "Cabinet C"
             3 -> return "Cabinet D"
-            else -> return "-"
+            else -> return ""
         }
     }
 
     fun getPlaySideString(): String {
+        if (getCabinet().toInt() > 3) return ""
         when(getData().playerSide.toInt()) {
             0 -> return "Player One"
             1 -> return "Player Two"
@@ -160,7 +155,7 @@ class Player(playerData: PlayerData = PlayerData()) {
         if (getMatchesWon() >= 34 && getRating() >= 1.4f) grade = "S"
         if (getMatchesWon() >= 55 && getRating() >= 1.6f) grade = "S+"
 
-        return grade // "${grade} ${(getPlayerRating()*10).toInt()}"
+        return grade
     }
 
 //    fun getRatingColor(): Vec4 {

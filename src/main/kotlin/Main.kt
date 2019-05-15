@@ -6,19 +6,18 @@ import javafx.stage.Stage
 import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
-import tornadofx.reloadStylesheetsOnFocus
 
 fun main(args: Array<String>) { launch<MyApp>(args) }
 
 class MyApp : App(MainView::class, MainStyle::class, MatchStyle::class, PlayerStyle::class) {
 
     init {
-        reloadStylesheetsOnFocus()
+//        reloadStylesheetsOnFocus()
     }
 
     override fun onBeforeShow(view: UIComponent) {
         super.onBeforeShow(view)
-        view.title = "ＧｅａｒＮｅｔ  //  0.5.0"
+        view.title = "ＧｅａｒＮｅｔ  //  0.5.3"
 
     }
 

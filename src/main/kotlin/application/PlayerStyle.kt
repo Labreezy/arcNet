@@ -13,7 +13,6 @@ class PlayerStyle : Stylesheet() {
         val fontFiraCodeBold = loadFont("/fonts/FiraCode-Bold.ttf", 16.0)
         val fontFiraCodeMedium = loadFont("/fonts/FiraCode-Medium.ttf", 16.0)
         val fontPaladinsStraight = loadFont("/fonts/Paladins-Straight.ttf", 16.0)
-        val fontPaladinsCondensed = loadFont("/fonts/Paladins-Condensed.ttf", 16.0)
         val fontRED = loadFont("/fonts/RED.ttf", 16.0)
 
         val playerContainer by cssclass()
@@ -102,18 +101,16 @@ class PlayerStyle : Stylesheet() {
                 alignment = Pos.BOTTOM_RIGHT
             }
             and(statusText) {
-                padding = box(0.px, 8.px, 0.px, 8.px)
-                textFill = c("#120109")
+                padding = box(0.0.px, 8.0.px)
+                textFill = c("#0094a4")
                 fontSize = 10.px
                 alignment = Pos.CENTER_RIGHT
             }
             and(recordText) {
                 fontFiraCodeBold?.let { font = it }
-                padding = box(4.px, 0.px, 0.px, 0.px)
-                textFill = c("#2bd8a7")
                 fontSize = 9.px
-                minWidth = 100.px
-                maxWidth = 100.px
+                minWidth = 200.px
+                maxWidth = 200.px
                 alignment = Pos.CENTER_LEFT
             }
             and(chainText) {
