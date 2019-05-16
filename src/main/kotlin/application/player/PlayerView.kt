@@ -1,4 +1,4 @@
-package application
+package application.player
 
 import azUtils.addCommas
 import azUtils.getRes
@@ -156,6 +156,7 @@ class PlayerView(override val root: Parent) : Fragment() {
         val changeInt = Random.nextInt(-444555, 666777)
         val chainInt = Random.nextInt(0, 9)
         val winsInt = Random.nextInt(44)
+        val cabId = Random.nextInt(5)
         character.viewport = Rectangle2D(Random.nextInt(8) * 64.0, Random.nextInt(4) * 64.0, 64.0, 64.0)
         handle.text = generateRandomName()
         statusBar.maxWidth = 335.0 * (loadingInt * 0.01)
@@ -166,7 +167,8 @@ class PlayerView(override val root: Parent) : Fragment() {
         if (changeInt > 0) change.textFill = c("#84c928") else change.textFill = c("#d22e44")
         change.text = p.getChangeString(1f, changeInt)
         record.text = "W:$winsInt  /  M:${winsInt + Random.nextInt(44)}"
-        location.text = "Roaming Lobby"
+        location.text = p.getPlaySideString(cabId, Random.nextInt(8))
+        cabinet.text = p.getCabinetString(cabId)
         status.text = "Standby: ${Random.nextInt(1, 8)} [$loadingInt%]"
     }
 

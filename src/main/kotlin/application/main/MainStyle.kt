@@ -1,4 +1,4 @@
-package application
+package application.main
 
 import azUtils.getRes
 import javafx.geometry.Pos

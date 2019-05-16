@@ -1,7 +1,7 @@
-import application.MainStyle
-import application.MainView
-import application.MatchStyle
-import application.PlayerStyle
+import application.main.MainStyle
+import application.main.MainView
+import application.match.MatchStyle
+import application.player.PlayerStyle
 import javafx.stage.Stage
 import tornadofx.App
 import tornadofx.UIComponent

@@ -1,5 +1,6 @@
-package application
+package application.tools
 
+import application.main.MainStyle
 import azUtils.getRes
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
