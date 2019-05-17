@@ -67,7 +67,13 @@ data class MatchData(
     // Direction pressed? : Pair<?, ?>
     // Tension Pulse? : Pair<Float, Float>
     // Stun level? : Pair<Int, Int>
-)
+) {
+    fun equals(other: MatchData) = other.tension == tension &&
+            other.health == health &&
+            other.burst == burst &&
+            other.risc == risc &&
+            other.isHit == isHit
+}
 
 data class LobbyData(
     val lobbyName: String = ""

@@ -1,4 +1,4 @@
-package azUtils
+package utils
 
 import java.io.File
 import java.io.FileNotFoundException
@@ -115,7 +115,9 @@ fun time(epochMilli: Long) = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT
  *
  * @return the formatted date and time as a `String`
  */
-fun time() = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(Locale.US).withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(timeMillis()))
+fun time() = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(Locale.US).withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(
+    timeMillis()
+))
 
 
 /**
@@ -191,11 +193,26 @@ fun truncate(name: String, length: Int): String {
  * @param inStr soon.
  */
 fun addCommas(inStr: String):String {
-    var commas = if (inStr.length % 3 == 0) (inStr.length/3)-1 else inStr.length/3
+    val commas = if (inStr.length % 3 == 0) (inStr.length/3)-1 else inStr.length/3
     var outStr = ""
     for (i in 0..commas-1) outStr = if (inStr.length > 3) ",${inStr.substring(inStr.length-(3*(i+1)), inStr.length-(3*i))}${outStr}" else "${inStr.substring(inStr.length-(3*(i+1)), inStr.length-(3*i))}${outStr}"
     return inStr.substring(0, inStr.length-(3*commas)) + outStr
 }
+
+
+/**
+ * TODO: WTF DOES THIS DO?
+ *
+ * uhhh
+ */
+fun keepInRange(value:Int, minimum:Int = -2147483647, maximum:Int = 2147483647, retainMax:Boolean = false): Int = if (value > maximum || value < minimum) { if (retainMax) maximum else minimum } else value
+/**
+ * TODO: WTF DOES THIS DO?
+ *
+ * uhhh
+ */
+fun isInRange(value:Int, minimum:Int = -2147483647, maximum:Int = 2147483647): Boolean = !(value > maximum || value < minimum)
+
 
 
 /**
@@ -218,3 +235,14 @@ fun writeToFile(fileName: String, text: String) {
 fun getRes(fileName: String): URI {
     return URI("${pathHome.toUri().toURL()}src/main/resources/${fileName}")
 }
+
+
+/**
+ * TODO: WTF DOES THIS DO?
+ *
+ * This is basically the same as Pair(), except mutable and unsafe.
+ */
+class Duo<F, S>(
+    var p1: F,
+    var p2: S
+) { fun p(p:Int) = if (p==0) p1 else p2 }

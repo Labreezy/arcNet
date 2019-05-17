@@ -1,8 +1,8 @@
 package session
 
-import azUtils.addCommas
 import memscan.PlayerData
 import session.Character.getCharacterName
+import utils.addCommas
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -98,8 +98,8 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     fun getCabinet() = getData().cabinetLoc
 
-    fun getCabinetString(): String {
-        when(getCabinet().toInt()) {
+    fun getCabinetString(cabId:Int = getCabinet().toInt()): String {
+        when(cabId) {
             0 -> return "Cabinet A"
             1 -> return "Cabinet B"
             2 -> return "Cabinet C"
@@ -108,9 +108,9 @@ class Player(playerData: PlayerData = PlayerData()) {
         }
     }
 
-    fun getPlaySideString(): String {
-        if (getCabinet().toInt() > 3) return ""
-        when(getData().playerSide.toInt()) {
+    fun getPlaySideString(cabId:Int = getCabinet().toInt(), sideId:Int = getData().playerSide.toInt()): String {
+        if (cabId > 3) return ""
+        when(sideId) {
             0 -> return "Player One"
             1 -> return "Player Two"
             2 -> return "2nd (Next)"

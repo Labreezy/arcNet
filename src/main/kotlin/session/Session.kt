@@ -10,10 +10,9 @@ import kotlin.math.max
 
 class Session: Controller() {
     val xrdApi: XrdApi = MemHandler()
-    val dataApi: DatabaseHandler = DatabaseHandler("159.89.112.213", password = "", username = "")
+    val dataApi: DatabaseHandler = DatabaseHandler("","","")
     val players: HashMap<Long, Player> = HashMap()
-    val matches: HashMap<Long, Match> = HashMap()
-    var totalMatchesPlayed: Int = 0
+    val match = Match() //var matches: HashMap<Long, Match> = HashMap()
 
     fun updatePlayers(): Boolean {
         var somethingChanged = false
@@ -43,12 +42,17 @@ class Session: Controller() {
         return somethingChanged
     }
 
+    fun updateMatch(): Boolean {
+        val matchData = xrdApi.getMatchData()
+        return match.updateMatchData(matchData)
+    }
+
     private fun resolveTheWinner(data: PlayerData, loserChange: Int) {
         players.values.filter { it.getSteamId() == data.steamUserId && it.hasWon() }.forEach { w ->
             w.changeChain(1)
             val payout = w.getChain() * w.getMatchesWon() + w.getMatchesPlayed() + loserChange + (w.getChain() * w.getChain() * 100)
             w.changeBounty(payout)
-            totalMatchesPlayed++
+//            matches.put(matches.size.toLong(), Match())
         }
     }
 

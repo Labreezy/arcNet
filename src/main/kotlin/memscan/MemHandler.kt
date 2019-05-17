@@ -1,12 +1,12 @@
 package memscan
 
-import azUtils.truncate
 import com.sun.jna.Memory
 import com.sun.jna.Pointer
 import org.jire.kotmem.win32.Kernel32.ReadProcessMemory
 import org.jire.kotmem.win32.Win32Process
 import org.jire.kotmem.win32.openProcess
 import org.jire.kotmem.win32.processIDByName
+import utils.truncate
 import java.nio.ByteBuffer
 
 
@@ -81,7 +81,7 @@ class MemHandler : XrdApi {
     override fun getMatchData(): MatchData {
         val sortedStructOffs = longArrayOf(0x9CCL, 0x2888L, 0xA0F4L, 0x22960, 0x2AC64)
         var p1offs = longArrayOf(0x1B18C78L,0L)
-        var p2offs = p1offs
+        var p2offs = longArrayOf(0x1B18C78L,0L)
         p2offs[0] += 4L
         try {
             p1offs[1] = sortedStructOffs[0]

@@ -1,4 +1,4 @@
-package application
+package application.player
 
 import javafx.geometry.Pos
 import javafx.scene.layout.BorderStrokeStyle
