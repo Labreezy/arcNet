@@ -1,13 +1,13 @@
 package application.tools
 
-import application.main.MainStyle
-import azUtils.getRes
+import application.MainStyle
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.control.Label
 import javafx.scene.image.ImageView
 import tornadofx.*
+import utils.getRes
 
 class ModuleView(override val root: Parent, modTitle: String): Fragment() {
 

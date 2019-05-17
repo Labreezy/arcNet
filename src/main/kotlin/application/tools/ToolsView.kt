@@ -1,7 +1,6 @@
 package application.tools
 
-import application.main.MainStyle
-import azUtils.getRes
+import application.MainStyle
 import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.geometry.Pos
@@ -10,6 +9,7 @@ import javafx.scene.Parent
 import javafx.scene.control.Label
 import session.Session
 import tornadofx.*
+import utils.getRes
 
 class ToolsView(override val root: Parent) : Fragment() {
 
@@ -48,7 +48,7 @@ class ToolsView(override val root: Parent) : Fragment() {
     }
 
     fun applyData(session: Session) = Platform.runLater {
-        matchesPlayedLabel.text = "Matches:  ${session.matches}"
+        matchesPlayedLabel.text = "Matches: -1 / 1"
         playersActiveLabel.text = "Players:  ${session.getActivePlayerCount()} / ${session.players.size}"
         modulesGui.forEach { it.nextFrame() }
     }

@@ -1,7 +1,7 @@
 package streamlabs
 
-import azUtils.writeToFile
 import session.Player
+import utils.writeToFile
 
 
 class SlobsHandler {

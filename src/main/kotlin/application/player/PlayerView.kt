@@ -1,7 +1,5 @@
 package application.player
 
-import azUtils.addCommas
-import azUtils.getRes
 import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.geometry.Pos
@@ -13,10 +11,14 @@ import javafx.scene.layout.HBox
 import session.Character.getCharacterPortrait
 import session.Player
 import tornadofx.*
+import utils.addCommas
 import utils.generateRandomName
+import utils.getRes
 import kotlin.random.Random
 
 class PlayerView(override val root: Parent) : Fragment() {
+
+    private lateinit var wholeThing: HBox
 
     private lateinit var character: ImageView
     private lateinit var statusBar: HBox
@@ -36,9 +38,10 @@ class PlayerView(override val root: Parent) : Fragment() {
     private lateinit var location: Label
 
     init { with(root) {
-        hbox { addClass(PlayerStyle.playerContainer)
+        wholeThing = hbox { addClass(PlayerStyle.playerContainer)
             minWidth = 400.0
             maxWidth = 400.0
+            opacity = 0.4
             character = imageview(getRes("gn_atlas.png").toString()) {
                 viewport = Rectangle2D(576.0, 192.0, 64.0, 64.0)
                 translateY -= 2.0
@@ -114,7 +117,7 @@ class PlayerView(override val root: Parent) : Fragment() {
     fun applyData(p: Player) = Platform.runLater {
         if (false) applyRandomData(p) else
             if (p.getSteamId() > 0L) {
-
+                wholeThing.opacity = 1.0
                 character.viewport = getCharacterPortrait(p.getData().characterId, p.isIdle())
 
                 handle.text = p.getNameString(); handle.isVisible = true

@@ -1,5 +1,5 @@
-import application.main.MainStyle
-import application.main.MainView
+import application.MainStyle
+import application.MainView
 import application.match.MatchStyle
 import application.player.PlayerStyle
 import javafx.stage.Stage
@@ -17,7 +17,7 @@ class MyApp : App(MainView::class, MainStyle::class, MatchStyle::class, PlayerSt
 
     override fun onBeforeShow(view: UIComponent) {
         super.onBeforeShow(view)
-        view.title = "ＧｅａｒＮｅｔ  //  0.5.3"
+        view.title = "ＧｅａｒＮｅｔ  //  0.5.6"
 
     }
 

@@ -57,7 +57,7 @@ class MatchStyle : Stylesheet() {
 
             and(matchTitle) {
                 fontPaladinsStraight?.let { font = it }
-                fontSize = 24.px
+                fontSize = 20.px
                 textFill = c("#04a4c4")
             }
 
@@ -73,8 +73,8 @@ class MatchStyle : Stylesheet() {
 
             and(demoText) {
                 fontSize = 10.px
-                minWidth = 128.px
-                maxWidth = 128.px
+                minWidth = 140.px
+                maxWidth = 140.px
                 padding = box(2.px, 0.px, 0.px, 0.px)
                 alignment = Pos.CENTER_LEFT
             }

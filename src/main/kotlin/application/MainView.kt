@@ -1,4 +1,4 @@
-package application.main
+package application
 
 import application.match.MatchView
 import application.player.PlayerView
@@ -27,7 +27,10 @@ class MainView : View() {
     private fun cycleMemScan() { GlobalScope.launch {
         utilsGui.blinkGuiltyGearIndicator(session)
         if (session.xrdApi.isConnected() && session.updatePlayers()) redrawAppUi()
-        delay(256); cycleMemScan() }
+        if (session.xrdApi.isConnected() && session.updateMatch()) {
+            matchesGui[0].applyMatch(session.match)
+        }
+        delay(128); cycleMemScan() }
     }
 
     private fun cycleUi() { GlobalScope.launch {
@@ -37,11 +40,11 @@ class MainView : View() {
 
     private fun redrawAppUi() {
         utilsGui.blinkGearNetIndicator(session)
+        // Sort and redraw PlayerViews
         val uiUpdate: List<Player> = session.players.values.toList().sortedByDescending { item -> item.getRating() }.sortedByDescending { item -> item.getBounty() }.sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
         for (i in 0..7) if (uiUpdate.size > i) playersGui[i].applyData(uiUpdate[i])
         else playersGui[i].applyData(Player())
-
-        // TODO: UPDATE MATCH GUI HERE
+        // Sort and redraw MatchViews
 
     }
 
@@ -58,10 +61,10 @@ class MainView : View() {
                     // MATCH INFO
                     label("MATCH MONITORS") { addClass(MainStyle.lobbyName) }
                     // MATCH VIEWS
-                    hbox{matchesGui.add(MatchView(parent, "A"))}
-                    hbox{matchesGui.add(MatchView(parent, "B"))}
-                    hbox{matchesGui.add(MatchView(parent, "C"))}
-                    hbox{matchesGui.add(MatchView(parent, "D"))}
+                    hbox{matchesGui.add(MatchView(parent))}
+                    hbox{matchesGui.add(MatchView(parent))}
+                    hbox{matchesGui.add(MatchView(parent))}
+                    hbox{matchesGui.add(MatchView(parent))}
                 }
 
                 // ======== RIGHT SIDE COLUMN ========

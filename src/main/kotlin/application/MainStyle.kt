@@ -1,12 +1,12 @@
-package application.main
+package application
 
-import azUtils.getRes
 import javafx.geometry.Pos
 import javafx.scene.layout.BorderStrokeStyle
 import javafx.scene.shape.StrokeLineCap
 import javafx.scene.shape.StrokeLineJoin
 import javafx.scene.shape.StrokeType
 import tornadofx.*
+import utils.getRes
 
 class MainStyle : Stylesheet() {
 

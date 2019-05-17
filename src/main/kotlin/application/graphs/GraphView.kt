@@ -1,11 +1,11 @@
 package application.graphs
 
 import application.match.MatchStyle
-import azUtils.getRes
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import tornadofx.*
+import utils.getRes
 
 /*
     data class MatchData(

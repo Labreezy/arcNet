@@ -12,8 +12,7 @@ class Session: Controller() {
     val xrdApi: XrdApi = MemHandler()
     val dataApi: DatabaseHandler = DatabaseHandler("","","")
     val players: HashMap<Long, Player> = HashMap()
-
-    var matches: HashMap<Long, Match> = HashMap()
+    val match = Match() //var matches: HashMap<Long, Match> = HashMap()
 
     fun updatePlayers(): Boolean {
         var somethingChanged = false
@@ -43,12 +42,17 @@ class Session: Controller() {
         return somethingChanged
     }
 
+    fun updateMatch(): Boolean {
+        val matchData = xrdApi.getMatchData()
+        return match.updateMatchData(matchData)
+    }
+
     private fun resolveTheWinner(data: PlayerData, loserChange: Int) {
         players.values.filter { it.getSteamId() == data.steamUserId && it.hasWon() }.forEach { w ->
             w.changeChain(1)
             val payout = w.getChain() * w.getMatchesWon() + w.getMatchesPlayed() + loserChange + (w.getChain() * w.getChain() * 100)
             w.changeBounty(payout)
-            matches.put(matches.size.toLong(), Match())
+//            matches.put(matches.size.toLong(), Match())
         }
     }
 
