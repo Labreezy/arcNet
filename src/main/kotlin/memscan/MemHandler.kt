@@ -1,12 +1,12 @@
 package memscan
 
-import azUtils.truncate
 import com.sun.jna.Memory
 import com.sun.jna.Pointer
 import org.jire.kotmem.win32.Kernel32.ReadProcessMemory
 import org.jire.kotmem.win32.Win32Process
 import org.jire.kotmem.win32.openProcess
 import org.jire.kotmem.win32.processIDByName
+import utils.truncate
 import java.nio.ByteBuffer
 
 
@@ -18,21 +18,17 @@ class MemHandler : XrdApi {
     var GG_PROC: Win32Process? = null
 
     override fun isConnected(): Boolean {
-        if (GG_PROC != null) return true
-        try {
-            GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
+        try { GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
+            return true
         } catch (e: IllegalStateException) {
             return false
         }
-        return true
     }
 
     @UseExperimental(ExperimentalUnsignedTypes::class)
     private fun getByteBufferFromAddress(offsets: LongArray, numBytes: Int): ByteBuffer? {
-        if(GG_PROC == null){
-            if(!isConnected()){
-                return null
-            }
+        if(!isConnected()){
+            return null
         }
         val procBaseAddr: Pointer = GG_PROC!!.modules["GuiltyGearXrd.exe"]!!.pointer
         var bufferMem = Memory(4L)
@@ -85,8 +81,11 @@ class MemHandler : XrdApi {
     override fun getMatchData(): MatchData {
         val sortedStructOffs = longArrayOf(0x9CCL, 0x2888L, 0xA0F4L, 0x22960, 0x2AC64)
         var p1offs = longArrayOf(0x1B18C78L,0L)
-        var p2offs = p1offs
+        var p2offs = longArrayOf(0x1B18C78L,0L)
         p2offs[0] += 4L
+        val p1roundoffset = longArrayOf(0x1A3BA38L)
+        val p2roundoffset = longArrayOf(0x1A3BA3CL)
+        val timeroffs = longArrayOf(0x177A8ACL, 0x450L, 0x4CL, 0x708L)
         try {
             p1offs[1] = sortedStructOffs[0]
             p2offs[1] = sortedStructOffs[0]
@@ -103,9 +102,11 @@ class MemHandler : XrdApi {
             p1offs[1] = sortedStructOffs[4]
             p2offs[1] = sortedStructOffs[4]
             var tensions = Pair(getByteBufferFromAddress(p1offs, 4)!!.getInt(), getByteBufferFromAddress(p2offs, 4)!!.getInt())
-            return MatchData(tensions, healths, burstReadies, riscs, isHits)
+            var timer = getByteBufferFromAddress(timeroffs, 4)!!.getInt()
+            var rounds = Pair(getByteBufferFromAddress(p1roundoffset, 4)!!.getInt(), getByteBufferFromAddress(p2roundoffset, 4)!!.getInt())
+            return MatchData(tensions, healths, burstReadies, riscs, isHits, timer, rounds)
         } catch (e : NullPointerException) {
-            return MatchData(Pair(0,0), Pair(0,0), Pair(false, false), Pair(0,0), Pair(false, false))
+            return MatchData(Pair(-1,-1), Pair(-1,-1), Pair(false, false), Pair(-1,-1), Pair(false, false), -1, Pair(-1,-1))
         }
     }
 
