@@ -76,6 +76,8 @@ data class MatchData(
             other.isHit == isHit &&
             other.timer == timer &&
             other.rounds == rounds
+            other.isHit == isHit
+
 }
 
 data class LobbyData(

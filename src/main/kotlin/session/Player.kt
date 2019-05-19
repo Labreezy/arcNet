@@ -1,14 +1,14 @@
 package session
 
-import azUtils.addCommas
-import getSession
-import memscan.Character.getCharacterName
 import memscan.PlayerData
+import session.Character.getCharacterName
+import utils.addCommas
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class Player(playerData: PlayerData) {
+
+class Player(playerData: PlayerData = PlayerData()) {
 
     var present = true
     private var bounty = 0
@@ -20,21 +20,22 @@ class Player(playerData: PlayerData) {
     private fun oldData() = data.first
     fun getData() = data.second
 
-    fun updatePlayerData(updatedData: PlayerData) {
-        data = Pair(getData(), updatedData);
+    fun updatePlayerData(updatedData: PlayerData, playersActive: Int) {
+        data = Pair(getData(), updatedData)
         if (hasLoaded()) {
             present = true
-            idle = max(getSession().getActivePlayerCount(), 1)
+            idle = playersActive
         }
     }
 
-    fun getDisplayName() = getData().displayName
 
-    fun getNameString() = "${getDisplayName()}"
+    fun getNameString() = getData().displayName
 
     fun getSteamId() = getData().steamUserId
 
-    fun getCharacter(shortened: Boolean) = getCharacterName(getData().characterId, shortened)
+    fun getCharacterId() = getData().characterId
+
+    fun getCharacter() = getCharacterName(getData().characterId)
 
     fun isScoreboardWorthy() = getBounty() > 0 && idle > 0 && getMatchesWon() > 0
 
@@ -55,25 +56,24 @@ class Player(playerData: PlayerData) {
 
     fun getBounty() = bounty
 
-    fun getBountyFormatted(ramp:Float) = if (getBounty() > 0) "${addCommas(min(getBounty()-getChange()+(getChange()*ramp).toInt(), getBounty()).toString())} W$"
+    fun getBountyFormatted(ramp:Float = 1f) = if (getBounty() > 0) "${addCommas(min(getBounty()-getChange()+(getChange()*ramp).toInt(), getBounty()).toString())} W$"
     else "${addCommas(max(getBounty()-getChange()+(getChange()*ramp).toInt(), getBounty()).toString())} W$"
 
-    fun getBountyString(ramp:Float) = if (getBounty() > 0) "${getBountyFormatted(if (change!=0) ramp else 1f)}" else "Free"
+    fun getBountyString(ramp:Float = 1f) = if (getBounty() > 0) getBountyFormatted(if (change!=0) ramp else 1f) else ""
+
+    fun getRecordString() = "W:${getMatchesWon()}  /  M:${getMatchesPlayed()}"
 
     fun changeBounty(amount:Int) {
         change = amount
         bounty += amount
-//        if (getChange()>0) changeCol = ColF(changeColDelay, changeColInterval, Vec4(1,1,1,0), Vec4(0.2,0.8,0.2,1))
-//        else changeCol = ColF(changeColDelay+80, changeColInterval, Vec4(1,1,1,0), Vec4(0.8,0.2,0.2,1))
         if (bounty < 100) bounty = 0
     }
 
     fun getChain() = chain
 
-    fun getChainString():String = if (getChain()>=8) "8 MAX" else if (getChain()>0) getChain().toString() else "-"
+    fun getChainString():String = if (getChain()>=8) "★" else if (getChain()>0) getChain().toString() else ""
 
     fun changeChain(amount:Int): Int {
-        idle = max(getSession().getActivePlayerCount(), 1)
         chain += amount
         if (chain < 0) chain = 0
         if (chain > 8) chain = 8
@@ -82,16 +82,11 @@ class Player(playerData: PlayerData) {
 
     fun getChange() = change
 
-    fun getChangeString(ramp:Float): String {
+    fun getChangeString(ramp:Float = 1f, change:Int = this.change): String {
         if (change > 0) return "+${addCommas(min(change*ramp, change.toFloat()).toInt().toString())} W$"
         else if (change < 0) return "-${addCommas(abs(max(change*ramp, change.toFloat()).toInt()).toString())} W$"
         else return ""
     }
-
-//    val changeColDelay = 320L
-//    val changeColInterval = 16L
-//    var changeCol = ColF(changeColDelay, changeColInterval, Vec4(0), Vec4(0))
-//    fun getChangeColor() = changeCol.getCol()
 
     fun getMatchesWon() = getData().matchesWon
 
@@ -103,18 +98,19 @@ class Player(playerData: PlayerData) {
 
     fun getCabinet() = getData().cabinetLoc
 
-    fun getCabinetString(): String {
-        when(getCabinet().toInt()) {
+    fun getCabinetString(cabId:Int = getCabinet().toInt()): String {
+        when(cabId) {
             0 -> return "Cabinet A"
             1 -> return "Cabinet B"
             2 -> return "Cabinet C"
             3 -> return "Cabinet D"
-            else -> return "-"
+            else -> return ""
         }
     }
 
-    fun getPlaySideString(): String {
-        when(getData().playerSide.toInt()) {
+    fun getPlaySideString(cabId:Int = getCabinet().toInt(), sideId:Int = getData().playerSide.toInt()): String {
+        if (cabId > 3) return ""
+        when(sideId) {
             0 -> return "Player One"
             1 -> return "Player Two"
             2 -> return "2nd (Next)"
@@ -126,6 +122,10 @@ class Player(playerData: PlayerData) {
             else -> return "[${getData().playerSide.toInt()}]"
         }
     }
+
+    val MAX_IDLE = 8
+    fun getStatusString() = if (idle == 0) "Idle: ${idle} [${getLoadPercent()}%]" else "Standby: ${idle} [${getLoadPercent()}%]"
+
 
     fun getLoadPercent() = getData().loadingPct
 
@@ -155,7 +155,7 @@ class Player(playerData: PlayerData) {
         if (getMatchesWon() >= 34 && getRating() >= 1.4f) grade = "S"
         if (getMatchesWon() >= 55 && getRating() >= 1.6f) grade = "S+"
 
-        return grade // "${grade} ${(getPlayerRating()*10).toInt()}"
+        return grade
     }
 
 //    fun getRatingColor(): Vec4 {

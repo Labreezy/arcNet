@@ -1,96 +1,73 @@
 package session
 
 import database.DatabaseHandler
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import memscan.MemHandler
 import memscan.PlayerData
 import memscan.XrdApi
-import twitch.TwitchBot
+import tornadofx.Controller
+import kotlin.math.max
 
-class Session {
+
+class Session: Controller() {
     val xrdApi: XrdApi = MemHandler()
-    val dataApi: DatabaseHandler = DatabaseHandler("159.89.112.213", password = "", username = "")
-    val botApi: TwitchBot = TwitchBot("")
-    var players: MutableMap<Long, Player> = HashMap()
-    var gamesCount: Int = 0
-    var memoryCycle = 0
-    var databaseCycle = 0
+    val dataApi: DatabaseHandler = DatabaseHandler("","","")
+    val players: HashMap<Long, Player> = HashMap()
+    val match = Match() //var matches: HashMap<Long, Match> = HashMap()
 
-    fun cycleMemoryScan() {
-        GlobalScope.launch {
-            delay(32)
-            if (xrdApi.isConnected()) updatePlayerData()
-            memoryCycle++
-            cycleMemoryScan()
-        }
-    }
-
-    fun cycleDatabase() {
-        GlobalScope.launch {
-            delay(256)
-            if (dataApi.isConnected()) updatePlayerLegacies()
-            databaseCycle++
-            cycleDatabase()
-        }
-    }
-
-    fun getAll() = players.values.toList()
-        .sortedByDescending { item -> item.getRating() }
-        .sortedByDescending { item -> item.getBounty() }
-        .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
-
-    private fun updatePlayerLegacies() {
-        // do something
-    }
-
-    private fun updatePlayerData() {
-        var loserChange = 0
+    fun updatePlayers(): Boolean {
+        var somethingChanged = false
+        var bountyReward = 0
         val playerData = xrdApi.getPlayerData()
+
         playerData.forEach { data ->
-            addPlayerIfNew(data)
-            var currLoser = resolveTheLoser(data)
-            if (currLoser > 0) loserChange = currLoser
+            if (data.steamUserId != 0L) {
+                // Add player if they aren't already stored
+                if (!players.containsKey(data.steamUserId)) {
+                    players[data.steamUserId] = Player(data); somethingChanged = true }
+
+                // The present is now the past, and the future is now the present
+                val player = players[data.steamUserId]!!
+                if (!player.getData().equals(data)) { somethingChanged = true }
+                player.updatePlayerData(data, getActivePlayerCount())
+
+                // Resolve if a game occured and what the reward will be
+                val bountyLost = resolveEveryoneElse(data)
+                if (bountyLost > 0) { bountyReward = bountyLost; somethingChanged = true }
+            }
         }
-        playerData.forEach { resolveTheWinner(it, loserChange) }
+
+        // Pay the winner
+        playerData.forEach { resolveTheWinner(it, bountyReward) }
+
+        return somethingChanged
+    }
+
+    fun updateMatch(): Boolean {
+        val matchData = xrdApi.getMatchData()
+        return match.updateMatchData(matchData)
     }
 
     private fun resolveTheWinner(data: PlayerData, loserChange: Int) {
-        players.values.forEach { s ->
-            if (s.getSteamId() == data.steamUserId) {
-                if (s.hasWon()) {
-                    gamesCount++
-                    s.changeChain(1)
-                    s.changeBounty(s.getChain()*s.getMatchesWon()+s.getMatchesPlayed()+loserChange + (s.getChain() * s.getChain() * 100))
-                }
-            }
+        players.values.filter { it.getSteamId() == data.steamUserId && it.hasWon() }.forEach { w ->
+            w.changeChain(1)
+            val payout = w.getChain() * w.getMatchesWon() + w.getMatchesPlayed() + loserChange + (w.getChain() * w.getChain() * 100)
+            w.changeBounty(payout)
+//            matches.put(matches.size.toLong(), Match())
         }
     }
 
-    private fun resolveTheLoser(data: PlayerData): Int {
+    private fun resolveEveryoneElse(data: PlayerData): Int {
         var loserChange = 0
-        players.values.forEach { s ->
-            if (s.getSteamId() == data.steamUserId) {
-                s.updatePlayerData(data)
-                if (s.hasLost()) {
-                    players.values.forEach { if (!it.hasPlayed()) it.incrementIdle() }
-                    s.changeChain(-1)
-                    if (s.getBounty() > 0) loserChange = s.getBounty().div(3)
-                    s.changeBounty(-loserChange)
-                    return loserChange
-                }
-            }
+        players.values.filter { it.getSteamId().equals(data.steamUserId) && it.hasLost() }.forEach { l ->
+            players.values.forEach { p -> if (!p.hasPlayed()) p.incrementIdle() }
+            l.changeChain(-1)
+            if (l.getBounty() > 0) loserChange = l.getBounty().div(3)
+            l.changeBounty(-loserChange)
+            return loserChange
         }
         return 0
     }
 
-    private fun addPlayerIfNew(data: PlayerData) {
-        if (!players.containsKey(data.steamUserId) && data.steamUserId != 0L) {
-            players[data.steamUserId] = Player(data)
-        }
-    }
-
-    fun getActivePlayerCount() = players.values.filter { !it.isIdle() }.size
+    fun getActivePlayerCount() = max(players.values.filter { !it.isIdle() }.size, 1)
 
 }

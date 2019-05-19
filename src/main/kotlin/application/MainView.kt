@@ -1,143 +1,96 @@
 package application
 
-import azUtils.pathHome
-import getSession
-import javafx.geometry.Insets
+import application.match.MatchView
+import application.player.PlayerView
+import application.tools.ToolsView
 import javafx.geometry.Pos
-import javafx.geometry.Rectangle2D
-import javafx.scene.layout.HBox
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import session.Player
+import session.Session
 import tornadofx.*
-import java.awt.Label
 
 class MainView : View() {
-//    val controller: MainController by inject()
-//    val input = SimpleStringProperty()
 
-    override val root: Form = form {
-        addClass(MainStyle.appContainer)
-        // TOP BAR
-        hbox {
-            alignment = Pos.CENTER
-            maxHeight = 16.0
-            setPadding(Insets(12.0, 0.0, 12.0, 0.0))
-            hbox { addClass(MainStyle.debuggable)
-                setSpacing(8.0)
-                minWidth = 420.0
-                alignment = Pos.CENTER
-                label("Guilty Gear Xrd") { if (getSession().xrdApi.isConnected()) addClass(MainStyle.moduleOnline) else addClass(MainStyle.moduleOffline) }
-                label("GearNet") { addClass(MainStyle.moduleOnline) }
-                label("Database") { if (getSession().dataApi.isConnected()) addClass(MainStyle.moduleOnline) else addClass(MainStyle.moduleOffline) }
-            }
-            hbox { addClass(MainStyle.debuggable)
-                minWidth = 520.0
-                alignment = Pos.CENTER_RIGHT
-                setPadding(Insets(0.0, 32.0, 0.0, 0.0))
-                label("LOBBY_MAX_LENGTH") { addClass(MainStyle.lobbyName) }
-            }
+    override val root: Form = Form()
+    private val playersGui: MutableList<PlayerView> = ArrayList()
+    private val matchesGui: MutableList<MatchView> = ArrayList()
+    private val session: Session by inject()
+    lateinit private var utilsGui: ToolsView
+
+    private fun cycleDatabase() { GlobalScope.launch {
+        utilsGui.blinkDatabaseIndicator(session)
+        delay(2048); cycleDatabase() }
+    }
+
+    private fun cycleMemScan() { GlobalScope.launch {
+        utilsGui.blinkGuiltyGearIndicator(session)
+        if (session.xrdApi.isConnected() && session.updatePlayers()) redrawAppUi()
+        if (session.xrdApi.isConnected() && session.updateMatch()) {
+            matchesGui[0].applyMatch(session.match)
         }
-        hbox {
-            alignment = Pos.CENTER
+        delay(128); cycleMemScan() }
+    }
 
-            vbox { addClass(MainStyle.debuggable)
-                // SIDE INFO SOMETHING ???
-                setPadding(Insets(0.0, 16.0, 16.0, 16.0))
-                minWidth = 420.0
-                maxWidth = 420.0
-                hbox {
-                    vbox { addClass(MainStyle.debuggable)
-                        label("Rating: A") { addClass(MainStyle.playerRating) }
-                        label("Chains: 8") { addClass(MainStyle.playerChains) }
-                    }
-                    vbox { addClass(MainStyle.debuggable)
-                        label("Wins: 80") { addClass(MainStyle.playerRating) }
-                        label("Games: 160") { addClass(MainStyle.playerChains) }
-                    }
-                }
-                label("it's a label") { addClass(MainStyle.debuggable)
-                    text = getSession().xrdApi.isConnected().toString()
-                }
-            }
-            vbox { addClass(MainStyle.debuggable)
-                setPadding(Insets(0.0, 16.0, 0.0, 16.0))
-                setSpacing(4.0)
-                minWidth = 520.0
-                maxWidth = 520.0
-                for (i in 0..7) {
-                    hbox {
-                        // PLAYER VIEW
-                        addClass(MainStyle.playerContainer)
-                        imageview("${pathHome.toUri().toURL()}src/main/resources/gn_atlas.png") {
-                            setPreserveRatio(true)
-                            setViewport(Rectangle2D(i*64.0, 0.0, 64.0, 64.0))
-                            setPrefSize(64.0, 64.0)
-                        }
-                        vbox {
-                            addClass(MainStyle.playerScoreSection)
-                            label("EL GRANDE TEJAS HANDLE") { addClass(MainStyle.playerHandle) }
-                            label("2,876,050 W$") { addClass(MainStyle.playerBounty) }
-                        }
-                        vbox {
-                            addClass(MainStyle.playerStatsSection)
-                            hbox {
-                                progressbar(0.5) {
-                                    minWidth = 120.0
-                                    maxHeight = 16.0
-                                }
-                            }
-                            hbox {
-                                vbox { addClass(MainStyle.debuggable)
-                                    label("Rating: A") { addClass(MainStyle.playerRating) }
-                                    label("Chains: 8") { addClass(MainStyle.playerChains) }
-                                }
-                                vbox { addClass(MainStyle.debuggable)
-                                    label("Wins: 80") { addClass(MainStyle.playerRating) }
-                                    label("Games: 160") { addClass(MainStyle.playerChains) }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    private fun cycleUi() { GlobalScope.launch {
+        utilsGui.applyData(session)
+        delay(64); cycleUi() }
+    }
 
+    private fun redrawAppUi() {
+        utilsGui.blinkGearNetIndicator(session)
+        // Sort and redraw PlayerViews
+        val uiUpdate: List<Player> = session.players.values.toList().sortedByDescending { item -> item.getRating() }.sortedByDescending { item -> item.getBounty() }.sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
+        for (i in 0..7) if (uiUpdate.size > i) playersGui[i].applyData(uiUpdate[i])
+        else playersGui[i].applyData(Player())
+        // Sort and redraw MatchViews
 
     }
+
+    init {
+        with(root) { addClass(MainStyle.appContainer)
+            translateY -= 5.0
+            hbox {
+
+                // ======== LEFT SIDE COLUMN ========
+                vbox { alignment = Pos.TOP_CENTER; spacing = 2.0
+                    minWidth = 520.0
+                    maxWidth = 520.0
+
+                    // MATCH INFO
+                    label("MATCH MONITORS") { addClass(MainStyle.lobbyName) }
+                    // MATCH VIEWS
+                    hbox{matchesGui.add(MatchView(parent))}
+                    hbox{matchesGui.add(MatchView(parent))}
+                    hbox{matchesGui.add(MatchView(parent))}
+                    hbox{matchesGui.add(MatchView(parent))}
+                }
+
+                // ======== RIGHT SIDE COLUMN ========
+                vbox { alignment = Pos.TOP_CENTER; spacing = 2.0
+                    minWidth = 420.0
+                    maxWidth = 420.0
+
+                    // LOBBY NAME
+                    label("LOBBY_TITLE_FULL") { addClass(MainStyle.lobbyName) }
+                    // PLAYER VIEWS
+                    for (i in 0..7) hbox { playersGui.add(PlayerView(parent)) }
+                }
+
+            }
+
+            // ======== BOTTOM UTILS ========
+            hbox { utilsGui = ToolsView(parent) }
+
+            cycleDatabase()
+            cycleMemScan()
+            cycleUi()
+        }
+
+    }
+
 }
 
-class PlayerView : View() {
-    override val root: Form = form {
-        hbox {
-            // PLAYER VIEW
-            addClass(MainStyle.playerContainer)
-            imageview("${pathHome.toUri().toURL()}src/main/resources/gn_atlas.png") {
-                setPreserveRatio(true)
-                setViewport(Rectangle2D(0.0, 0.0, 64.0, 64.0))
-                setPrefSize(64.0, 64.0)
-            }
-            vbox {
-                addClass(MainStyle.playerScoreSection)
-                label("EL GRANDE TEJAS HANDLE") { addClass(MainStyle.playerHandle) }
-                label("2,876,050 W$") { addClass(MainStyle.playerBounty) }
-            }
-            vbox {
-                addClass(MainStyle.playerStatsSection)
-                hbox {
-                    progressbar {
-                        minWidth = 120.0
-                        maxHeight = 16.0
-                    }
-                }
-                hbox {
-                    vbox {
-                        label("Rating: A") { addClass(MainStyle.playerRating) }
-                        label("Chains: 8") { addClass(MainStyle.playerChains) }
-                    }
-                    vbox {
-                        label("Wins: 80") { addClass(MainStyle.playerRating) }
-                        label("Games: 160") { addClass(MainStyle.playerChains) }
-                    }
-                }
-            }
-        }
-    }
-}
+
+

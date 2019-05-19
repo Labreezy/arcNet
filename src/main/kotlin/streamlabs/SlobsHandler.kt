@@ -1,7 +1,7 @@
 package streamlabs
 
-import azUtils.writeToFile
 import session.Player
+import utils.writeToFile
 
 
 class SlobsHandler {
@@ -15,7 +15,7 @@ class SlobsHandler {
                     "Backdrop:\n" +
                     "${getFullscreen(true)}\n" +
                     "Name:\n" +
-                    "${players.get(i).getDisplayName()}\n" +
+                    "${players.get(i).getNameString()}\n" +
                     "Bounty:\n" +
                     "${players.get(i).getBountyFormatted(0f)}\n" +
                     "Rating:\n" +
@@ -25,8 +25,7 @@ class SlobsHandler {
                     "Change:\n" +
                     "${players.get(i).getChangeString(0f)}\n" +
                     "Character:\n" +
-                    "${players.get(i).getCharacter(true)}\n" +
-                    "${players.get(i).getCharacter(false)}\n" +
+                    "${players.get(i).getCharacter()}\n" +
                     ""
             writeToFile("remote${i}", remote)
         } else writeToFile("remote${i}", "")
